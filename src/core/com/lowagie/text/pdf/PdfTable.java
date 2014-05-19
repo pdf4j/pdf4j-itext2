@@ -1,5 +1,5 @@
 /*
- * $Id$
+ * $Id: PdfTable.java 3393 2008-05-16 21:33:55Z xlv $
  *
  * Copyright 1999, 2000, 2001, 2002 Bruno Lowagie
  *
@@ -75,10 +75,10 @@ public class PdfTable extends Rectangle {
 	private int columns;
     
 	/** this is the ArrayList with all the cell of the table header. */
-	private ArrayList headercells;
+	private ArrayList<PdfCell> headercells;
     
 	/** this is the ArrayList with all the cells in the table. */
-	private ArrayList cells;
+	private ArrayList<PdfCell> cells;
     
 	/** Original table used to build this object*/
 	protected Table table;
@@ -114,8 +114,8 @@ public class PdfTable extends Rectangle {
 		setLeft(positions[0]);
 		setRight(positions[positions.length - 1]);
 		
-		headercells = new ArrayList();
-		cells = new ArrayList();
+		headercells = new ArrayList<PdfCell>();
+		cells = new ArrayList<PdfCell>();
 
 		updateRowAdditionsInternal();
 	}
@@ -148,7 +148,7 @@ public class PdfTable extends Rectangle {
 		int firstDataRow = table.getLastHeaderRow() + 1;
 		Cell cell;
 		PdfCell currentCell;
-		ArrayList newCells = new ArrayList();
+		ArrayList<PdfCell> newCells = new ArrayList<PdfCell>();
 		int rows = table.size() + 1;
 		float[] offsets = new float[rows];
 		for (int i = 0; i < rows; i++) {
@@ -156,9 +156,9 @@ public class PdfTable extends Rectangle {
 		}
         
 		// loop over all the rows
-		for (Iterator rowIterator = table.iterator(); rowIterator.hasNext(); ) {
+		for (Iterator<Row> rowIterator = table.iterator(); rowIterator.hasNext(); ) {
 			groupChange = false;
-			row = (Row) rowIterator.next();
+			row = rowIterator.next();
 			if (row.isEmpty()) {
 				if (rowNumber < rows - 1 && offsets[rowNumber + 1] > offsets[rowNumber]) offsets[rowNumber + 1] = offsets[rowNumber];
 			}
@@ -196,7 +196,7 @@ public class PdfTable extends Rectangle {
 		// loop over all the cells
 		int n = newCells.size();
 		for (int i = 0; i < n; i++) {
-			currentCell = (PdfCell) newCells.get(i);
+			currentCell = newCells.get(i);
 			try {
 				currentCell.setBottom(offsets[currentCell.rownumber()-prevRows + currentCell.rowspan()]);
 			}
@@ -213,7 +213,7 @@ public class PdfTable extends Rectangle {
 	 */
 	
 	int rows() {
-		return cells.isEmpty() ? 0 : ((PdfCell)cells.get(cells.size()-1)).rownumber()+1; 
+		return cells.isEmpty() ? 0 : cells.get(cells.size()-1).rownumber()+1; 
 	}
 
 	/** @see com.lowagie.text.Element#type() */
@@ -227,7 +227,7 @@ public class PdfTable extends Rectangle {
 	 * @return	an <CODE>ArrayList</CODE>
 	 */
     
-	ArrayList getHeaderCells() {
+	ArrayList<PdfCell> getHeaderCells() {
 		return headercells;
 	}
     
@@ -247,7 +247,7 @@ public class PdfTable extends Rectangle {
 	 * @return	an <CODE>ArrayList</CODE>
 	 */
     
-	ArrayList getCells() {
+	ArrayList<PdfCell> getCells() {
 		return cells;
 	}
     

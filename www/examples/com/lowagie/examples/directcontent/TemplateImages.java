@@ -1,5 +1,5 @@
 /*
- * $Id$
+ * $Id: TemplateImages.java 3989 2009-06-18 02:22:54Z xlv $
  *
  * This code is part of the 'iText Tutorial'.
  * You can find the complete tutorial at the following address:
@@ -87,7 +87,7 @@ public class TemplateImages {
             
             Paragraph p1 = new Paragraph("This is a template ");
             p1.add(ck);
-            p1.add(" just here.");
+            p1.addObject(" just here.");
             p1.setLeading(img.getScaledHeight() * 1.1f);
             document.add(p1);
             document.add(table);

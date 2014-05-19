@@ -54,6 +54,7 @@ import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.StringTokenizer;
+import com.lowagie.text.error_messages.MessageLocalization;
 
 import com.lowagie.text.ExceptionConverter;
 /** Supports fast encodings for winansi and PDFDocEncoding.
@@ -106,7 +107,7 @@ public class PdfEncodings {
     
     static final IntHashtable pdfEncoding = new IntHashtable();
     
-    static HashMap extraEncodings = new HashMap();
+    static HashMap<String, ExtraEncoding> extraEncodings = new HashMap<String, ExtraEncoding>();
     
     static {        
         for (int k = 128; k < 161; ++k) {
@@ -144,7 +145,7 @@ public class PdfEncodings {
                 b[k] = (byte)text.charAt(k);
             return b;
         }
-        ExtraEncoding extra = (ExtraEncoding)extraEncodings.get(encoding.toLowerCase());
+        ExtraEncoding extra = extraEncodings.get(encoding.toLowerCase());
         if (extra != null) {
             byte b[] = extra.charToByte(text, encoding);
             if (b != null)
@@ -208,7 +209,7 @@ public class PdfEncodings {
     public static final byte[] convertToBytes(char char1, String encoding) {
         if (encoding == null || encoding.length() == 0)
             return new byte[]{(byte)char1};
-        ExtraEncoding extra = (ExtraEncoding)extraEncodings.get(encoding.toLowerCase());
+        ExtraEncoding extra = extraEncodings.get(encoding.toLowerCase());
         if (extra != null) {
             byte b[] = extra.charToByte(char1, encoding);
             if (b != null)
@@ -262,7 +263,7 @@ public class PdfEncodings {
                 c[k] = (char)(bytes[k] & 0xff);
             return new String(c);
         }
-        ExtraEncoding extra = (ExtraEncoding)extraEncodings.get(encoding.toLowerCase());
+        ExtraEncoding extra = extraEncodings.get(encoding.toLowerCase());
         if (extra != null) {
             String text = extra.byteToChar(bytes, encoding);
             if (text != null)
@@ -307,7 +308,7 @@ public class PdfEncodings {
         return true;
     }
     
-    static final HashMap cmaps = new HashMap();
+    static final HashMap<String, char[][]> cmaps = new HashMap<String, char[][]>();
     /** Assumes that '\\n' and '\\r\\n' are the newline sequences. It may not work for
      * all CJK encodings. To be used with loadCmap().
      */    
@@ -337,7 +338,7 @@ public class PdfEncodings {
         try {
             char planes[][] = null;
             synchronized (cmaps) {
-                planes = (char[][])cmaps.get(name);
+                planes = cmaps.get(name);
             }
             if (planes == null) {
                 planes = readCmap(name, newline);
@@ -381,7 +382,7 @@ public class PdfEncodings {
         try {
             char planes[][] = null;
             synchronized (cmaps) {
-                planes = (char[][])cmaps.get(name);
+                planes = cmaps.get(name);
             }
             if (planes == null) {
                 planes = readCmap(name, (byte[][])null);
@@ -415,7 +416,7 @@ public class PdfEncodings {
     }
 
     static char[][] readCmap(String name, byte newline[][]) throws IOException {
-        ArrayList planes = new ArrayList();
+        ArrayList<char[]> planes = new ArrayList<char[]>();
         planes.add(new char[256]);
         readCmap(name, planes);
         if (newline != null) {
@@ -423,19 +424,19 @@ public class PdfEncodings {
                 encodeSequence(newline[k].length, newline[k], BaseFont.CID_NEWLINE, planes);
         }
         char ret[][] = new char[planes.size()][];
-        return (char[][])planes.toArray(ret);
+        return planes.toArray(ret);
     }
     
-    static void readCmap(String name, ArrayList planes) throws IOException {
+    static void readCmap(String name, ArrayList<char[]> planes) throws IOException {
         String fullName = BaseFont.RESOURCE_PATH + "cmaps/" + name;
         InputStream in = BaseFont.getResourceStream(fullName);
         if (in == null)
-            throw new IOException("The Cmap " + name + " was not found.");
+            throw new IOException(MessageLocalization.getComposedMessage("the.cmap.1.was.not.found", name));
         encodeStream(in, planes);
         in.close();
     }
     
-    static void encodeStream(InputStream in, ArrayList planes) throws IOException {
+    static void encodeStream(InputStream in, ArrayList<char[]> planes) throws IOException {
         BufferedReader rd = new BufferedReader(new InputStreamReader(in, "iso-8859-1"));
         String line = null;
         int state = CIDNONE;
@@ -501,15 +502,15 @@ public class PdfEncodings {
         }
     }
 
-    static void encodeSequence(int size, byte seqs[], char cid, ArrayList planes) {
+    static void encodeSequence(int size, byte seqs[], char cid, ArrayList<char[]> planes) {
         --size;
         int nextPlane = 0;
         for (int idx = 0; idx < size; ++idx) {
-            char plane[] = (char[])planes.get(nextPlane);
+            char plane[] = planes.get(nextPlane);
             int one = seqs[idx] & 0xff;
             char c = plane[one];
             if (c != 0 && (c & 0x8000) == 0)
-                throw new RuntimeException("Inconsistent mapping.");
+                throw new RuntimeException(MessageLocalization.getComposedMessage("inconsistent.mapping"));
             if (c == 0) {
                 planes.add(new char[256]);
                 c = (char)((planes.size() - 1) | 0x8000);
@@ -517,11 +518,11 @@ public class PdfEncodings {
             }
             nextPlane = c & 0x7fff;
         }
-        char plane[] = (char[])planes.get(nextPlane);
+        char plane[] = planes.get(nextPlane);
         int one = seqs[size] & 0xff;
         char c = plane[one];
         if ((c & 0x8000) != 0)
-            throw new RuntimeException("Inconsistent mapping.");
+            throw new RuntimeException(MessageLocalization.getComposedMessage("inconsistent.mapping"));
         plane[one] = cid;
     }
 
@@ -529,9 +530,10 @@ public class PdfEncodings {
      * @param name the name of the encoding. The encoding recognition is case insensitive
      * @param enc the conversion class
      */    
+    @SuppressWarnings("unchecked")
     public static void addExtraEncoding(String name, ExtraEncoding enc) {
         synchronized (extraEncodings) { // This serializes concurrent updates
-            HashMap newEncodings = (HashMap)extraEncodings.clone();
+            HashMap<String, ExtraEncoding> newEncodings = (HashMap<String, ExtraEncoding>)extraEncodings.clone();
             newEncodings.put(name.toLowerCase(), enc);
             extraEncodings = newEncodings;  // This swap does not require synchronization with reader
         }

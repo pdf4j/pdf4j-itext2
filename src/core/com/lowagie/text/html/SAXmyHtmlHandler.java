@@ -1,5 +1,5 @@
 /*
- * $Id$
+ * $Id: SAXmyHtmlHandler.java 3393 2008-05-16 21:33:55Z xlv $
  *
  * Copyright 2001, 2002 by Bruno Lowagie.
  *
@@ -56,7 +56,6 @@ import org.xml.sax.Attributes;
 
 import com.lowagie.text.DocListener;
 import com.lowagie.text.DocumentException;
-import com.lowagie.text.Element;
 import com.lowagie.text.ElementTags;
 import com.lowagie.text.ExceptionConverter;
 import com.lowagie.text.pdf.BaseFont;
@@ -110,7 +109,7 @@ public class SAXmyHtmlHandler extends SAXiTextHandler // SAXmyHandler
      *            a tagmap translating HTML tags to iText tags
      */
 
-    public SAXmyHtmlHandler(DocListener document, HashMap htmlTags) {
+    public SAXmyHtmlHandler(DocListener document, HashMap<String, HtmlPeer> htmlTags) {
         super(document, htmlTags);
     }
 
@@ -184,7 +183,7 @@ public class SAXmyHtmlHandler extends SAXiTextHandler // SAXmyHandler
             return;
         }
         if (myTags.containsKey(name)) {
-            XmlPeer peer = (XmlPeer) myTags.get(name);
+            XmlPeer peer = myTags.get(name);
             if (ElementTags.TABLE.equals(peer.getTag()) || ElementTags.CELL.equals(peer.getTag())) {
                 Properties p = peer.getAttributes(attrs);
                 String value;
@@ -233,7 +232,7 @@ public class SAXmyHtmlHandler extends SAXiTextHandler // SAXmyHandler
     	name = name.toLowerCase();
         if (ElementTags.PARAGRAPH.equals(name)) {
             try {
-                document.add((Element) stack.pop());
+                document.add(stack.pop());
                 return;
             } catch (DocumentException e) {
                 throw new ExceptionConverter(e);
@@ -262,7 +261,7 @@ public class SAXmyHtmlHandler extends SAXiTextHandler // SAXmyHandler
             return;
         }
         if (myTags.containsKey(name)) {
-            XmlPeer peer = (XmlPeer) myTags.get(name);
+            XmlPeer peer = myTags.get(name);
             if (ElementTags.TABLE.equals(peer.getTag())) {
                 tableBorder = false;
             }

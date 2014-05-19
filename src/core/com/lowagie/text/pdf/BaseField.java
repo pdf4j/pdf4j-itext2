@@ -52,6 +52,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import com.lowagie.text.error_messages.MessageLocalization;
 
 import com.lowagie.text.DocumentException;
 import com.lowagie.text.Element;
@@ -110,6 +111,11 @@ public abstract class BaseField {
      * This flag is only meaningful with combo fields.
      */    
     public static final int EDIT = PdfFormField.FF_EDIT;
+    
+    /** whether or not a list may have multiple selections.  Only applies to /CH LIST
+     * fields, not combo boxes.
+     */
+    public static final int MULTISELECT = PdfFormField.FF_MULTISELECT;
 
     /**
      * combo box flag.
@@ -143,7 +149,7 @@ public abstract class BaseField {
     /** Holds value of property maxCharacterLength. */
     protected int maxCharacterLength;
     
-    private final static HashMap fieldKeys = new HashMap();
+    private final static HashMap<PdfName, Integer> fieldKeys = new HashMap<PdfName, Integer>();
  
     static {
         fieldKeys.putAll(PdfCopyFieldsImp.fieldKeys);
@@ -252,8 +258,8 @@ public abstract class BaseField {
         return app;
     }
     
-    protected static ArrayList getHardBreaks(String text) {
-        ArrayList arr = new ArrayList();
+    protected static ArrayList<String> getHardBreaks(String text) {
+        ArrayList<String> arr = new ArrayList<String>();
         char cs[] = text.toCharArray();
         int len = cs.length;
         StringBuffer buf = new StringBuffer();
@@ -287,13 +293,13 @@ public abstract class BaseField {
         }
     }
     
-    protected static ArrayList breakLines(ArrayList breaks, BaseFont font, float fontSize, float width) {
-        ArrayList lines = new ArrayList();
+    protected static ArrayList<String> breakLines(ArrayList<String> breaks, BaseFont font, float fontSize, float width) {
+        ArrayList<String> lines = new ArrayList<String>();
         StringBuffer buf = new StringBuffer();
         for (int ck = 0; ck < breaks.size(); ++ck) {
             buf.setLength(0);
             float w = 0;
-            char cs[] = ((String)breaks.get(ck)).toCharArray();
+            char cs[] = breaks.get(ck).toCharArray();
             int len = cs.length;
             // 0 inline first, 1 inline, 2 spaces
             int state = 0;
@@ -560,7 +566,7 @@ public abstract class BaseField {
      */
     public void setRotation(int rotation) {
         if (rotation % 90 != 0)
-            throw new IllegalArgumentException("Rotation must be a multiple of 90.");
+            throw new IllegalArgumentException(MessageLocalization.getComposedMessage("rotation.must.be.a.multiple.of.90"));
         rotation %= 360;
         if (rotation < 0)
             rotation += 360;
@@ -662,8 +668,8 @@ public abstract class BaseField {
      * @param to the destination. It may be <CODE>null</CODE>
      */    
     public static void moveFields(PdfDictionary from, PdfDictionary to) {
-        for (Iterator i = from.getKeys().iterator(); i.hasNext();) {
-            PdfName key = (PdfName)i.next();
+        for (Iterator<PdfName> i = from.getKeys().iterator(); i.hasNext();) {
+            PdfName key = i.next();
             if (fieldKeys.containsKey(key)) {
                 if (to != null)
                     to.put(key, from.get(key));

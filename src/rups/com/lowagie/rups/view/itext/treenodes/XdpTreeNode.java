@@ -1,5 +1,5 @@
 /*
- * $Id$
+ * $Id: XdpTreeNode.java 3312 2008-05-01 20:58:46Z xlv $
  *
  * Copyright 2007 Bruno Lowagie.
  *
@@ -20,7 +20,6 @@
 
 package com.lowagie.rups.view.itext.treenodes;
 
-import java.util.Iterator;
 import java.util.List;
 
 import org.dom4j.Attribute;
@@ -45,6 +44,7 @@ public class XdpTreeNode extends IconTreeNode {
 	 * Constructs an XdpTreeNode
 	 * @param node	the XML node
 	 */
+    @SuppressWarnings("unchecked")
 	public XdpTreeNode(Node node) {
 		super(null, node);
 		if (node instanceof Element) {
@@ -74,9 +74,8 @@ public class XdpTreeNode extends IconTreeNode {
     	icon = IconFetcher.getIcon("tag.png");
 	}
 
-	private void addChildNodes(List list) {
-		for (Iterator i = list.iterator(); i.hasNext(); ) {
-			Node n = (Node)i.next();
+	private void addChildNodes(List<Node> list) {
+		for (Node n: list) {
 			if (n instanceof Namespace) continue;
 			if (n instanceof Comment) continue;
 			this.add(new XdpTreeNode(n));

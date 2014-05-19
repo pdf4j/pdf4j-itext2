@@ -1,5 +1,5 @@
 /*
- * $Id$
+ * $Id: PdfTextArray.java 3393 2008-05-16 21:33:55Z xlv $
  *
  * Copyright 1999, 2000, 2001, 2002 Bruno Lowagie
  *
@@ -62,7 +62,7 @@ import java.util.ArrayList;
  */
 
 public class PdfTextArray{
-    ArrayList arrayList = new ArrayList();
+    ArrayList<Object> arrayList = new ArrayList<Object>();
     
     // To emit a more efficient array, we consolidate
     // repeated numbers or strings into single array entries.
@@ -122,7 +122,7 @@ public class PdfTextArray{
         // adding an empty string doesn't modify the TextArray at all
     }
     
-    ArrayList getArrayList() {
+    ArrayList<Object> getArrayList() {
         return arrayList;
     }
     

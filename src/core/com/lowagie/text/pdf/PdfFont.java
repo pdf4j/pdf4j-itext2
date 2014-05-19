@@ -1,5 +1,5 @@
 /*
- * $Id$
+ * $Id: PdfFont.java 3393 2008-05-16 21:33:55Z xlv $
  *
  * Copyright 1999, 2000, 2001, 2002 Bruno Lowagie
  *
@@ -67,7 +67,7 @@ import com.lowagie.text.Image;
  * @see		BadPdfFormatException
  */
 
-class PdfFont implements Comparable {
+class PdfFont implements Comparable<PdfFont> {
     
     
     /** the font metrics. */
@@ -93,19 +93,17 @@ class PdfFont implements Comparable {
     /**
      * Compares this <CODE>PdfFont</CODE> with another
      *
-     * @param	object	the other <CODE>PdfFont</CODE>
+     * @param	pdfFont	the other <CODE>PdfFont</CODE>
      * @return	a value
      */
     
-    public int compareTo(Object object) {
+    public int compareTo(PdfFont pdfFont) {
         if (image != null)
             return 0;
-        if (object == null) {
+        if (pdfFont == null) {
             return -1;
         }
-        PdfFont pdfFont;
-        try {
-            pdfFont = (PdfFont) object;
+ 
             if (font != pdfFont.font) {
                 return 1;
             }
@@ -114,10 +112,6 @@ class PdfFont implements Comparable {
             }
             return 0;
         }
-        catch(ClassCastException cce) {
-            return -2;
-        }
-    }
     
     /**
      * Returns the size of this font.

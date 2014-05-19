@@ -47,6 +47,7 @@
 package com.lowagie.text.pdf;
 
 import java.util.ArrayList;
+import com.lowagie.text.error_messages.MessageLocalization;
 
 import com.lowagie.text.Chunk;
 import com.lowagie.text.Font;
@@ -63,7 +64,7 @@ import com.lowagie.text.Utilities;
  */
 public class FontSelector {
     
-    protected ArrayList fonts = new ArrayList();
+    protected ArrayList<Font> fonts = new ArrayList<Font>();
 
     /**
      * Adds a <CODE>Font</CODE> to be searched for valid characters.
@@ -88,7 +89,7 @@ public class FontSelector {
     public Phrase process(String text) {
         int fsize = fonts.size();
         if (fsize == 0)
-            throw new IndexOutOfBoundsException("No font is defined.");
+            throw new IndexOutOfBoundsException(MessageLocalization.getComposedMessage("no.font.is.defined"));
         char cc[] = text.toCharArray();
         int len = cc.length;
         StringBuffer sb = new StringBuffer();
@@ -104,11 +105,11 @@ public class FontSelector {
             if (Utilities.isSurrogatePair(cc, k)) {
                 int u = Utilities.convertToUtf32(cc, k);
                 for (int f = 0; f < fsize; ++f) {
-                    font = (Font)fonts.get(f);
+                    font = fonts.get(f);
                     if (font.getBaseFont().charExists(u)) {
                         if (lastidx != f) {
                             if (sb.length() > 0 && lastidx != -1) {
-                                Chunk ck = new Chunk(sb.toString(), (Font)fonts.get(lastidx));
+                                Chunk ck = new Chunk(sb.toString(), fonts.get(lastidx));
                                 ret.add(ck);
                                 sb.setLength(0);
                             }
@@ -122,11 +123,11 @@ public class FontSelector {
             }
             else {
                 for (int f = 0; f < fsize; ++f) {
-                    font = (Font)fonts.get(f);
+                    font = fonts.get(f);
                     if (font.getBaseFont().charExists(c)) {
                         if (lastidx != f) {
                             if (sb.length() > 0 && lastidx != -1) {
-                                Chunk ck = new Chunk(sb.toString(), (Font)fonts.get(lastidx));
+                                Chunk ck = new Chunk(sb.toString(), fonts.get(lastidx));
                                 ret.add(ck);
                                 sb.setLength(0);
                             }
@@ -139,7 +140,7 @@ public class FontSelector {
             }
         }
         if (sb.length() > 0) {
-            Chunk ck = new Chunk(sb.toString(), (Font)fonts.get(lastidx == -1 ? 0 : lastidx));
+            Chunk ck = new Chunk(sb.toString(), fonts.get(lastidx == -1 ? 0 : lastidx));
             ret.add(ck);
         }
         return ret;

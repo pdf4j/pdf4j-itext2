@@ -70,18 +70,18 @@ public class PdfNameTree {
      * @return the dictionary with the name tree. This dictionary is the one
      * generally pointed to by the key /Dests, for example
      */    
-    public static PdfDictionary writeTree(HashMap items, PdfWriter writer) throws IOException {
+    public static PdfDictionary writeTree(HashMap<String, PdfObject> items, PdfWriter writer) throws IOException {
         if (items.isEmpty())
             return null;
         String names[] = new String[items.size()];
-        names = (String[])items.keySet().toArray(names);
+        names = items.keySet().toArray(names);
         Arrays.sort(names);
         if (names.length <= leafSize) {
             PdfDictionary dic = new PdfDictionary();
             PdfArray ar = new PdfArray();
             for (int k = 0; k < names.length; ++k) {
                 ar.add(new PdfString(names[k], null));
-                ar.add((PdfObject)items.get(names[k]));
+                ar.add(items.get(names[k]));
             }
             dic.put(PdfName.NAMES, ar);
             return dic;
@@ -99,7 +99,7 @@ public class PdfNameTree {
             arr = new PdfArray();
             for (; offset < end; ++offset) {
                 arr.add(new PdfString(names[offset], null));
-                arr.add((PdfObject)items.get(names[offset]));
+                arr.add(items.get(names[offset]));
             }
             dic.put(PdfName.NAMES, arr);
             kids[k] = writer.addToBody(dic).getIndirectReference();
@@ -135,7 +135,7 @@ public class PdfNameTree {
         }
     }
     
-    private static void iterateItems(PdfDictionary dic, HashMap items) {
+    private static void iterateItems(PdfDictionary dic, HashMap<String, PdfObject> items) {
         PdfArray nn = (PdfArray)PdfReader.getPdfObjectRelease(dic.get(PdfName.NAMES));
         if (nn != null) {
             for (int k = 0; k < nn.size(); ++k) {
@@ -151,8 +151,8 @@ public class PdfNameTree {
         }
     }
     
-    public static HashMap readTree(PdfDictionary dic) {
-        HashMap items = new HashMap();
+    public static HashMap<String, PdfObject> readTree(PdfDictionary dic) {
+        HashMap<String, PdfObject> items = new HashMap<String, PdfObject>();
         if (dic != null)
             iterateItems(dic, items);
         return items;

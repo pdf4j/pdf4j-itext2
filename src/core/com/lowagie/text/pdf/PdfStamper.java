@@ -55,6 +55,7 @@ import java.security.SignatureException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import com.lowagie.text.error_messages.MessageLocalization;
 
 import com.lowagie.text.DocWriter;
 import com.lowagie.text.DocumentException;
@@ -81,7 +82,7 @@ public class PdfStamper
      * The writer
      */    
     protected PdfStamperImp stamper;
-    private HashMap moreInfo;
+    private HashMap<String, String> moreInfo;
     private boolean hasSignature;
     private PdfSignatureAppearance sigApp;
 
@@ -131,7 +132,7 @@ public class PdfStamper
      * @return the map or <CODE>null</CODE>
      *
      */
-    public HashMap getMoreInfo() {
+    public HashMap<String, String> getMoreInfo() {
         return this.moreInfo;
     }
 
@@ -141,7 +142,7 @@ public class PdfStamper
      * @param moreInfo additional entries to the info dictionary
      *
      */
-    public void setMoreInfo(HashMap moreInfo) {
+    public void setMoreInfo(HashMap<String, String> moreInfo) {
         this.moreInfo = moreInfo;
     }
 
@@ -268,9 +269,9 @@ public class PdfStamper
      */
     public void setEncryption(byte userPassword[], byte ownerPassword[], int permissions, boolean strength128Bits) throws DocumentException {
         if (stamper.isAppend())
-            throw new DocumentException("Append mode does not support changing the encryption status.");
+            throw new DocumentException(MessageLocalization.getComposedMessage("append.mode.does.not.support.changing.the.encryption.status"));
         if (stamper.isContentWritten())
-            throw new DocumentException("Content was already written to the output.");
+            throw new DocumentException(MessageLocalization.getComposedMessage("content.was.already.written.to.the.output"));
         stamper.setEncryption(userPassword, ownerPassword, permissions, strength128Bits ? PdfWriter.STANDARD_ENCRYPTION_128 : PdfWriter.STANDARD_ENCRYPTION_40);
     }
 
@@ -289,9 +290,9 @@ public class PdfStamper
      */
     public void setEncryption(byte userPassword[], byte ownerPassword[], int permissions, int encryptionType) throws DocumentException {
         if (stamper.isAppend())
-            throw new DocumentException("Append mode does not support changing the encryption status.");
+            throw new DocumentException(MessageLocalization.getComposedMessage("append.mode.does.not.support.changing.the.encryption.status"));
         if (stamper.isContentWritten())
-            throw new DocumentException("Content was already written to the output.");
+            throw new DocumentException(MessageLocalization.getComposedMessage("content.was.already.written.to.the.output"));
         stamper.setEncryption(userPassword, ownerPassword, permissions, encryptionType);
     }
 
@@ -345,9 +346,9 @@ public class PdfStamper
      */
      public void setEncryption(Certificate[] certs, int[] permissions, int encryptionType) throws DocumentException {
         if (stamper.isAppend())
-            throw new DocumentException("Append mode does not support changing the encryption status.");
+            throw new DocumentException(MessageLocalization.getComposedMessage("append.mode.does.not.support.changing.the.encryption.status"));
         if (stamper.isContentWritten())
-            throw new DocumentException("Content was already written to the output.");
+            throw new DocumentException(MessageLocalization.getComposedMessage("content.was.already.written.to.the.output"));
         stamper.setEncryption(certs, permissions, encryptionType);
      }
      
@@ -444,7 +445,7 @@ public class PdfStamper
      * {@link SimpleBookmark}.
      * @param outlines the bookmarks or <CODE>null</CODE> to remove any
      */
-    public void setOutlines(List outlines) {
+    public void setOutlines(List<HashMap<String, Object>> outlines) {
         stamper.setOutlines(outlines);
     }
 
@@ -755,7 +756,7 @@ public class PdfStamper
      * @return	a Map with all the PdfLayers in the document (and the name/title of the layer as key)
      * @since	2.1.2
      */
-    public Map getPdfLayers() {
+    public Map<String, PdfLayer> getPdfLayers() {
     	return stamper.getPdfLayers();
     }
 }

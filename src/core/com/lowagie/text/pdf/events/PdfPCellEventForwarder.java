@@ -1,5 +1,5 @@
 /*
- * $Id$
+ * $Id: PdfPCellEventForwarder.java 3393 2008-05-16 21:33:55Z xlv $
  *
  * Copyright 2005 Bruno Lowagie
  *
@@ -50,7 +50,6 @@
 package com.lowagie.text.pdf.events;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 
 import com.lowagie.text.Rectangle;
 import com.lowagie.text.pdf.PdfContentByte;
@@ -67,7 +66,7 @@ import com.lowagie.text.pdf.PdfPCellEvent;
 public class PdfPCellEventForwarder implements PdfPCellEvent {
 
 	/** ArrayList containing all the PageEvents that have to be executed. */
-	protected ArrayList events = new ArrayList();
+	protected ArrayList<PdfPCellEvent> events = new ArrayList<PdfPCellEvent>();
 	
 	/** 
 	 * Add a page event to the forwarder.
@@ -81,9 +80,8 @@ public class PdfPCellEventForwarder implements PdfPCellEvent {
 	 * @see com.lowagie.text.pdf.PdfPCellEvent#cellLayout(com.lowagie.text.pdf.PdfPCell, com.lowagie.text.Rectangle, com.lowagie.text.pdf.PdfContentByte[])
 	 */
 	public void cellLayout(PdfPCell cell, Rectangle position, PdfContentByte[] canvases) {
-		PdfPCellEvent event;
-		for (Iterator i = events.iterator(); i.hasNext(); ) {
-			event = (PdfPCellEvent)i.next();
+		;
+		for (PdfPCellEvent event: events) {
 			event.cellLayout(cell, position, canvases);
 		}
 	}

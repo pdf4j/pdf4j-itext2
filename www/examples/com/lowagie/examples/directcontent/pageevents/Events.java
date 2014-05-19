@@ -1,5 +1,5 @@
 /*
- * $Id$
+ * $Id: Events.java 3393 2008-05-16 21:33:55Z xlv $
  *
  * This code is part of the 'iText Tutorial'.
  * You can find the complete tutorial at the following address:
@@ -18,7 +18,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.EmptyStackException;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.TreeSet;
 
 import javax.xml.parsers.SAXParser;
@@ -58,7 +57,7 @@ public class Events {
 	class MyPageEvents extends PdfPageEventHelper {
 
 		/** we will keep a list of speakers */
-		TreeSet speakers = new TreeSet();
+		TreeSet<Speaker> speakers = new TreeSet<Speaker>();
 
 		/** This is the contentbyte object of the writer */
 		PdfContentByte cb;
@@ -106,8 +105,7 @@ public class Events {
 		public void onChapter(PdfWriter writer, Document document,
 				float paragraphPosition, Paragraph title) {
 			StringBuffer buf = new StringBuffer();
-			for (Iterator i = title.getChunks().iterator(); i.hasNext();) {
-				Chunk chunk = (Chunk) i.next();
+			for (Chunk chunk: title.getChunks()) {
 				buf.append(chunk.getContent());
 			}
 			act = buf.toString();
@@ -156,7 +154,7 @@ public class Events {
 		 * Getting the list of speakers.
 		 * @return	a list of speakers and the number of occurrences.
 		 */
-		public TreeSet getSpeakers() {
+		public TreeSet<Speaker> getSpeakers() {
 			return speakers;
 		}
 	}
@@ -211,9 +209,7 @@ public class Events {
 			parser.parse("playRomeoJuliet.xml", new Events().getXmlHandler(document));
 
 			document.newPage();
-			Speaker speaker;
-			for (Iterator i = events.getSpeakers().iterator(); i.hasNext();) {
-				speaker = (Speaker) i.next();
+			for (Speaker speaker: events.getSpeakers()) {
 				document.add(new Paragraph(speaker.getName() + ": "
 						+ speaker.getOccurrence() + " speech blocks"));
 			}
@@ -237,7 +233,7 @@ public class Events {
 		 * @param document	the Document object
 		 * @param tagmap	the tagmap
 		 */
-		public MyHandler(Document document, HashMap tagmap) {
+		public MyHandler(Document document, HashMap<String, XmlPeer> tagmap) {
 			super(document, tagmap);
 		}
 
@@ -249,7 +245,7 @@ public class Events {
 		 */
 		public void endElement(String uri, String lname, String name) {
 			if (myTags.containsKey(name)) {
-				XmlPeer peer = (XmlPeer) myTags.get(name);
+				XmlPeer peer = myTags.get(name);
 				// we don't want the document to be close
 				// because we are going to add a page after the xml is parsed
 				if (isDocumentRoot(peer.getTag())) {
@@ -303,7 +299,7 @@ public class Events {
 	 * This object contains a speaker and a number of occurrences in the play
 	 */
 
-	class Speaker implements Comparable {
+	class Speaker implements Comparable<Speaker> {
 
 		// name of the speaker
 		private String name;
@@ -338,11 +334,10 @@ public class Events {
 		/**
 		 * There is something odd going on in this compareTo.
 		 * Do you see it?
-		 * @param o an other speaker object
+		 * @param otherSpeaker an other speaker object
 		 * @see java.lang.Comparable#compareTo(java.lang.Object)
 		 */
-		public int compareTo(Object o) {
-			Speaker otherSpeaker = (Speaker) o;
+		public int compareTo(Speaker otherSpeaker) {
 			if (otherSpeaker.getName().equals(name)) {
 				this.occurrence += otherSpeaker.getOccurrence();
 				otherSpeaker.occurrence = this.occurrence;

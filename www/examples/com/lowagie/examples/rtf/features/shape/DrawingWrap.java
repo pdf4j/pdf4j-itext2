@@ -1,5 +1,5 @@
 /*
- * $Id$
+ * $Id: DrawingWrap.java 3393 2008-05-16 21:33:55Z xlv $
  *
  * This code is free software. It may only be copied or modified
  * if you include the following copyright notice:
@@ -37,7 +37,7 @@ import com.lowagie.text.rtf.graphic.RtfShapeProperty;
  * are how to use the setBelowText and setZOrder methods for defining the
  * z-order of drawing objects.
  * 
- * @version $Revision$
+ * @version $Revision: 3393 $
  * @author Mark Hall (Mark.Hall@mail.room3b.eu)
  */
 public class DrawingWrap {
@@ -56,7 +56,7 @@ public class DrawingWrap {
 
             Paragraph par = new Paragraph();
             for(int i = 0; i < 600; i++) {
-                par.add("bla ");
+                par.addObject("bla ");
             }
             document.add(par);
 

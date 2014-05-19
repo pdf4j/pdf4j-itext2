@@ -1,5 +1,5 @@
 /*
- * $Id$
+ * $Id: Pfm2afm.java 4167 2009-12-13 04:05:50Z xlv $
  *
  * Copyright 1991 Ken Borgendale
  *
@@ -145,6 +145,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
+import com.lowagie.text.error_messages.MessageLocalization;
 
 /**
  * Converts a PFM file into an AFM file.
@@ -269,7 +270,7 @@ public final class Pfm2afm {
         res2 = in.readIntLE();
         fontname = in.readIntLE();
         if (h_len != in.length() || extlen != 30 || fontname < 75 || fontname > 512)
-            throw new IOException("Not a valid PFM file.");
+            throw new IOException(MessageLocalization.getComposedMessage("not.a.valid.pfm.file"));
         in.seek(psext + 14);
         capheight = in.readShortLE();
         xheight = in.readShortLE();

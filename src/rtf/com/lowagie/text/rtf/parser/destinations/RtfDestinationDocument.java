@@ -1,5 +1,5 @@
 /*
- * $Id$
+ * $Id: RtfDestinationDocument.java 3561 2008-07-15 22:17:57Z xlv $
  *
  * Copyright 2007 by Howard Shank (hgshank@yahoo.com)
  *
@@ -106,7 +106,7 @@ public final class RtfDestinationDocument extends RtfDestination implements RtfP
 	 */
 	private int tableLevel = 0;
 	
-	private static final List IMPORT_IGNORED_CTRLWORDS = Arrays.asList(new String[]{
+	private static final List<String> IMPORT_IGNORED_CTRLWORDS = Arrays.asList(new String[]{
 		"rtf",
 		"ansicpg",
 		"deff",
@@ -123,7 +123,7 @@ public final class RtfDestinationDocument extends RtfDestination implements RtfP
 		"adeflang",
 		"adeflangfe"});
 
-	private static final List CONVERT_IGNORED_CTRLWORDS = Arrays.asList(new String[]{"rtf"});
+	private static final List<String> CONVERT_IGNORED_CTRLWORDS = Arrays.asList(new String[]{"rtf"});
 
 	private Paragraph iTextParagraph = null;
 	
@@ -569,7 +569,7 @@ public final class RtfDestinationDocument extends RtfDestination implements RtfP
 			Chunk chunk = new Chunk();
 			chunk.append(this.buffer.toString());
 			this.buffer = new StringBuffer(255);
-			HashMap charProperties = this.rtfParser.getState().properties.getProperties(RtfProperty.CHARACTER);
+			HashMap<String, Object> charProperties = this.rtfParser.getState().properties.getProperties(RtfProperty.CHARACTER);
 			String defFont = (String)charProperties.get(RtfProperty.CHARACTER_FONT);
 			if(defFont == null) defFont = "0";
 			RtfDestinationFontTable fontTable = (RtfDestinationFontTable)this.rtfParser.getDestination("fonttbl");

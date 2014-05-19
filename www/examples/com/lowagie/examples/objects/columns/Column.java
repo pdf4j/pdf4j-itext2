@@ -1,5 +1,5 @@
 /*
- * $Id$
+ * $Id: Column.java 3393 2008-05-16 21:33:55Z xlv $
  *
  * This code is part of the 'iText Tutorial'.
  * You can find the complete tutorial at the following address:
@@ -61,9 +61,9 @@ public class Column {
             Phrase names = new Phrase(15, "NAME\n", font);
             
             for (int i = 0; i < 27; i++) {
-                unicodes.add(uni[i] + "\n");
-                characters.add(code[i] + "\n");
-                names.add(name[i] + "\n");
+                unicodes.addObject(uni[i] + "\n");
+                characters.addObject(code[i] + "\n");
+                names.addObject(name[i] + "\n");
             }
             
             // we grab the ContentByte and do some stuff with it

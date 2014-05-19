@@ -66,18 +66,18 @@ public class PdfNumberTree {
      * @throws IOException on error
      * @return the dictionary with the number tree.
      */    
-    public static PdfDictionary writeTree(HashMap items, PdfWriter writer) throws IOException {
+    public static <O extends PdfObject> PdfDictionary writeTree(HashMap<Integer, O> items, PdfWriter writer) throws IOException {
         if (items.isEmpty())
             return null;
         Integer numbers[] = new Integer[items.size()];
-        numbers = (Integer[])items.keySet().toArray(numbers);
+        numbers = items.keySet().toArray(numbers);
         Arrays.sort(numbers);
         if (numbers.length <= leafSize) {
             PdfDictionary dic = new PdfDictionary();
             PdfArray ar = new PdfArray();
             for (int k = 0; k < numbers.length; ++k) {
                 ar.add(new PdfNumber(numbers[k].intValue()));
-                ar.add((PdfObject)items.get(numbers[k]));
+                ar.add(items.get(numbers[k]));
             }
             dic.put(PdfName.NUMS, ar);
             return dic;
@@ -95,7 +95,7 @@ public class PdfNumberTree {
             arr = new PdfArray();
             for (; offset < end; ++offset) {
                 arr.add(new PdfNumber(numbers[offset].intValue()));
-                arr.add((PdfObject)items.get(numbers[offset]));
+                arr.add(items.get(numbers[offset]));
             }
             dic.put(PdfName.NUMS, arr);
             kids[k] = writer.addToBody(dic).getIndirectReference();
@@ -131,7 +131,7 @@ public class PdfNumberTree {
         }
     }
     
-    private static void iterateItems(PdfDictionary dic, HashMap items) {
+    private static void iterateItems(PdfDictionary dic, HashMap<Integer, PdfObject> items) {
         PdfArray nn = (PdfArray)PdfReader.getPdfObjectRelease(dic.get(PdfName.NUMS));
         if (nn != null) {
             for (int k = 0; k < nn.size(); ++k) {
@@ -147,8 +147,8 @@ public class PdfNumberTree {
         }
     }
     
-    public static HashMap readTree(PdfDictionary dic) {
-        HashMap items = new HashMap();
+    public static HashMap<Integer, PdfObject> readTree(PdfDictionary dic) {
+        HashMap<Integer, PdfObject> items = new HashMap<Integer, PdfObject>();
         if (dic != null)
             iterateItems(dic, items);
         return items;

@@ -36,9 +36,9 @@ public class BookmarksTest {
         // read bookmark back
         PdfReader r = new PdfReader(baos.toByteArray());
 
-        List bookmarks = SimpleBookmark.getBookmark(r);
+        List<HashMap<String, Object>> bookmarks = SimpleBookmark.getBookmark(r);
         assertEquals("bookmark size", 1, bookmarks.size()); 
-        HashMap<String, Object> b = (HashMap<String, Object>)bookmarks.get(0);
+        HashMap<String, Object> b = bookmarks.get(0);
         String title = (String) b.get("Title");
         assertEquals("bookmark title", TITLE, title); 
     }

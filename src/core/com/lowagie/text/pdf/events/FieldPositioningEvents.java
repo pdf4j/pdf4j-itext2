@@ -48,6 +48,7 @@ package com.lowagie.text.pdf.events;
 
 import java.io.IOException;
 import java.util.HashMap;
+import com.lowagie.text.error_messages.MessageLocalization;
 
 import com.lowagie.text.Document;
 import com.lowagie.text.DocumentException;
@@ -71,7 +72,7 @@ public class FieldPositioningEvents extends PdfPageEventHelper implements PdfPCe
     /**
      * Keeps a map with fields that are to be positioned in inGenericTag.
      */
-    protected HashMap genericChunkFields = new HashMap();
+    protected HashMap<String, PdfFormField> genericChunkFields = new HashMap<String, PdfFormField>();
 
     /**
      * Keeps the form field that is to be positioned in a cellLayout event.
@@ -151,7 +152,7 @@ public class FieldPositioningEvents extends PdfPageEventHelper implements PdfPCe
 	public void onGenericTag(PdfWriter writer, Document document,
 			Rectangle rect, String text) {
 		rect.setBottom(rect.getBottom() - 3);
-		PdfFormField field = (PdfFormField) genericChunkFields.get(text);
+		PdfFormField field = genericChunkFields.get(text);
 		if (field == null) {
 			TextField tf = new TextField(writer, new Rectangle(rect.getLeft(padding), rect.getBottom(padding), rect.getRight(padding), rect.getTop(padding)), text);
 			tf.setFontSize(14);
@@ -174,7 +175,7 @@ public class FieldPositioningEvents extends PdfPageEventHelper implements PdfPCe
 	 * @see com.lowagie.text.pdf.PdfPCellEvent#cellLayout(com.lowagie.text.pdf.PdfPCell, com.lowagie.text.Rectangle, com.lowagie.text.pdf.PdfContentByte[])
 	 */
 	public void cellLayout(PdfPCell cell, Rectangle rect, PdfContentByte[] canvases) {
-		if (cellField == null || (fieldWriter == null && parent == null)) throw new ExceptionConverter(new IllegalArgumentException("You have used the wrong constructor for this FieldPositioningEvents class."));
+		if (cellField == null || (fieldWriter == null && parent == null)) throw new IllegalArgumentException(MessageLocalization.getComposedMessage("you.have.used.the.wrong.constructor.for.this.fieldpositioningevents.class"));
 		cellField.put(PdfName.RECT, new PdfRectangle(rect.getLeft(padding), rect.getBottom(padding), rect.getRight(padding), rect.getTop(padding)));
 		if (parent == null)
 			fieldWriter.addAnnotation(cellField);

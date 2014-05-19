@@ -1,5 +1,5 @@
 /*
- * $Id$
+ * $Id: Add3D.java 3393 2008-05-16 21:33:55Z xlv $
  *
  * Adapted from an example in C# from Christian Neuhold
  * published on the itext mailing list by Paulo Soares at 16. April 2007.
@@ -50,7 +50,7 @@ import java.net.*;
  */
 public class Add3D extends AbstractTool {
     static {
-        addVersion("$Id$");
+        addVersion("$Id: Add3D.java 3393 2008-05-16 21:33:55Z xlv $");
     }
 
     FileArgument destfile = null;

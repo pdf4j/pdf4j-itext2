@@ -51,17 +51,18 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import com.lowagie.text.error_messages.MessageLocalization;
 
 /**
  * A RtfByteArrayBuffer works much like {@link ByteArrayOutputStream} but is cheaper and faster in most cases
  * (exception: large writes when reusing buffers).
  * 
- * @version $Id$
+ * @version $Id: RtfByteArrayBuffer.java 4167 2009-12-13 04:05:50Z xlv $
  * @author Thomas Bickel (tmb99@inode.at)
  */
 public final class RtfByteArrayBuffer extends OutputStream
 {
-	private final java.util.List arrays = new java.util.ArrayList();
+	private final java.util.List<byte[]> arrays = new java.util.ArrayList<byte[]>();
 	private byte[] buffer;
 	private int pos = 0;
 	private int size = 0;
@@ -80,7 +81,7 @@ public final class RtfByteArrayBuffer extends OutputStream
 	 */
 	public RtfByteArrayBuffer(final int bufferSize)
 	{
-		if((bufferSize <= 0) || (bufferSize > 1<<30)) throw new IllegalArgumentException("bufferSize "+bufferSize);
+		if((bufferSize <= 0) || (bufferSize > 1<<30)) throw new IllegalArgumentException(MessageLocalization.getComposedMessage("buffersize.1", bufferSize));
 		
 		int n = 1<<5;
 		while(n < bufferSize) {
@@ -265,7 +266,7 @@ public final class RtfByteArrayBuffer extends OutputStream
 	public byte[][] toByteArrayArray()
 	{
 		flushBuffer();
-		return(byte[][])arrays.toArray(new byte[arrays.size()][]);
+		return arrays.toArray(new byte[arrays.size()][]);
 	}
 	
 	/**
@@ -279,7 +280,7 @@ public final class RtfByteArrayBuffer extends OutputStream
 		int off = 0;
 		final int n = arrays.size();
 		for(int k = 0; k < n; k++) {
-			byte[] src = (byte[])arrays.get(k);
+			byte[] src = arrays.get(k);
 			System.arraycopy(src, 0, r, off, src.length);
 			off += src.length;
 		}
@@ -299,7 +300,7 @@ public final class RtfByteArrayBuffer extends OutputStream
 		
 		final int n = arrays.size();
 		for(int k = 0; k < n; k++) {
-			byte[] src = (byte[])arrays.get(k);
+			byte[] src = arrays.get(k);
 			out.write(src);
 		}
 		if(pos > 0) out.write(buffer, 0, pos);

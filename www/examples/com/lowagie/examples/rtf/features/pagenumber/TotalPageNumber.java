@@ -1,5 +1,5 @@
 /*
- * $Id$
+ * $Id: TotalPageNumber.java 3393 2008-05-16 21:33:55Z xlv $
  *
  * This code is free software. It may only be copied or modified
  * if you include the following copyright notice:
@@ -35,7 +35,7 @@ import com.lowagie.text.rtf.headerfooter.RtfHeaderFooter;
  * "Page X of Y" form. Unfortunately Word sometimes takes some time until the
  * total number of pages is updated.
  * 
- * @version $Revision$
+ * @version $Revision: 3393 $
  * @author Mark Hall (Mark.Hall@mail.room3b.eu)
  */
 public class TotalPageNumber {
@@ -57,7 +57,7 @@ public class TotalPageNumber {
             par.add(new RtfPageNumber());
             
             // Add the RtfTotalPageNumber to the Paragraph
-            par.add(" of ");
+            par.addObject(" of ");
             par.add(new RtfTotalPageNumber());
             
             // Create an RtfHeaderFooter with the Paragraph and set it

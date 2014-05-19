@@ -1,5 +1,5 @@
 /*
- * $Id$
+ * $Id: TagMap.java 3393 2008-05-16 21:33:55Z xlv $
  *
  * Copyright 2001, 2002 by Bruno Lowagie.
  *
@@ -67,7 +67,7 @@ import com.lowagie.text.ExceptionConverter;
  * The <CODE>Tags</CODE>-class maps several XHTML-tags to iText-objects.
  */
 
-public class TagMap extends HashMap {
+public class TagMap extends HashMap<String, XmlPeer> {
 
     private static final long serialVersionUID = -6809383366554350820L;
 
@@ -92,7 +92,7 @@ public class TagMap extends HashMap {
         public static final String CONTENT = "content";
         
 /** This is the tagmap using the AttributeHandler */
-        private HashMap tagMap;
+        private HashMap<String, XmlPeer> tagMap;
         
 /** This is the current peer. */
         private XmlPeer currentPeer;
@@ -104,7 +104,7 @@ public class TagMap extends HashMap {
  * @param	tagMap  A Hashmap containing XmlPeer-objects
  */
         
-        public AttributeHandler(HashMap tagMap) {
+        public AttributeHandler(HashMap<String, XmlPeer> tagMap) {
             super();
             this.tagMap = tagMap;
         }

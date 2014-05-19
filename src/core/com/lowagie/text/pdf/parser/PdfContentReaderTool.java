@@ -53,7 +53,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import com.lowagie.text.pdf.PdfDictionary;
@@ -87,9 +86,8 @@ public class PdfContentReaderTool {
     static public String getDictionaryDetail(PdfDictionary dic, int depth){
         StringBuffer builder = new StringBuffer();
         builder.append('(');
-        List subDictionaries = new ArrayList();
-        for (Iterator i = dic.getKeys().iterator(); i.hasNext(); ) {
-            PdfName key = (PdfName)i.next();
+        List<PdfName> subDictionaries = new ArrayList<PdfName>();
+        for (PdfName key: dic.getKeys()) {
             PdfObject val = dic.getDirectObject(key);
             if (val.isDictionary())
                 subDictionaries.add(key);
@@ -100,9 +98,7 @@ public class PdfContentReaderTool {
         }
         builder.setLength(builder.length()-2);
         builder.append(')');
-        PdfName pdfSubDictionaryName;
-        for (Iterator it = subDictionaries.iterator(); it.hasNext(); ) {
-        	pdfSubDictionaryName = (PdfName)it.next();
+        for (PdfName pdfSubDictionaryName: subDictionaries) {
             builder.append('\n');
             for(int i = 0; i < depth+1; i++){
                 builder.append('\t');
@@ -142,7 +138,7 @@ public class PdfContentReaderTool {
         }
 
         out.println("- - - - - Text Extraction - - - - - -");
-        PdfTextExtractor extractor = new PdfTextExtractor(reader);
+        PdfTextExtractor extractor = new PdfTextExtractor(reader, new SimpleTextExtractingPdfContentRenderListener());
         String extractedText = extractor.getTextFromPage(pageNum);
         if (extractedText.length() != 0)
             out.println(extractedText);

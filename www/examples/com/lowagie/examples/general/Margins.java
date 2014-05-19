@@ -1,5 +1,5 @@
 /*
- * $Id$
+ * $Id: Margins.java 3393 2008-05-16 21:33:55Z xlv $
  *
  * This code is part of the 'iText Tutorial'.
  * You can find the complete tutorial at the following address:
@@ -56,7 +56,7 @@ public class Margins {
             Paragraph paragraph = new Paragraph();
             paragraph.setAlignment(Element.ALIGN_JUSTIFIED);
             for (int i = 0; i < 20; i++) {
-                paragraph.add("Hello World, Hello Sun, Hello Moon, Hello Stars, Hello Sea, Hello Land, Hello People. ");
+                paragraph.addObject("Hello World, Hello Sun, Hello Moon, Hello Stars, Hello Sea, Hello Land, Hello People. ");
             }
             document.add(paragraph);
             document.setMargins(180, 108, 72, 36);

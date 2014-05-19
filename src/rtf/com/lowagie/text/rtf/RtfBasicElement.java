@@ -1,5 +1,5 @@
 /*
- * $Id$
+ * $Id: RtfBasicElement.java 3626 2008-11-11 19:27:25Z xlv $
  *
  * Copyright 2001, 2002, 2003, 2004 by Mark Hall
  *
@@ -60,7 +60,7 @@ import com.lowagie.text.rtf.document.RtfDocument;
  * The RtfBasicElement interface defines the interface for elements that can
  * be added to the RtfWriter.
  *
- * @version $Id$
+ * @version $Id: RtfBasicElement.java 3626 2008-11-11 19:27:25Z xlv $
  * @author Mark Hall (Mark.Hall@mail.room3b.eu)
  * @author Thomas Bickel (tmb99@inode.at)
  */

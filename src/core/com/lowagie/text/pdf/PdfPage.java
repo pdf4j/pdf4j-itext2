@@ -1,5 +1,5 @@
 /*
- * $Id$
+ * $Id: PdfPage.java 3393 2008-05-16 21:33:55Z xlv $
  *
  * Copyright 1999, 2000, 2001, 2002 Bruno Lowagie
  *
@@ -111,7 +111,7 @@ public class PdfPage extends PdfDictionary {
  * @param		rotate			a value for the <B>Rotate</B> key
  */
     
-    PdfPage(PdfRectangle mediaBox, HashMap boxSize, PdfDictionary resources, int rotate) {
+    PdfPage(PdfRectangle mediaBox, HashMap<String, PdfRectangle> boxSize, PdfDictionary resources, int rotate) {
         super(PAGE);
         this.mediaBox = mediaBox;
         put(PdfName.MEDIABOX, mediaBox);
@@ -120,7 +120,7 @@ public class PdfPage extends PdfDictionary {
             put(PdfName.ROTATE, new PdfNumber(rotate));
         }
         for (int k = 0; k < boxStrings.length; ++k) {
-            PdfObject rect = (PdfObject)boxSize.get(boxStrings[k]);
+        	PdfRectangle rect = boxSize.get(boxStrings[k]);
             if (rect != null)
                 put(boxNames[k], rect);
         }
@@ -144,7 +144,7 @@ public class PdfPage extends PdfDictionary {
  * @param		resources		an indirect reference to a <CODE>PdfResources</CODE>-object
  */
     
-    PdfPage(PdfRectangle mediaBox, HashMap boxSize, PdfDictionary resources) {
+    PdfPage(PdfRectangle mediaBox, HashMap<String, PdfRectangle> boxSize, PdfDictionary resources) {
         this(mediaBox, boxSize, resources, 0);
     }
     

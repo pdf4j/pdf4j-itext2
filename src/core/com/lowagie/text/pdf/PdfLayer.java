@@ -48,6 +48,7 @@
 package com.lowagie.text.pdf;
 
 import java.util.ArrayList;
+import com.lowagie.text.error_messages.MessageLocalization;
 /**
  * An optional content group is a dictionary representing a collection of graphics
  * that can be made visible or invisible dynamically by users of viewer applications.
@@ -57,7 +58,7 @@ import java.util.ArrayList;
  */
 public class PdfLayer extends PdfDictionary implements PdfOCG {
     protected PdfIndirectReference ref;
-    protected ArrayList children;
+    protected ArrayList<PdfLayer> children;
     protected PdfLayer parent;
     protected String title;
 
@@ -84,7 +85,7 @@ public class PdfLayer extends PdfDictionary implements PdfOCG {
      */    
     public static PdfLayer createTitle(String title, PdfWriter writer) {
         if (title == null)
-            throw new NullPointerException("Title cannot be null.");
+            throw new NullPointerException(MessageLocalization.getComposedMessage("title.cannot.be.null"));
         PdfLayer layer = new PdfLayer(title);
         writer.registerLayer(layer);
         return layer;
@@ -111,10 +112,10 @@ public class PdfLayer extends PdfDictionary implements PdfOCG {
      */    
     public void addChild(PdfLayer child) {
         if (child.parent != null)
-            throw new IllegalArgumentException("The layer '" + ((PdfString)child.get(PdfName.NAME)).toUnicodeString() + "' already has a parent.");
+            throw new IllegalArgumentException(MessageLocalization.getComposedMessage("the.layer.1.already.has.a.parent", ((PdfString)child.get(PdfName.NAME)).toUnicodeString()));
         child.parent = this;
         if (children == null)
-            children = new ArrayList();
+            children = new ArrayList<PdfLayer>();
         children.add(child);
     }
 
@@ -131,7 +132,7 @@ public class PdfLayer extends PdfDictionary implements PdfOCG {
      * Gets the children layers.
      * @return the children layers or <CODE>null</CODE> if the layer has no children
      */    
-    public ArrayList getChildren() {
+    public ArrayList<PdfLayer> getChildren() {
         return children;
     }
     

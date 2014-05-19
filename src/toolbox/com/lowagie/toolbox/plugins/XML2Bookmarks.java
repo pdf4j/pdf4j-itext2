@@ -1,5 +1,5 @@
 /*
- * $Id$
+ * $Id: XML2Bookmarks.java 3393 2008-05-16 21:33:55Z xlv $
  *
  * Copyright 2005 by Hans-Werner Hilse.
  *
@@ -73,7 +73,7 @@ import com.lowagie.toolbox.arguments.filters.PdfFilter;
 public class XML2Bookmarks extends AbstractTool {
 
 	static {
-		addVersion("$Id$");
+		addVersion("$Id: XML2Bookmarks.java 3393 2008-05-16 21:33:55Z xlv $");
 	}
 
 	/**

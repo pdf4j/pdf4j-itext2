@@ -1,5 +1,5 @@
 /*
- * $Id$
+ * $Id: PdfEncryption.java 4167 2009-12-13 04:05:50Z xlv $
  *
  * Copyright 2001-2006 Paulo Soares
  *
@@ -50,6 +50,7 @@
 package com.lowagie.text.pdf;
 
 import com.lowagie.text.pdf.crypto.ARCFOUREncryption;
+import com.lowagie.text.error_messages.MessageLocalization;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -144,12 +145,12 @@ public class PdfEncryption {
 
 	public PdfEncryption(PdfEncryption enc) {
 		this();
-		mkey = (byte[]) enc.mkey.clone();
-		ownerKey = (byte[]) enc.ownerKey.clone();
-		userKey = (byte[]) enc.userKey.clone();
+		mkey = enc.mkey.clone();
+		ownerKey = enc.ownerKey.clone();
+		userKey = enc.userKey.clone();
 		permissions = enc.permissions;
 		if (enc.documentID != null)
-			documentID = (byte[]) enc.documentID.clone();
+			documentID = enc.documentID.clone();
 		revision = enc.revision;
 		keyLength = enc.keyLength;
 		encryptMetadata = enc.encryptMetadata;
@@ -182,7 +183,7 @@ public class PdfEncryption {
 			revision = AES_128;
 			break;
 		default:
-			throw new IllegalArgumentException("No valid encryption mode");
+			throw new IllegalArgumentException(MessageLocalization.getComposedMessage("no.valid.encryption.mode"));
 		}
 	}
 

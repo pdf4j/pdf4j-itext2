@@ -1,5 +1,5 @@
 /*
- * $Id$
+ * $Id: RtfPageNumber.java 3626 2008-11-11 19:27:25Z xlv $
  *
  * Copyright 2001, 2002, 2003, 2004 by Mark Hall
  *
@@ -60,7 +60,7 @@ import com.lowagie.text.rtf.document.RtfDocument;
 /**
  * The RtfPageNumber provides the page number field in rtf documents.
  * 
- * @version $Id$
+ * @version $Id: RtfPageNumber.java 3626 2008-11-11 19:27:25Z xlv $
  * @author Mark Hall (Mark.Hall@mail.room3b.eu)
  * @author Steffen.Stundzig (Steffen.Stundzig@smb-tec.com)
  * @author Thomas Bickel (tmb99@inode.at)

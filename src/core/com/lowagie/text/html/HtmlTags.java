@@ -1,5 +1,5 @@
 /*
- * $Id$
+ * $Id: HtmlTags.java 3561 2008-07-15 22:17:57Z xlv $
  *
  * Copyright 2001, 2002 by Bruno Lowagie.
  *

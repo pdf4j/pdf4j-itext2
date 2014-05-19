@@ -1,5 +1,5 @@
 /*
- * $Id$
+ * $Id: PdfAnnotationsImp.java 3989 2009-06-18 02:22:54Z xlv $
  *
  * Copyright 2006 Bruno Lowagie
  *
@@ -52,7 +52,7 @@ package com.lowagie.text.pdf.internal;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.HashSet;
 
 import com.lowagie.text.Annotation;
 import com.lowagie.text.ExceptionConverter;
@@ -67,6 +67,7 @@ import com.lowagie.text.pdf.PdfName;
 import com.lowagie.text.pdf.PdfObject;
 import com.lowagie.text.pdf.PdfRectangle;
 import com.lowagie.text.pdf.PdfString;
+import com.lowagie.text.pdf.PdfTemplate;
 import com.lowagie.text.pdf.PdfWriter;
 
 public class PdfAnnotationsImp {
@@ -80,13 +81,13 @@ public class PdfAnnotationsImp {
      * This is the array containing the references to annotations
      * that were added to the document.
      */
-    protected ArrayList annotations;
+    protected ArrayList<PdfAnnotation> annotations;
     
     /**
      * This is an array containing references to some delayed annotations
      * (that were added for a page that doesn't exist yet).
      */
-    protected ArrayList delayedAnnotations = new ArrayList();
+    protected ArrayList<PdfAnnotation> delayedAnnotations = new ArrayList<PdfAnnotation>();
     
     
     public PdfAnnotationsImp(PdfWriter writer) {
@@ -132,10 +133,10 @@ public class PdfAnnotationsImp {
     
     void addFormFieldRaw(PdfFormField field) {
         annotations.add(field);
-        ArrayList kids = field.getKids();
+        ArrayList<PdfFormField> kids = field.getKids();
         if (kids != null) {
             for (int k = 0; k < kids.size(); ++k)
-                addFormFieldRaw((PdfFormField)kids.get(k));
+                addFormFieldRaw(kids.get(k));
         }
     }
     
@@ -145,15 +146,14 @@ public class PdfAnnotationsImp {
 
     public void resetAnnotations() {
         annotations = delayedAnnotations;
-        delayedAnnotations = new ArrayList();
+        delayedAnnotations = new ArrayList<PdfAnnotation>();
     }
     
     public PdfArray rotateAnnotations(PdfWriter writer, Rectangle pageSize) {
         PdfArray array = new PdfArray();
         int rotation = pageSize.getRotation() % 360;
         int currentPage = writer.getCurrentPageNumber();
-        for (int k = 0; k < annotations.size(); ++k) {
-            PdfAnnotation dic = (PdfAnnotation)annotations.get(k);
+        for (PdfAnnotation dic: annotations) {
             int page = dic.getPlaceInPage();
             if (page > currentPage) {
                 delayedAnnotations.add(dic);
@@ -161,7 +161,7 @@ public class PdfAnnotationsImp {
             }
             if (dic.isForm()) {
                 if (!dic.isUsed()) {
-                    HashMap templates = dic.getTemplates();
+                    HashSet<PdfTemplate> templates = dic.getTemplates();
                     if (templates != null)
                         acroForm.addFieldTemplates(templates);
                 }

@@ -1,5 +1,5 @@
 /*
- * $Id$
+ * $Id: PdfArray.java 3788 2009-03-17 01:45:36Z xlv $
  *
  * Copyright 1999, 2000, 2001, 2002 Bruno Lowagie
  *
@@ -72,7 +72,7 @@ public class PdfArray extends PdfObject {
 	// CLASS VARIABLES
 
 	/** this is the actual array of PdfObjects */
-    protected ArrayList arrayList;
+    protected ArrayList<PdfObject> arrayList;
 
     // constructors
 
@@ -81,7 +81,7 @@ public class PdfArray extends PdfObject {
      */
     public PdfArray() {
         super(ARRAY);
-        arrayList = new ArrayList();
+        arrayList = new ArrayList<PdfObject>();
     }
 
     /**
@@ -92,7 +92,7 @@ public class PdfArray extends PdfObject {
      */
     public PdfArray(PdfObject object) {
         super(ARRAY);
-        arrayList = new ArrayList();
+        arrayList = new ArrayList<PdfObject>();
         arrayList.add(object);
     }
 
@@ -107,7 +107,7 @@ public class PdfArray extends PdfObject {
      */
     public PdfArray(float values[]) {
         super(ARRAY);
-        arrayList = new ArrayList();
+        arrayList = new ArrayList<PdfObject>();
         add(values);
     }
     
@@ -122,7 +122,7 @@ public class PdfArray extends PdfObject {
      */
     public PdfArray(int values[]) {
         super(ARRAY);
-        arrayList = new ArrayList();
+        arrayList = new ArrayList<PdfObject>();
         add(values);
     }
 
@@ -136,10 +136,10 @@ public class PdfArray extends PdfObject {
      *   something that isn't a <CODE>PdfObject</CODE>
      * @since 2.1.3
      */
-    public PdfArray(ArrayList l) {
+    public PdfArray(ArrayList<PdfObject> l) {
         this();
-        for (Iterator i = l.iterator(); i.hasNext(); )
-        	add((PdfObject)i.next());
+        for (PdfObject o: l)
+        	add(o);
     }
 
     /**
@@ -150,7 +150,7 @@ public class PdfArray extends PdfObject {
      */
     public PdfArray(PdfArray array) {
         super(ARRAY);
-        arrayList = new ArrayList(array.arrayList);
+        arrayList = new ArrayList<PdfObject>(array.arrayList);
     }
 
     // METHODS OVERRIDING SOME PDFOBJECT METHODS
@@ -165,17 +165,17 @@ public class PdfArray extends PdfObject {
     public void toPdf(PdfWriter writer, OutputStream os) throws IOException {
         os.write('[');
 
-        Iterator i = arrayList.iterator();
+        Iterator<PdfObject> i = arrayList.iterator();
         PdfObject object;
         int type = 0;
         if (i.hasNext()) {
-            object = (PdfObject) i.next();
+            object = i.next();
             if (object == null)
                 object = PdfNull.PDFNULL;
             object.toPdf(writer, os);
         }
         while (i.hasNext()) {
-            object = (PdfObject) i.next();
+            object = i.next();
             if (object == null)
                 object = PdfNull.PDFNULL;
             type = object.type();
@@ -213,7 +213,7 @@ public class PdfArray extends PdfObject {
      * @since 2.1.5
      */
     public PdfObject set(int idx, PdfObject obj) {
-        return (PdfObject) arrayList.set(idx, obj);
+        return arrayList.set(idx, obj);
     }
 
     /**
@@ -227,7 +227,7 @@ public class PdfArray extends PdfObject {
      * @since 2.1.5
      */
     public PdfObject remove(int idx) {
-        return (PdfObject) arrayList.remove(idx);
+        return arrayList.remove(idx);
     }
 
     /**
@@ -236,7 +236,7 @@ public class PdfArray extends PdfObject {
      * @deprecated
      * @return the internal ArrayList.  Naughty Naughty.
      */
-    public ArrayList getArrayList() {
+    public ArrayList<PdfObject> getArrayList() {
         return arrayList;
     }
 
@@ -349,7 +349,7 @@ public class PdfArray extends PdfObject {
      * 
      * @return a ListIterator
      */
-    public ListIterator listIterator() {
+    public ListIterator<PdfObject> listIterator() {
         return arrayList.listIterator();
     }
 
@@ -365,7 +365,7 @@ public class PdfArray extends PdfObject {
      * @return A <CODE>PdfObject</CODE>
      */
     public PdfObject getPdfObject(int idx) {
-        return (PdfObject)arrayList.get(idx);
+        return arrayList.get(idx);
     }
 
     /**

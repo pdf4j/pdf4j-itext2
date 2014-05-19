@@ -1,5 +1,5 @@
 /*
- * $Id$
+ * $Id: RemoteGoto.java 3393 2008-05-16 21:33:55Z xlv $
  *
  * This code is part of the 'iText Tutorial'.
  * You can find the complete tutorial at the following address:
@@ -62,7 +62,7 @@ public class RemoteGoto {
             // a paragraph with a link to an external url
             Paragraph p1 = new Paragraph("You can turn a Chunk into an ", FontFactory.getFont(FontFactory.HELVETICA, 12));
             p1.add(new Chunk("anchor", FontFactory.getFont(FontFactory.HELVETICA, 12, Font.UNDERLINE, new Color(0, 0, 255))).setAnchor(new URL("http://www.lowagie.com/iText/")));
-            p1.add(", for instance to the iText site.");
+            p1.addObject(", for instance to the iText site.");
             
             // some paragraph
             Paragraph p2 = new Paragraph("blah, blah, blah");

@@ -1,5 +1,5 @@
 /*
- * $Id$
+ * $Id: PdfReaderInstance.java 4167 2009-12-13 04:05:50Z xlv $
  *
  * Copyright 2001, 2002 Paulo Soares
  *
@@ -51,7 +51,8 @@ package com.lowagie.text.pdf;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
+import java.util.HashSet;
+import com.lowagie.text.error_messages.MessageLocalization;
 /**
  * Instance of PdfReader in each output document.
  *
@@ -63,10 +64,10 @@ class PdfReaderInstance {
     int myXref[];
     PdfReader reader;
     RandomAccessFileOrArray file;
-    HashMap importedPages = new HashMap();
+    HashMap<Integer, PdfImportedPage> importedPages = new HashMap<Integer, PdfImportedPage>();
     PdfWriter writer;
-    HashMap visited = new HashMap();
-    ArrayList nextRound = new ArrayList();
+    HashSet<Integer> visited = new HashSet<Integer>();
+    ArrayList<Integer> nextRound = new ArrayList<Integer>();
     
     PdfReaderInstance(PdfReader reader, PdfWriter writer) {
         this.reader = reader;
@@ -81,11 +82,11 @@ class PdfReaderInstance {
     
     PdfImportedPage getImportedPage(int pageNumber) {
         if (!reader.isOpenedWithFullPermissions())
-            throw new IllegalArgumentException("PdfReader not opened with owner password");
+            throw new IllegalArgumentException(MessageLocalization.getComposedMessage("pdfreader.not.opened.with.owner.password"));
         if (pageNumber < 1 || pageNumber > reader.getNumberOfPages())
-            throw new IllegalArgumentException("Invalid page number: " + pageNumber);
+            throw new IllegalArgumentException(MessageLocalization.getComposedMessage("invalid.page.number.1", pageNumber));
         Integer i = new Integer(pageNumber);
-        PdfImportedPage pageT = (PdfImportedPage)importedPages.get(i);
+        PdfImportedPage pageT = importedPages.get(i);
         if (pageT == null) {
             pageT = new PdfImportedPage(this, writer, pageNumber);
             importedPages.put(i, pageT);
@@ -133,7 +134,7 @@ class PdfReaderInstance {
         dic.put(PdfName.RESOURCES, PdfReader.getPdfObjectRelease(page.get(PdfName.RESOURCES)));
         dic.put(PdfName.TYPE, PdfName.XOBJECT);
         dic.put(PdfName.SUBTYPE, PdfName.FORM);
-        PdfImportedPage impPage = (PdfImportedPage)importedPages.get(new Integer(pageNumber));
+        PdfImportedPage impPage = importedPages.get(new Integer(pageNumber));
         dic.put(PdfName.BBOX, new PdfRectangle(impPage.getBoundingBox()));
         PdfArray matrix = impPage.getMatrix();
         if (matrix == null)
@@ -154,12 +155,12 @@ class PdfReaderInstance {
     
     void writeAllVisited() throws IOException {
         while (!nextRound.isEmpty()) {
-            ArrayList vec = nextRound;
-            nextRound = new ArrayList();
+            ArrayList<Integer> vec = nextRound;
+            nextRound = new ArrayList<Integer>();
             for (int k = 0; k < vec.size(); ++k) {
-                Integer i = (Integer)vec.get(k);
-                if (!visited.containsKey(i)) {
-                    visited.put(i, null);
+                Integer i = vec.get(k);
+                if (!visited.contains(i)) {
+                    visited.add(i);
                     int n = i.intValue();
                     writer.addToBody(reader.getPdfObjectRelease(n), myXref[n]);
                 }
@@ -170,8 +171,7 @@ class PdfReaderInstance {
     void writeAllPages() throws IOException {
         try {
             file.reOpen();
-            for (Iterator it = importedPages.values().iterator(); it.hasNext();) {
-                PdfImportedPage ip = (PdfImportedPage)it.next();
+            for (PdfImportedPage ip: importedPages.values()) {
                 writer.addToBody(ip.getFormXObject(writer.getCompressionLevel()), ip.getIndirectReference());
             }
             writeAllVisited();

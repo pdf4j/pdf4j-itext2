@@ -1,5 +1,5 @@
 /*
- * $Id$
+ * $Id: HtmlWriter.java 4167 2009-12-13 04:05:50Z xlv $
  *
  * Copyright 1999, 2000, 2001, 2002 by Bruno Lowagie.
  *
@@ -58,6 +58,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Properties;
 import java.util.Stack;
+import com.lowagie.text.error_messages.MessageLocalization;
 
 import com.lowagie.text.Anchor;
 import com.lowagie.text.Annotation;
@@ -131,7 +132,7 @@ public class HtmlWriter extends DocWriter {
     // membervariables
     
 /** This is the current font of the HTML. */
-    protected Stack currentfont = new Stack();
+    protected Stack<Font> currentfont = new Stack<Font>();
     
 /** This is the standard font of the HTML. */
     protected Font standardfont = new Font();
@@ -231,8 +232,7 @@ public class HtmlWriter extends DocWriter {
             return false;
         }
         if (open && !element.isContent()) {
-				throw new DocumentException(
-						"The document is open; you can only add Elements with content.");
+				throw new DocumentException(MessageLocalization.getComposedMessage("the.document.is.open.you.can.only.add.elements.with.content"));
         }
         try {
             switch(element.type()) {
@@ -531,7 +531,7 @@ public class HtmlWriter extends DocWriter {
     
     public boolean isOtherFont(Font font) {
         try {
-            Font cFont = (Font) currentfont.peek();
+            Font cFont = currentfont.peek();
             if (cFont.compareTo(font) == 0) return false;
             return true;
         }
@@ -636,7 +636,7 @@ public class HtmlWriter extends DocWriter {
                 }
                 
                 if (chunk.isEmpty()) return;
-                HashMap attributes = chunk.getAttributes();
+                HashMap<String, Object> attributes = chunk.getAttributes();
                 if (attributes != null && attributes.get(Chunk.NEWPAGE) != null) {
                     return;
                 }
@@ -695,8 +695,8 @@ public class HtmlWriter extends DocWriter {
                 os.write(GT);
                 currentfont.push(phrase.getFont());
                 // contents
-                for (Iterator i = phrase.iterator(); i.hasNext(); ) {
-                    write((Element) i.next(), indent + 1);
+                for (Element e: phrase) {
+                    write(e, indent + 1);
                 }
                 // end tag
                 addTabs(indent);
@@ -724,8 +724,8 @@ public class HtmlWriter extends DocWriter {
                 os.write(GT);
                 currentfont.push(anchor.getFont());
                 // contents
-                for (Iterator i = anchor.iterator(); i.hasNext(); ) {
-                    write((Element) i.next(), indent + 1);
+                for (Element e: anchor) {
+                    write(e, indent + 1);
                 }
                 // end tag
                 addTabs(indent);
@@ -750,8 +750,8 @@ public class HtmlWriter extends DocWriter {
                 os.write(GT);
                 currentfont.push(paragraph.getFont());
                 // contents
-                for (Iterator i = paragraph.iterator(); i.hasNext(); ) {
-                    write((Element)i.next(), indent + 1);
+                for (Element e: paragraph) {
+                    write(e, indent + 1);
                 }
                 // end tag
                 addTabs(indent);
@@ -780,8 +780,8 @@ public class HtmlWriter extends DocWriter {
                 writeMarkupAttributes(markup);
                 os.write(GT);
                 // contents
-                for (Iterator i = list.getItems().iterator(); i.hasNext(); ) {
-                    write((Element) i.next(), indent + 1);
+                for (Element e: list.getItems()) {
+                    write(e, indent + 1);
                 }
                 // end tag
                 addTabs(indent);
@@ -807,8 +807,8 @@ public class HtmlWriter extends DocWriter {
                 os.write(GT);
                 currentfont.push(listItem.getFont());
                 // contents
-                for (Iterator i = listItem.iterator(); i.hasNext(); ) {
-                    write((Element) i.next(), indent + 1);
+                for (Element e: listItem) {
+                    write(e, indent + 1);
                 }
                 // end tag
                 addTabs(indent);
@@ -863,8 +863,8 @@ public class HtmlWriter extends DocWriter {
                 if (cell.isEmpty()) {
                     write(NBSP);
                 } else {
-                    for (Iterator i = cell.getElements(); i.hasNext(); ) {
-                        write((Element) i.next(), indent + 1);
+                    for (Iterator<Element> i = cell.getElements(); i.hasNext(); ) {
+                        write(i.next(), indent + 1);
                     }
                 }
                 // end tag
@@ -943,8 +943,8 @@ public class HtmlWriter extends DocWriter {
                 os.write(GT);
                 // contents
                 Row row;
-                for (Iterator iterator = table.iterator(); iterator.hasNext(); ) {
-                    row = (Row) iterator.next();
+                for (Iterator<Row> iterator = table.iterator(); iterator.hasNext(); ) {
+                    row = iterator.next();
                     write(row, indent + 1);
                 }
                 // end tag
@@ -1033,16 +1033,16 @@ public class HtmlWriter extends DocWriter {
             os.write(GT);
             currentfont.push(section.getTitle().getFont());
             // contents
-            for (Iterator i = section.getTitle().iterator(); i.hasNext(); ) {
-                write((Element)i.next(), indent + 1);
+            for (Element e: section.getTitle()) {
+                write(e, indent + 1);
             }
             // end tag
             addTabs(indent);
             writeEnd(HtmlTags.H[depth]);
             currentfont.pop();
         }
-        for (Iterator i = section.iterator(); i.hasNext(); ) {
-            write((Element) i.next(), indent);
+        for (Element e: section) {
+            write(e, indent);
         }
     }
     
@@ -1061,7 +1061,7 @@ public class HtmlWriter extends DocWriter {
         write("=\"");
         if (styleAttributes != null) {
             String key;
-            for (Enumeration e = styleAttributes.propertyNames(); e.hasMoreElements(); ) {
+            for (Enumeration<?> e = styleAttributes.propertyNames(); e.hasMoreElements(); ) {
                 key = (String)e.nextElement();
                 writeCssProperty(key, styleAttributes.getProperty(key));
             }

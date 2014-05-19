@@ -1,5 +1,6 @@
 /*
- * $Id$
+ * $Id: FontFactory.java 4167 2009-12-13 04:05:50Z xlv $
+ * $Name$
  *
  * Copyright 2002 by Bruno Lowagie.
  *
@@ -52,6 +53,7 @@ package com.lowagie.text;
 import java.awt.Color;
 import java.util.Properties;
 import java.util.Set;
+import com.lowagie.text.error_messages.MessageLocalization;
 
 import com.lowagie.text.pdf.BaseFont;
 
@@ -392,7 +394,7 @@ public final class FontFactory {
  * @return a set of registered fonts
  */
     
-    public static Set getRegisteredFonts() {
+    public static Set<String> getRegisteredFonts() {
         return fontImp.getRegisteredFonts();
     }
     
@@ -401,7 +403,7 @@ public final class FontFactory {
  * @return a set of registered font families
  */
     
-    public static Set getRegisteredFamilies() {
+    public static Set<String> getRegisteredFamilies() {
         return fontImp.getRegisteredFamilies();
     }
     
@@ -440,7 +442,7 @@ public final class FontFactory {
      */    
     public static void setFontImp(FontFactoryImp fontImp) {
         if (fontImp == null)
-            throw new NullPointerException("FontFactoryImp cannot be null.");
+            throw new NullPointerException(MessageLocalization.getComposedMessage("fontfactoryimp.cannot.be.null"));
         FontFactory.fontImp = fontImp;
     }
 }

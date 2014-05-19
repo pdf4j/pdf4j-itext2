@@ -1,5 +1,5 @@
 /*
- * $Id$
+ * $Id: MultiColumnText.java 4167 2009-12-13 04:05:50Z xlv $
  *
  * Copyright 2004 Steve Appling
  *
@@ -50,6 +50,7 @@
 package com.lowagie.text.pdf;
 
 import java.util.ArrayList;
+import com.lowagie.text.error_messages.MessageLocalization;
 
 import com.lowagie.text.Chunk;
 import com.lowagie.text.DocumentException;
@@ -101,7 +102,7 @@ public class MultiColumnText implements Element {
     /**
      * Array of <CODE>ColumnDef</CODE> objects used to define the columns
      */
-    private ArrayList columnDefs;
+    private ArrayList<ColumnDef> columnDefs;
 
     /**
      * true if all columns are simple (rectangular)
@@ -131,7 +132,7 @@ public class MultiColumnText implements Element {
      * @param height
      */
     public MultiColumnText(float height) {
-        columnDefs = new ArrayList();
+        columnDefs = new ArrayList<ColumnDef>();
         desiredHeight = height;
         top = AUTOMATIC;
         // canvas will be set later
@@ -147,7 +148,7 @@ public class MultiColumnText implements Element {
      * @param top
      */
     public MultiColumnText(float top, float height) {
-        columnDefs = new ArrayList();
+        columnDefs = new ArrayList<ColumnDef>();
         desiredHeight = height;
         this.top = top;
         nextY = top;
@@ -263,7 +264,7 @@ public class MultiColumnText implements Element {
         } else if (element instanceof Chunk) {
             columnText.addText((Chunk) element);
         } else {
-            throw new DocumentException("Can't add " + element.getClass() + " to MultiColumnText with complex columns");
+            throw new DocumentException(MessageLocalization.getComposedMessage("can.t.add.1.to.multicolumntext.with.complex.columns", element.getClass()));
         }
     }
 
@@ -281,7 +282,7 @@ public class MultiColumnText implements Element {
         this.document = document;
         columnText.setCanvas(canvas);
         if (columnDefs.isEmpty()) {
-            throw new DocumentException("MultiColumnText has no columns");
+            throw new DocumentException(MessageLocalization.getComposedMessage("multicolumntext.has.no.columns"));
         }
         overflow = false;
         float currentHeight = 0;
@@ -294,15 +295,15 @@ public class MultiColumnText implements Element {
                 else if (nextY == AUTOMATIC) {
                     nextY = document.getVerticalPosition(true); // RS - 07/07/2005 - - Get current doc writing position for top of columns on new page.
                 }
-                ColumnDef currentDef = (ColumnDef) columnDefs.get(getCurrentColumn());
+                ColumnDef currentDef = columnDefs.get(getCurrentColumn());
                 columnText.setYLine(top);
 
                 float[] left = currentDef.resolvePositions(Rectangle.LEFT);
                 float[] right = currentDef.resolvePositions(Rectangle.RIGHT);
                 if (document.isMarginMirroring() && document.getPageNumber() % 2 == 0){
                     float delta = document.rightMargin() - document.left();
-                    left = (float[])left.clone();
-                    right = (float[])right.clone();
+                    left = left.clone();
+                    right = right.clone();
                     for (int i = 0; i < left.length; i += 2) {
                         left[i] -= delta;
                     }
@@ -414,7 +415,7 @@ public class MultiColumnText implements Element {
      * @return	null
      */
 
-    public ArrayList getChunks() {
+    public ArrayList<Chunk> getChunks() {
         return null;
     }
     

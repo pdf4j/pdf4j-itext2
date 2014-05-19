@@ -92,10 +92,10 @@ public class DefaultFontMapper implements FontMapper {
     
     /** Maps aliases to names.
      */    
-    private HashMap aliases = new HashMap();
+    private HashMap<String, String> aliases = new HashMap<String, String>();
     /** Maps names to BaseFont parameters.
      */    
-    private HashMap mapper = new HashMap();
+    private HashMap<String, BaseFontParameters> mapper = new HashMap<String, BaseFontParameters>();
     /**
      * Returns a BaseFont which can be used to represent the given AWT Font
      *
@@ -226,12 +226,12 @@ public class DefaultFontMapper implements FontMapper {
      * @return the BaseFont parameter or <CODE>null</CODE> if not found.
      */    
     public BaseFontParameters getBaseFontParameters(String name) {
-        String alias = (String)aliases.get(name);
+        String alias = aliases.get(name);
         if (alias == null)
-            return (BaseFontParameters)mapper.get(name);
-        BaseFontParameters p = (BaseFontParameters)mapper.get(alias);
+            return mapper.get(name);
+        BaseFontParameters p = mapper.get(alias);
         if (p == null)
-            return (BaseFontParameters)mapper.get(name);
+            return mapper.get(name);
         else
             return p;
     }
@@ -258,7 +258,7 @@ public class DefaultFontMapper implements FontMapper {
         for (int k = 0; k < names.length; ++k) {
             aliases.put(names[k][3], main);
         }
-        aliases.put(allNames[0], main);
+        aliases.put((String)allNames[0], main);
     }
     
     /** Inserts all the fonts recognized by iText in the
@@ -301,11 +301,11 @@ public class DefaultFontMapper implements FontMapper {
         return count;
     }
     
-    public HashMap getMapper() {
+    public HashMap<String, BaseFontParameters> getMapper() {
         return mapper;
     }
     
-    public HashMap getAliases() {
+    public HashMap<String, String> getAliases() {
         return aliases;
     }
 }

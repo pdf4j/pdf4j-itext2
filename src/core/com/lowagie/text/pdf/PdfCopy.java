@@ -1,5 +1,5 @@
 /*
- * $Id$
+ * $Id: PdfCopy.java 3989 2009-06-18 02:22:54Z xlv $
  *
  * Copyright (C) 2002 Mark Thompson
  *
@@ -51,7 +51,7 @@ package com.lowagie.text.pdf;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.HashMap;
-import java.util.Iterator;
+import java.util.HashSet;
 
 import com.lowagie.text.Document;
 import com.lowagie.text.DocumentException;
@@ -81,8 +81,8 @@ public class PdfCopy extends PdfWriter {
         boolean getCopied() { return hasCopied; }
         PdfIndirectReference getRef() { return theRef; }
     };
-    protected HashMap indirects;
-    protected HashMap indirectMap;
+    protected HashMap<RefKey, IndirectReferences> indirects;
+    protected HashMap<PdfReader, HashMap<RefKey, IndirectReferences>> indirectMap;
     protected int currentObjectNum = 1;
     protected PdfReader reader;
     protected PdfIndirectReference acroForm;
@@ -90,7 +90,7 @@ public class PdfCopy extends PdfWriter {
     /** Holds value of property rotateContents. */
     private boolean rotateContents = true;
     protected PdfArray fieldArray;
-    protected HashMap fieldTemplates;
+    protected HashSet<PdfTemplate> fieldTemplates;
     
     /**
      * A key to allow us to hash indirect references
@@ -132,7 +132,7 @@ public class PdfCopy extends PdfWriter {
         super(new PdfDocument(), os);
         document.addDocListener(pdf);
         pdf.addWriter(this);
-        indirectMap = new HashMap();
+        indirectMap = new HashMap<PdfReader, HashMap<RefKey, IndirectReferences>>();
     }
 
     /** Getter for property rotateContents.
@@ -189,7 +189,7 @@ public class PdfCopy extends PdfWriter {
     protected PdfIndirectReference copyIndirect(PRIndirectReference in) throws IOException, BadPdfFormatException {
         PdfIndirectReference theRef;
         RefKey key = new RefKey(in);
-        IndirectReferences iRef = (IndirectReferences)indirects.get(key);
+        IndirectReferences iRef = indirects.get(key);
         if (iRef != null) {
             theRef = iRef.getRef();
             if (iRef.getCopied()) {
@@ -223,8 +223,7 @@ public class PdfCopy extends PdfWriter {
         PdfDictionary out = new PdfDictionary();
         PdfObject type = PdfReader.getPdfObjectRelease(in.get(PdfName.TYPE));
         
-        for (Iterator it = in.getKeys().iterator(); it.hasNext();) {
-            PdfName key = (PdfName)it.next();
+        for (PdfName key: in.getKeys()) {
             PdfObject value = in.get(key);
             //	    System.out.println("Copy " + key);
             if (type != null && PdfName.PAGE.equals(type)) {
@@ -243,8 +242,7 @@ public class PdfCopy extends PdfWriter {
     protected PdfStream copyStream(PRStream in) throws IOException, BadPdfFormatException {
         PRStream out = new PRStream(in, null);
         
-        for (Iterator it = in.getKeys().iterator(); it.hasNext();) {
-            PdfName key = (PdfName) it.next();
+        for (PdfName key: in.getKeys()) {
             PdfObject value = in.get(key);
             out.put(key, copyObject(value));
         }
@@ -260,8 +258,7 @@ public class PdfCopy extends PdfWriter {
     protected PdfArray copyArray(PdfArray in) throws IOException, BadPdfFormatException {
         PdfArray out = new PdfArray();
         
-        for (Iterator i = in.listIterator(); i.hasNext();) {
-            PdfObject value = (PdfObject)i.next();
+        for (PdfObject value: in.getArrayList()) {
             out.add(copyObject(value));
         }
         return out;
@@ -320,9 +317,9 @@ public class PdfCopy extends PdfWriter {
      */
     protected void setFromReader(PdfReader reader) {
         this.reader = reader;
-        indirects = (HashMap)indirectMap.get(reader);
+        indirects = indirectMap.get(reader);
         if (indirects == null) {
-            indirects = new HashMap();
+            indirects = new HashMap<RefKey, IndirectReferences>();
             indirectMap.put(reader,indirects);
             PdfDictionary catalog = reader.getCatalog();
             PRIndirectReference ref = null;
@@ -347,7 +344,7 @@ public class PdfCopy extends PdfWriter {
         reader.releasePage(pageNum);
         RefKey key = new RefKey(origRef);
         PdfIndirectReference pageRef;
-        IndirectReferences iRef = (IndirectReferences)indirects.get(key);
+        IndirectReferences iRef = indirects.get(key);
         if (iRef != null && !iRef.getCopied()) {
             pageReferences.add(iRef.getRef());
             iRef.setCopied();
@@ -372,7 +369,7 @@ public class PdfCopy extends PdfWriter {
     public void addPage(Rectangle rect, int rotation) {
     	PdfRectangle mediabox = new PdfRectangle(rect, rotation);
     	PageResources resources = new PageResources();
-    	PdfPage page = new PdfPage(mediabox, new HashMap(), resources.getResources(), 0);
+    	PdfPage page = new PdfPage(mediabox, new HashMap<String, PdfRectangle>(), resources.getResources(), 0);
     	page.put(PdfName.TABS, getTabs());
     	root.addPage(page);
     	++currentPageNumber;
@@ -395,7 +392,7 @@ public class PdfCopy extends PdfWriter {
         if (hisRef == null) return; // bugfix by John Englar
         RefKey key = new RefKey(hisRef);
         PdfIndirectReference myRef;
-        IndirectReferences iRef = (IndirectReferences)indirects.get(key);
+        IndirectReferences iRef = indirects.get(key);
         if (iRef != null) {
             acroForm = myRef = iRef.getRef();
         }
@@ -441,8 +438,7 @@ public class PdfCopy extends PdfWriter {
             return;
         PdfDictionary dr = new PdfDictionary();
         acroForm.put(PdfName.DR, dr);
-        for (Iterator it = fieldTemplates.keySet().iterator(); it.hasNext();) {
-            PdfTemplate template = (PdfTemplate)it.next();
+        for (PdfTemplate template: fieldTemplates) {
             PdfFormField.mergeResources(dr, (PdfDictionary)template.getResources());
         }
         // if (dr.get(PdfName.ENCODING) == null) dr.put(PdfName.ENCODING, PdfName.WIN_ANSI_ENCODING);
@@ -662,35 +658,35 @@ public class PdfCopy extends PdfWriter {
             cstp.fieldArray.add(ref);
         }
 
-        private void expandFields(PdfFormField field, ArrayList allAnnots) {
+        private void expandFields(PdfFormField field, ArrayList<PdfAnnotation> allAnnots) {
             allAnnots.add(field);
-            ArrayList kids = field.getKids();
+            ArrayList<PdfFormField> kids = field.getKids();
             if (kids != null) {
                 for (int k = 0; k < kids.size(); ++k)
-                    expandFields((PdfFormField)kids.get(k), allAnnots);
+                    expandFields(kids.get(k), allAnnots);
             }
         }
 
         public void addAnnotation(PdfAnnotation annot) {
             try {
-                ArrayList allAnnots = new ArrayList();
+                ArrayList<PdfAnnotation> allAnnots = new ArrayList<PdfAnnotation>();
                 if (annot.isForm()) {
                     PdfFormField field = (PdfFormField)annot;
                     if (field.getParent() != null)
                         return;
                     expandFields(field, allAnnots);
                     if (cstp.fieldTemplates == null)
-                        cstp.fieldTemplates = new HashMap();
+                        cstp.fieldTemplates = new HashSet<PdfTemplate>();
                 }
                 else
                     allAnnots.add(annot);
                 for (int k = 0; k < allAnnots.size(); ++k) {
-                    annot = (PdfAnnotation)allAnnots.get(k);
+                    annot = allAnnots.get(k);
                     if (annot.isForm()) {
                         if (!annot.isUsed()) {
-                            HashMap templates = annot.getTemplates();
+                            HashSet<PdfTemplate> templates = annot.getTemplates();
                             if (templates != null)
-                                cstp.fieldTemplates.putAll(templates);
+                                cstp.fieldTemplates.addAll(templates);
                         }
                         PdfFormField field = (PdfFormField)annot;
                         if (field.getParent() == null)

@@ -1,5 +1,5 @@
 /*
- * $Id$
+ * $Id: UsingFontFactory.java 3393 2008-05-16 21:33:55Z xlv $
  *
  * This code is part of the 'iText Tutorial'.
  * You can find the complete tutorial at the following address:
@@ -58,10 +58,10 @@ public class UsingFontFactory {
 			Paragraph p = new Paragraph("Font Families", FontFactory.getFont(FontFactory.HELVETICA, 16f));
 			document.add(p);
 			FontFactory.registerDirectories();
-			TreeSet families = new TreeSet(FontFactory.getRegisteredFamilies());
+			TreeSet<String> families = new TreeSet<String>(FontFactory.getRegisteredFamilies());
 			int c = 0;
-			for (Iterator i = families.iterator(); i.hasNext() && c < 15; ) {
-				name = (String) i.next();
+			for (Iterator<String> i = families.iterator(); i.hasNext() && c < 15; ) {
+				name = i.next();
 				p = new Paragraph(name);
 				document.add(p);
 				c++;
@@ -69,8 +69,8 @@ public class UsingFontFactory {
 			document.newPage();
 			String quick = "quick brown fox jumps over the lazy dog";
 			p = new Paragraph("Fonts", FontFactory.getFont(FontFactory.HELVETICA, 16f));
-			for (Iterator i = families.iterator(); i.hasNext() && c > 0; ) {
-				name = (String) i.next();
+			for (Iterator<String> i = families.iterator(); i.hasNext() && c > 0; ) {
+				name = i.next();
 				p = new Paragraph(name);
 				document.add(p);
 				try {

@@ -1,5 +1,5 @@
 /*
- * $Id$
+ * $Id: RtfStylesheetList.java 3626 2008-11-11 19:27:25Z xlv $
  *
  * Copyright 2001, 2002, 2003, 2004 by Mark Hall
  *
@@ -63,7 +63,7 @@ import com.lowagie.text.rtf.document.RtfDocument;
 /**
  * The RtfStylesheetList stores the RtfParagraphStyles that are used in the document.
  * 
- * @version $Id$
+ * @version $Id: RtfStylesheetList.java 3626 2008-11-11 19:27:25Z xlv $
  * @author Mark Hall (Mark.Hall@mail.room3b.eu)
  * @author Thomas Bickel (tmb99@inode.at)
  */
@@ -72,7 +72,7 @@ public class RtfStylesheetList extends RtfElement implements RtfExtendedElement 
     /**
      * The HashMap containing the RtfParagraphStyles.
      */
-    private HashMap styleMap = null;
+    private HashMap<String, RtfParagraphStyle> styleMap = null;
     /**
      * Whether the default settings have been loaded.
      */
@@ -85,7 +85,7 @@ public class RtfStylesheetList extends RtfElement implements RtfExtendedElement 
      */
     public RtfStylesheetList(RtfDocument doc) {
         super(doc);
-        this.styleMap = new HashMap();
+        this.styleMap = new HashMap<String, RtfParagraphStyle>();
     }
 
     /**
@@ -139,7 +139,7 @@ public class RtfStylesheetList extends RtfElement implements RtfExtendedElement 
             registerDefaultStyles();
         }
         if(this.styleMap.containsKey(styleName)) {
-            return (RtfParagraphStyle) this.styleMap.get(styleName);
+            return this.styleMap.get(styleName);
         } else {
             return null;
         }
@@ -154,9 +154,9 @@ public class RtfStylesheetList extends RtfElement implements RtfExtendedElement 
         result.write(DocWriter.getISOBytes("\\stylesheet"));
         result.write(RtfBasicElement.DELIMITER);
         this.document.outputDebugLinebreak(result);
-        Iterator it = this.styleMap.values().iterator();
+        Iterator<RtfParagraphStyle> it = this.styleMap.values().iterator();
         while(it.hasNext()) {
-        	RtfParagraphStyle rps = (RtfParagraphStyle)it.next();
+        	RtfParagraphStyle rps = it.next();
         	rps.writeDefinition(result);
         }
         result.write(DocWriter.getISOBytes("}"));

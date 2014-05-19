@@ -1,5 +1,5 @@
 /*
- * $Id$
+ * $Id: RtfTOCEntry.java 3626 2008-11-11 19:27:25Z xlv $
  *
  * Copyright 2004 by Mark Hall
  * Uses code Copyright 2002
@@ -63,7 +63,7 @@ import com.lowagie.text.Font;
  * contents. Add the RtfTOCEntry in those locations in the document where table of
  * contents entries should link to 
  * 
- * @version $Id$
+ * @version $Id: RtfTOCEntry.java 3626 2008-11-11 19:27:25Z xlv $
  * @author Mark Hall (Mark.Hall@mail.room3b.eu)
  * @author Steffen.Stundzig (Steffen.Stundzig@smb-tec.com) 
  * @author Thomas Bickel (tmb99@inode.at)

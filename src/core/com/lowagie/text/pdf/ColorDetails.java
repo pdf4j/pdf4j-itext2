@@ -1,5 +1,5 @@
 /*
- * $Id$
+ * $Id: ColorDetails.java 3561 2008-07-15 22:17:57Z xlv $
  *
  * Copyright 2002 by Phillip Pan
  *

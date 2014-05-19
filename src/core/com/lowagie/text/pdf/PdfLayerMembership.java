@@ -80,7 +80,7 @@ public class PdfLayerMembership extends PdfDictionary implements PdfOCG {
 
     PdfIndirectReference ref;
     PdfArray members = new PdfArray();
-    HashSet layers = new HashSet();
+    HashSet<PdfLayer> layers = new HashSet<PdfLayer>();
     
     /**
      * Creates a new, empty, membership layer.
@@ -115,7 +115,7 @@ public class PdfLayerMembership extends PdfDictionary implements PdfOCG {
      * Gets the member layers.
      * @return the member layers
      */    
-    public Collection getLayers() {
+    public Collection<PdfLayer> getLayers() {
         return layers;
     }
     

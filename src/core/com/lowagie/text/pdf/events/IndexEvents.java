@@ -70,7 +70,7 @@ public class IndexEvents extends PdfPageEventHelper {
     /**
      * keeps the indextag with the pagenumber
      */
-    private Map indextag = new TreeMap();
+    private Map<String, Integer> indextag = new TreeMap<String, Integer>();
 
     /**
      * All the text that is passed to this event, gets registered in the indexentry.
@@ -93,7 +93,7 @@ public class IndexEvents extends PdfPageEventHelper {
     /**
      * the list for the index entry
      */
-    private List indexentry = new ArrayList();
+    private List<Entry> indexentry = new ArrayList<Entry>();
 
     /**
      * Create an index entry.
@@ -181,12 +181,9 @@ public class IndexEvents extends PdfPageEventHelper {
     /**
      * Comparator for sorting the index
      */
-    private Comparator comparator = new Comparator() {
+    private Comparator<Entry> comparator = new Comparator<Entry>() {
 
-        public int compare(Object arg0, Object arg1) {
-            Entry en1 = (Entry) arg0;
-            Entry en2 = (Entry) arg1;
-
+        public int compare(Entry en1, Entry en2) {
             int rt = 0;
             if (en1.getIn1() != null && en2.getIn1() != null) {
                 if ((rt = en1.getIn1().compareToIgnoreCase(en2.getIn1())) == 0) {
@@ -211,7 +208,7 @@ public class IndexEvents extends PdfPageEventHelper {
      * Set the comparator.
      * @param aComparator The comparator to set.
      */
-    public void setComparator(Comparator aComparator) {
+    public void setComparator(Comparator<Entry> aComparator) {
         comparator = aComparator;
     }
 
@@ -219,15 +216,15 @@ public class IndexEvents extends PdfPageEventHelper {
      * Returns the sorted list with the entries and the collected page numbers.
      * @return Returns the sorted list with the entries and the collected page numbers.
      */
-    public List getSortedEntries() {
+    public List<Entry> getSortedEntries() {
 
-        Map grouped = new HashMap();
+        Map<String, Entry> grouped = new HashMap<String, Entry>();
 
         for (int i = 0; i < indexentry.size(); i++) {
-            Entry e = (Entry) indexentry.get(i);
+            Entry e = indexentry.get(i);
             String key = e.getKey();
 
-            Entry master = (Entry) grouped.get(key);
+            Entry master = grouped.get(key);
             if (master != null) {
                 master.addPageNumberAndTag(e.getPageNumber(), e.getTag());
             } else {
@@ -237,7 +234,7 @@ public class IndexEvents extends PdfPageEventHelper {
         }
 
         // copy to a list and sort it
-        List sorted = new ArrayList(grouped.values());
+        List<Entry> sorted = new ArrayList<Entry>(grouped.values());
         Collections.sort(sorted, comparator);
         return sorted;
     }
@@ -275,12 +272,12 @@ public class IndexEvents extends PdfPageEventHelper {
         /**
          * the list of all page numbers.
          */
-        private List pagenumbers = new ArrayList();
+        private List<Integer> pagenumbers = new ArrayList<Integer>();
 
         /**
          * the list of all tags.
          */
-        private List tags = new ArrayList();
+        private List<String> tags = new ArrayList<String>();
 
         /**
          * Create a new object.
@@ -335,7 +332,7 @@ public class IndexEvents extends PdfPageEventHelper {
          */
         public int getPageNumber() {
             int rt = -1;
-            Integer i = (Integer) indextag.get(tag);
+            Integer i = indextag.get(tag);
             if (i != null) {
                 rt = i.intValue();
             }
@@ -364,7 +361,7 @@ public class IndexEvents extends PdfPageEventHelper {
          * Returns the pagenumbers.
          * @return Returns the pagenumbers.
          */
-        public List getPagenumbers() {
+        public List<Integer> getPagenumbers() {
             return pagenumbers;
         }
 
@@ -372,7 +369,7 @@ public class IndexEvents extends PdfPageEventHelper {
          * Returns the tags.
          * @return Returns the tags.
          */
-        public List getTags() {
+        public List<String> getTags() {
             return tags;
         }
 

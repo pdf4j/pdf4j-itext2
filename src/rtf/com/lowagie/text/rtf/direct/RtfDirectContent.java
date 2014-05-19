@@ -1,5 +1,5 @@
 /**
- * $Id$
+ * $Id: RtfDirectContent.java 3626 2008-11-11 19:27:25Z xlv $
  *
  * Copyright 2006 by Mark Hall
  *
@@ -66,7 +66,7 @@ import com.lowagie.text.rtf.RtfAddableElement;
  * constant that makes it possible to easily add soft line-breaks anywhere in
  * the RTF document.
  * 
- * @version $Id$
+ * @version $Id: RtfDirectContent.java 3626 2008-11-11 19:27:25Z xlv $
  * @author Mark Hall (Mark.Hall@mail.room3b.eu)
  * @author Thomas Bickel (tmb99@inode.at)
  */

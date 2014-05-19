@@ -1,5 +1,5 @@
 /*
- * $Id$
+ * $Id: RtfFont.java 4023 2009-07-11 23:41:19Z xlv $
  *
  * Copyright 2001, 2002, 2003, 2004 by Mark Hall
  *
@@ -64,7 +64,7 @@ import com.lowagie.text.rtf.document.RtfDocument;
  * BaseFont fontname handling contributed by Craig Fleming. Various fixes
  * Renaud Michel, Werner Daehn.
  *
- * Version: $Id$
+ * Version: $Id: RtfFont.java 4023 2009-07-11 23:41:19Z xlv $
  * @author Mark Hall (Mark.Hall@mail.room3b.eu)
  * @author Craig Fleming (rythos@rhana.dhs.org)
  * @author Renaud Michel (r.michel@immedia.be)
@@ -726,7 +726,7 @@ public class RtfFont extends Font implements RtfExtendedElement {
      * 
      * @since 2.1.0
      */
-    public int compareTo(Object object) {
+    public int compareTo(Font object) {
         if (object == null) {
             return -1;
         }
@@ -736,10 +736,8 @@ public class RtfFont extends Font implements RtfExtendedElement {
             } else {
                 return super.compareTo(object);
             }
-        } else if(object instanceof Font) {
-            return super.compareTo(object);
         } else {
-            return -3;
+            return super.compareTo(object);
         }
     }
 }

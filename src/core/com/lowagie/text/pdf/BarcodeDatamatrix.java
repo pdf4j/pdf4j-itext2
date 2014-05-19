@@ -1,5 +1,5 @@
 /*
- * $Id$
+ * $Id: BarcodeDatamatrix.java 3192 2008-03-27 19:07:33Z xlv $
  *
  * Copyright 2007 by Paulo Soares.
  *
@@ -978,14 +978,14 @@ public class BarcodeDatamatrix {
         private int nrow;
         private int ncol;
         private short[] array;
-        private static final Hashtable cache = new Hashtable();
+        private static final Hashtable<Integer, short[]> cache = new Hashtable<Integer, short[]>();
 
         private Placement() {
         }
         
         static short[] doPlacement(int nrow, int ncol) {
             Integer key = new Integer(nrow * 1000 + ncol);
-            short[] pc = (short[])cache.get(key);
+            short[] pc = cache.get(key);
             if (pc != null)
                 return pc;
             Placement p = new Placement();

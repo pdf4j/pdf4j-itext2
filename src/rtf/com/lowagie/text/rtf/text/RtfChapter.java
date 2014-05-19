@@ -1,5 +1,5 @@
 /*
- * $Id$
+ * $Id: RtfChapter.java 3626 2008-11-11 19:27:25Z xlv $
  *
  * Copyright 2001, 2002 by Mark Hall
  *
@@ -62,7 +62,7 @@ import com.lowagie.text.rtf.document.RtfDocument;
  * The RtfChapter wraps a Chapter element.
  * INTERNAL CLASS
  * 
- * @version $Id$
+ * @version $Id: RtfChapter.java 3626 2008-11-11 19:27:25Z xlv $
  * @author Mark Hall (Mark.Hall@mail.room3b.eu)
  * @author Thomas Bickel (tmb99@inode.at)
  */
@@ -92,7 +92,7 @@ public class RtfChapter extends RtfSection {
             this.title.writeContent(result);
         }
         for(int i = 0; i < items.size(); i++) {
-        	RtfBasicElement rbe = (RtfBasicElement)items.get(i);
+        	RtfBasicElement rbe = items.get(i);
         	rbe.writeContent(result);
         }
         result.write(DocWriter.getISOBytes("\\sect"));

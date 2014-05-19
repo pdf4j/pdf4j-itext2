@@ -53,6 +53,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
+import com.lowagie.text.error_messages.MessageLocalization;
 
 import org.xml.sax.SAXException;
 
@@ -68,13 +69,13 @@ import com.lowagie.text.pdf.internal.PdfViewerPreferencesImp;
 import com.lowagie.text.xml.xmp.XmpReader;
 
 class PdfStamperImp extends PdfWriter {
-    HashMap readers2intrefs = new HashMap();
-    HashMap readers2file = new HashMap();
+    HashMap<PdfReader, IntHashtable> readers2intrefs = new HashMap<PdfReader, IntHashtable>();
+    HashMap<PdfReader, RandomAccessFileOrArray> readers2file = new HashMap<PdfReader, RandomAccessFileOrArray>();
     RandomAccessFileOrArray file;
     PdfReader reader;
     IntHashtable myXref = new IntHashtable();
     /** Integer(page number) -> PageStamp */
-    HashMap pagesToContent = new HashMap();
+    HashMap<PdfDictionary, PageStamp> pagesToContent = new HashMap<PdfDictionary, PageStamp>();
     boolean closed = false;
     /** Holds value of property rotateContents. */
     private boolean rotateContents = true;
@@ -82,10 +83,10 @@ class PdfStamperImp extends PdfWriter {
     protected boolean flat = false;
     protected boolean flatFreeText = false;
     protected int namePtr[] = {0};
-    protected HashSet partialFlattening = new HashSet();
+    protected HashSet<String> partialFlattening = new HashSet<String>();
     protected boolean useVp = false;
     protected PdfViewerPreferencesImp viewerPreferences = new PdfViewerPreferencesImp();
-    protected HashMap fieldTemplates = new HashMap();
+    protected HashSet<PdfTemplate> fieldTemplates = new HashSet<PdfTemplate>();
     protected boolean fieldsAdded = false;
     protected int sigFlags = 0;
     protected boolean append;
@@ -105,16 +106,16 @@ class PdfStamperImp extends PdfWriter {
     PdfStamperImp(PdfReader reader, OutputStream os, char pdfVersion, boolean append) throws DocumentException, IOException {
         super(new PdfDocument(), os);
         if (!reader.isOpenedWithFullPermissions())
-            throw new BadPasswordException("PdfReader not opened with owner password");
+            throw new BadPasswordException(MessageLocalization.getComposedMessage("pdfreader.not.opened.with.owner.password"));
         if (reader.isTampered())
-            throw new DocumentException("The original document was reused. Read it again from file.");
+            throw new DocumentException(MessageLocalization.getComposedMessage("the.original.document.was.reused.read.it.again.from.file"));
         reader.setTampered(true);
         this.reader = reader;
         file = reader.getSafeFile();
         this.append = append;
         if (append) {
             if (reader.isRebuilt())
-                throw new DocumentException("Append mode requires a document without errors even if recovery was possible.");
+                throw new DocumentException(MessageLocalization.getComposedMessage("append.mode.requires.a.document.without.errors.even.if.recovery.was.possible"));
             if (reader.isEncrypted())
                 crypto = new PdfEncryption(reader.getDecrypt());
             pdf_version.setAppendmode(true);
@@ -146,7 +147,7 @@ class PdfStamperImp extends PdfWriter {
         initialXrefSize = reader.getXrefSize();
     }
 
-    void close(HashMap moreInfo) throws IOException {
+    void close(HashMap<String, String> moreInfo) throws IOException {
         if (closed)
             return;
         if (useVp) {
@@ -323,18 +324,16 @@ class PdfStamperImp extends PdfWriter {
         PdfIndirectReference info = null;
         PdfDictionary newInfo = new PdfDictionary();
         if (oldInfo != null) {
-            for (Iterator i = oldInfo.getKeys().iterator(); i.hasNext();) {
-                PdfName key = (PdfName)i.next();
+            for (PdfName key: oldInfo.getKeys()) {
                 PdfObject value = PdfReader.getPdfObject(oldInfo.get(key));
                 newInfo.put(key, value);
             }
         }
         if (moreInfo != null) {
-            for (Iterator i = moreInfo.entrySet().iterator(); i.hasNext();) {
-                Map.Entry entry = (Map.Entry) i.next();
-                String key = (String) entry.getKey();
+            for (Map.Entry<String, String> entry: moreInfo.entrySet()) {
+                String key = entry.getKey();
                 PdfName keyName = new PdfName(key);
-                String value = (String) entry.getValue();
+                String value = entry.getValue();
                 if (value == null)
                     newInfo.remove(keyName);
                 else
@@ -402,8 +401,7 @@ class PdfStamperImp extends PdfWriter {
     }
 
     void alterContents() throws IOException {
-        for (Iterator i = pagesToContent.values().iterator(); i.hasNext();) {
-            PageStamp ps = (PageStamp)i.next();
+        for (PageStamp ps: pagesToContent.values()) {
             PdfDictionary pageN = ps.pageN;
             markUsed(pageN);
             PdfArray ar = null;
@@ -460,7 +458,7 @@ class PdfStamperImp extends PdfWriter {
     }
 
     protected int getNewObjectNumber(PdfReader reader, int number, int generation) {
-        IntHashtable ref = (IntHashtable)readers2intrefs.get(reader);
+        IntHashtable ref = readers2intrefs.get(reader);
         if (ref != null) {
             int n = ref.get(number);
             if (n == 0) {
@@ -485,7 +483,7 @@ class PdfStamperImp extends PdfWriter {
 
     RandomAccessFileOrArray getReaderFile(PdfReader reader) {
         if (readers2intrefs.containsKey(reader)) {
-            RandomAccessFileOrArray raf = (RandomAccessFileOrArray)readers2file.get(reader);
+            RandomAccessFileOrArray raf = readers2file.get(reader);
             if (raf != null)
                 return raf;
             return reader.getSafeFile();
@@ -519,7 +517,7 @@ class PdfStamperImp extends PdfWriter {
         if (!readers2intrefs.containsKey(reader))
             return;
         readers2intrefs.remove(reader);
-        RandomAccessFileOrArray raf = (RandomAccessFileOrArray)readers2file.get(reader);
+        RandomAccessFileOrArray raf = readers2file.get(reader);
         if (raf == null)
             return;
         readers2file.remove(reader);
@@ -548,8 +546,7 @@ class PdfStamperImp extends PdfWriter {
             case PdfObject.DICTIONARY:
             case PdfObject.STREAM:
                 PdfDictionary dic = (PdfDictionary)obj;
-                for (Iterator it = dic.getKeys().iterator(); it.hasNext();) {
-                    PdfName name = (PdfName)it.next();
+                for (PdfName name: dic.getKeys()) {
                     findAllObjects(reader, dic.get(name), hits);
                 }
                 return;
@@ -572,8 +569,8 @@ class PdfStamperImp extends PdfWriter {
             return;
         registerReader(fdf, false);
         IntHashtable hits = new IntHashtable();
-        HashMap irt = new HashMap();
-        ArrayList an = new ArrayList();
+        HashMap<String, PdfObject> irt = new HashMap<String, PdfObject>();
+        ArrayList<PdfObject> an = new ArrayList<PdfObject>();
         for (int k = 0; k < annots.size(); ++k) {
             PdfObject obj = annots.getPdfObject(k);
             PdfDictionary annot = (PdfDictionary)PdfReader.getPdfObject(obj);
@@ -595,7 +592,7 @@ class PdfStamperImp extends PdfWriter {
             if (obj.type() == PdfObject.DICTIONARY) {
                 PdfObject str = PdfReader.getPdfObject(((PdfDictionary)obj).get(PdfName.IRT));
                 if (str != null && str.type() == PdfObject.STRING) {
-                   PdfObject i = (PdfObject)irt.get(str.toString());
+                   PdfObject i = irt.get(str.toString());
                    if (i != null) {
                        PdfDictionary dic2 = new PdfDictionary();
                        dic2.merge((PdfDictionary)obj);
@@ -607,7 +604,7 @@ class PdfStamperImp extends PdfWriter {
             addToBody(obj, getNewObjectNumber(fdf, n, 0));
         }
         for (int k = 0; k < an.size(); ++k) {
-            PdfObject obj = (PdfObject)an.get(k);
+            PdfObject obj = an.get(k);
             PdfDictionary annot = (PdfDictionary)PdfReader.getPdfObject(obj);
             PdfNumber page = annot.getAsNumber(PdfName.PAGE);
             PdfDictionary dic = reader.getPageN(page.intValue() + 1);
@@ -624,7 +621,7 @@ class PdfStamperImp extends PdfWriter {
 
     PageStamp getPageStamp(int pageNum) {
         PdfDictionary pageN = reader.getPageN(pageNum);
-        PageStamp ps = (PageStamp)pagesToContent.get(pageN);
+        PageStamp ps = pagesToContent.get(pageN);
         if (ps == null) {
             ps = new PageStamp(this, reader, pageN);
             pagesToContent.put(pageN, ps);
@@ -655,9 +652,8 @@ class PdfStamperImp extends PdfWriter {
             return;
         if (page > reader.getNumberOfPages())
             return;
-        HashMap fields = acroFields.getFields();
-        for (Iterator it = fields.values().iterator(); it.hasNext();) {
-            AcroFields.Item item = (AcroFields.Item)it.next();
+        HashMap<String, AcroFields.Item> fields = acroFields.getFields();
+        for (AcroFields.Item item: fields.values()) {
             for (int k = 0; k < item.size(); ++k) {
                 int p = item.getPage(k).intValue();
                 if (p >= page)
@@ -677,7 +673,7 @@ class PdfStamperImp extends PdfWriter {
     void replacePage(PdfReader r, int pageImported, int pageReplaced) {
         PdfDictionary pageN = reader.getPageN(pageReplaced);
         if (pagesToContent.containsKey(pageN))
-            throw new IllegalStateException("This page cannot be replaced: new content was already added");
+            throw new IllegalStateException(MessageLocalization.getComposedMessage("this.page.cannot.be.replaced.new.content.was.already.added"));
         PdfImportedPage p = getImportedPage(r, pageImported);
         PdfDictionary dic2 = reader.getPageNRelease(pageReplaced);
         dic2.remove(PdfName.RESOURCES);
@@ -690,7 +686,7 @@ class PdfStamperImp extends PdfWriter {
         dic2.put(PdfName.ROTATE, new PdfNumber(r.getPageRotation(pageImported)));
         PdfContentByte cb = getOverContent(pageReplaced);
         cb.addTemplate(p, 0, 0);
-        PageStamp ps = (PageStamp)pagesToContent.get(pageN);
+        PageStamp ps = pagesToContent.get(pageN);
         ps.replacePoint = ps.over.getInternalBuffer().size();
     }
 
@@ -742,7 +738,7 @@ class PdfStamperImp extends PdfWriter {
                 }
             }
             if (len == kids.size())
-                throw new RuntimeException("Internal inconsistence.");
+                throw new RuntimeException(MessageLocalization.getComposedMessage("internal.inconsistence"));
             markUsed(kids);
             reader.pageRefs.insertPage(pageNumber, pref);
             correctAcroFieldPages(pageNumber);
@@ -794,7 +790,7 @@ class PdfStamperImp extends PdfWriter {
     boolean partialFormFlattening(String name) {
         getAcroFields();
         if (acroFields.getXfa().isXfaPresent())
-            throw new UnsupportedOperationException("Partial form flattening is not supported with XFA forms.");
+            throw new UnsupportedOperationException(MessageLocalization.getComposedMessage("partial.form.flattening.is.not.supported.with.xfa.forms"));
         if (!acroFields.getFields().containsKey(name))
             return false;
         partialFlattening.add(name);
@@ -803,12 +799,12 @@ class PdfStamperImp extends PdfWriter {
 
     void flatFields() {
         if (append)
-            throw new IllegalArgumentException("Field flattening is not supported in append mode.");
+            throw new IllegalArgumentException(MessageLocalization.getComposedMessage("field.flattening.is.not.supported.in.append.mode"));
         getAcroFields();
-        HashMap fields = acroFields.getFields();
+        HashMap<String, AcroFields.Item> fields = acroFields.getFields();
         if (fieldsAdded && partialFlattening.isEmpty()) {
-            for (Iterator i = fields.keySet().iterator(); i.hasNext();) {
-                partialFlattening.add(i.next());
+            for (String s: fields.keySet()) {
+                partialFlattening.add(s);
             }
         }
         PdfDictionary acroForm = reader.getCatalog().getAsDict(PdfName.ACROFORM);
@@ -816,12 +812,11 @@ class PdfStamperImp extends PdfWriter {
         if (acroForm != null) {
             acroFds = (PdfArray)PdfReader.getPdfObject(acroForm.get(PdfName.FIELDS), acroForm);
         }
-        for (Iterator i = fields.entrySet().iterator(); i.hasNext();) {
-            Map.Entry entry = (Map.Entry) i.next();
-            String name = (String) entry.getKey();
+        for (Map.Entry<String, AcroFields.Item> entry: fields.entrySet()) {
+            String name = entry.getKey();
             if (!partialFlattening.isEmpty() && !partialFlattening.contains(name))
                 continue;
-            AcroFields.Item item = (AcroFields.Item) entry.getValue();
+            AcroFields.Item item = entry.getValue();
             for (int k = 0; k < item.size(); ++k) {
                 PdfDictionary merged = item.getMerged(k);
                 PdfNumber ff = merged.getAsNumber(PdfName.F);
@@ -955,6 +950,7 @@ class PdfStamperImp extends PdfWriter {
             PdfReader.killIndirect(iFields);
             acrodic.put(PdfName.FIELDS, new PdfArray());
         }
+        acrodic.remove(PdfName.SIGFLAGS);
 //        PdfReader.killIndirect(acro);
 //        reader.getCatalog().remove(PdfName.ACROFORM);
     }
@@ -975,7 +971,7 @@ class PdfStamperImp extends PdfWriter {
     private void flatFreeTextFields()
 	{
 		if (append)
-			throw new IllegalArgumentException("FreeText flattening is not supported in append mode.");
+			throw new IllegalArgumentException(MessageLocalization.getComposedMessage("freetext.flattening.is.not.supported.in.append.mode"));
 
 		for (int page = 1; page <= reader.getNumberOfPages(); ++page)
 		{
@@ -1069,7 +1065,7 @@ class PdfStamperImp extends PdfWriter {
     public PdfIndirectReference getPageReference(int page) {
         PdfIndirectReference ref = reader.getPageOrigRef(page);
         if (ref == null)
-            throw new IllegalArgumentException("Invalid page number " + page);
+            throw new IllegalArgumentException(MessageLocalization.getComposedMessage("invalid.page.number.1", page));
         return ref;
     }
 
@@ -1077,7 +1073,7 @@ class PdfStamperImp extends PdfWriter {
      * @see com.lowagie.text.pdf.PdfWriter#addAnnotation(com.lowagie.text.pdf.PdfAnnotation)
      */
     public void addAnnotation(PdfAnnotation annot) {
-        throw new RuntimeException("Unsupported in this context. Use PdfStamper.addAnnotation()");
+        throw new RuntimeException(MessageLocalization.getComposedMessage("unsupported.in.this.context.use.pdfstamper.addannotation"));
     }
 
     void addDocumentField(PdfIndirectReference ref) {
@@ -1119,8 +1115,7 @@ class PdfStamperImp extends PdfWriter {
             markUsed(acroForm);
         }
         markUsed(dr);
-        for (Iterator it = fieldTemplates.keySet().iterator(); it.hasNext();) {
-            PdfTemplate template = (PdfTemplate)it.next();
+        for (PdfTemplate template: fieldTemplates) {
             PdfFormField.mergeResources(dr, (PdfDictionary)template.getResources(), this);
         }
         // if (dr.get(PdfName.ENCODING) == null) dr.put(PdfName.ENCODING, PdfName.WIN_ANSI_ENCODING);
@@ -1150,18 +1145,18 @@ class PdfStamperImp extends PdfWriter {
         }
     }
 
-    void expandFields(PdfFormField field, ArrayList allAnnots) {
+    void expandFields(PdfFormField field, ArrayList<PdfAnnotation> allAnnots) {
         allAnnots.add(field);
-        ArrayList kids = field.getKids();
+        ArrayList<PdfFormField> kids = field.getKids();
         if (kids != null) {
             for (int k = 0; k < kids.size(); ++k)
-                expandFields((PdfFormField)kids.get(k), allAnnots);
+                expandFields(kids.get(k), allAnnots);
         }
     }
 
     void addAnnotation(PdfAnnotation annot, PdfDictionary pageN) {
         try {
-            ArrayList allAnnots = new ArrayList();
+            ArrayList<PdfAnnotation> allAnnots = new ArrayList<PdfAnnotation>();
             if (annot.isForm()) {
                 fieldsAdded = true;
                 getAcroFields();
@@ -1173,14 +1168,14 @@ class PdfStamperImp extends PdfWriter {
             else
                 allAnnots.add(annot);
             for (int k = 0; k < allAnnots.size(); ++k) {
-                annot = (PdfAnnotation)allAnnots.get(k);
+                annot = allAnnots.get(k);
                 if (annot.getPlaceInPage() > 0)
                     pageN = reader.getPageN(annot.getPlaceInPage());
                 if (annot.isForm()) {
                     if (!annot.isUsed()) {
-                        HashMap templates = annot.getTemplates();
+                        HashSet<PdfTemplate> templates = annot.getTemplates();
                         if (templates != null)
-                            fieldTemplates.putAll(templates);
+                            fieldTemplates.addAll(templates);
                     }
                     PdfFormField field = (PdfFormField)annot;
                     if (field.getParent() == null)
@@ -1206,10 +1201,10 @@ class PdfStamperImp extends PdfWriter {
                             switch (rotation) {
                                 case 90:
                                     annot.put(PdfName.RECT, new PdfRectangle(
-                                    pageSize.getTop() - rect.bottom(),
-                                    rect.left(),
                                     pageSize.getTop() - rect.top(),
-                                    rect.right()));
+                                    rect.right(),
+                                    pageSize.getTop() - rect.bottom(),
+                                    rect.left()));
                                     break;
                                 case 180:
                                     annot.put(PdfName.RECT, new PdfRectangle(
@@ -1271,7 +1266,7 @@ class PdfStamperImp extends PdfWriter {
     }
 
     void setJavaScript() throws IOException {
-        HashMap djs = pdf.getDocumentLevelJS();
+        HashMap<String, PdfObject> djs = pdf.getDocumentLevelJS();
         if (djs.isEmpty())
             return;
         PdfDictionary catalog = reader.getCatalog();
@@ -1287,7 +1282,7 @@ class PdfStamperImp extends PdfWriter {
     }
 
     void addFileAttachments() throws IOException {
-        HashMap fs = pdf.getDocumentFileAttachment();
+        HashMap<String, PdfObject> fs = pdf.getDocumentFileAttachment();
         if (fs.isEmpty())
             return;
         PdfDictionary catalog = reader.getCatalog();
@@ -1298,10 +1293,9 @@ class PdfStamperImp extends PdfWriter {
             markUsed(catalog);
         }
         markUsed(names);
-        HashMap old = PdfNameTree.readTree((PdfDictionary)PdfReader.getPdfObjectRelease(names.get(PdfName.EMBEDDEDFILES)));
-        for (Iterator it = fs.entrySet().iterator(); it.hasNext();) {
-            Map.Entry entry = (Map.Entry) it.next();
-            String name = (String) entry.getKey();
+        HashMap<String, PdfObject> old = PdfNameTree.readTree((PdfDictionary)PdfReader.getPdfObjectRelease(names.get(PdfName.EMBEDDEDFILES)));
+        for (Map.Entry<String, PdfObject> entry: fs.entrySet()) {
+            String name = entry.getKey();
             int k = 0;
             String nn = name;
             while (old.containsKey(nn)) {
@@ -1311,6 +1305,13 @@ class PdfStamperImp extends PdfWriter {
             old.put(nn, entry.getValue());
         }
         PdfDictionary tree = PdfNameTree.writeTree(old, this);
+        // Remove old EmbeddedFiles object if preset
+        PdfObject oldEmbeddedFiles = names.get(PdfName.EMBEDDEDFILES);
+        if (oldEmbeddedFiles != null) {
+            PdfReader.killIndirect(oldEmbeddedFiles);
+        }
+
+        // Add new EmbeddedFiles object
         names.put(PdfName.EMBEDDEDFILES, addToBody(tree).getIndirectReference());
     }
 
@@ -1370,7 +1371,7 @@ class PdfStamperImp extends PdfWriter {
      * @see PdfStamper#setPageAction(PdfName, PdfAction, int)
      */
     public void setPageAction(PdfName actionType, PdfAction action) throws PdfException {
-        throw new UnsupportedOperationException("Use setPageAction(PdfName actionType, PdfAction action, int page)");
+        throw new UnsupportedOperationException(MessageLocalization.getComposedMessage("use.setpageaction.pdfname.actiontype.pdfaction.action.int.page"));
     }
 
     /**
@@ -1383,7 +1384,7 @@ class PdfStamperImp extends PdfWriter {
      */
     void setPageAction(PdfName actionType, PdfAction action, int page) throws PdfException {
         if (!actionType.equals(PAGE_OPEN) && !actionType.equals(PAGE_CLOSE))
-            throw new PdfException("Invalid page additional action type: " + actionType.toString());
+            throw new PdfException(MessageLocalization.getComposedMessage("invalid.page.additional.action.type.1", actionType.toString()));
         PdfDictionary pg = reader.getPageN(page);
         PdfDictionary aa = (PdfDictionary)PdfReader.getPdfObject(pg.get(PdfName.AA), pg);
         if (aa == null) {
@@ -1400,7 +1401,7 @@ class PdfStamperImp extends PdfWriter {
      * @param seconds ignore
      */
     public void setDuration(int seconds) {
-        throw new UnsupportedOperationException("Use setPageAction(PdfName actionType, PdfAction action, int page)");
+        throw new UnsupportedOperationException(MessageLocalization.getComposedMessage("use.setpageaction.pdfname.actiontype.pdfaction.action.int.page"));
     }
 
     /**
@@ -1408,7 +1409,7 @@ class PdfStamperImp extends PdfWriter {
      * @param transition ignore
      */
     public void setTransition(PdfTransition transition) {
-        throw new UnsupportedOperationException("Use setPageAction(PdfName actionType, PdfAction action, int page)");
+        throw new UnsupportedOperationException(MessageLocalization.getComposedMessage("use.setpageaction.pdfname.actiontype.pdfaction.action.int.page"));
     }
 
     /**
@@ -1480,7 +1481,7 @@ class PdfStamperImp extends PdfWriter {
         actionType.equals(DID_SAVE) ||
         actionType.equals(WILL_PRINT) ||
         actionType.equals(DID_PRINT))) {
-            throw new PdfException("Invalid additional action type: " + actionType.toString());
+            throw new PdfException(MessageLocalization.getComposedMessage("invalid.additional.action.type.1", actionType.toString()));
         }
         PdfDictionary aa = reader.getCatalog().getAsDict(PdfName.AA);
         if (aa == null) {
@@ -1507,14 +1508,14 @@ class PdfStamperImp extends PdfWriter {
      * @see com.lowagie.text.pdf.PdfWriter#setOpenAction(java.lang.String)
      */
     public void setOpenAction(String name) {
-        throw new UnsupportedOperationException("Open actions by name are not supported.");
+        throw new UnsupportedOperationException(MessageLocalization.getComposedMessage("open.actions.by.name.are.not.supported"));
     }
 
     /**
      * @see com.lowagie.text.pdf.PdfWriter#setThumbnail(com.lowagie.text.Image)
      */
     public void setThumbnail(com.lowagie.text.Image image) {
-        throw new UnsupportedOperationException("Use PdfStamper.setThumbnail().");
+        throw new UnsupportedOperationException(MessageLocalization.getComposedMessage("use.pdfstamper.setthumbnail"));
     }
 
     void setThumbnail(Image image, int page) throws PdfException, DocumentException {
@@ -1526,11 +1527,11 @@ class PdfStamperImp extends PdfWriter {
     }
 
     public PdfContentByte getDirectContentUnder() {
-        throw new UnsupportedOperationException("Use PdfStamper.getUnderContent() or PdfStamper.getOverContent()");
+        throw new UnsupportedOperationException(MessageLocalization.getComposedMessage("use.pdfstamper.getundercontent.or.pdfstamper.getovercontent"));
     }
 
     public PdfContentByte getDirectContent() {
-        throw new UnsupportedOperationException("Use PdfStamper.getUnderContent() or PdfStamper.getOverContent()");
+        throw new UnsupportedOperationException(MessageLocalization.getComposedMessage("use.pdfstamper.getundercontent.or.pdfstamper.getovercontent"));
     }
 
     /**
@@ -1550,8 +1551,8 @@ class PdfStamperImp extends PdfWriter {
     	PdfArray ocgs = dict.getAsArray(PdfName.OCGS);
     	PdfIndirectReference ref;
     	PdfLayer layer;
-    	HashMap ocgmap = new HashMap();
-    	for (Iterator i = ocgs.listIterator(); i.hasNext(); ) {
+    	HashMap<String, PdfLayer> ocgmap = new HashMap<String, PdfLayer>();
+    	for (Iterator<PdfObject> i = ocgs.listIterator(); i.hasNext(); ) {
     		ref = (PdfIndirectReference)i.next();
     		layer = new PdfLayer(null);
     		layer.setRef(ref);
@@ -1562,9 +1563,9 @@ class PdfStamperImp extends PdfWriter {
     	PdfDictionary d = dict.getAsDict(PdfName.D);
     	PdfArray off = d.getAsArray(PdfName.OFF);
     	if (off != null) {
-    		for (Iterator i = off.listIterator(); i.hasNext(); ) {
+    		for (Iterator<PdfObject> i = off.listIterator(); i.hasNext(); ) {
     			ref = (PdfIndirectReference)i.next();
-    			layer = (PdfLayer)ocgmap.get(ref.toString());
+    			layer = ocgmap.get(ref.toString());
     			layer.setOn(false);
     		}
     	}
@@ -1586,45 +1587,45 @@ class PdfStamperImp extends PdfWriter {
      * @param	ocgmap	a HashMap with indirect reference Strings as keys and PdfLayer objects as values.
      * @since	2.1.2
      */
-    private void addOrder(PdfLayer parent, PdfArray arr, Map ocgmap) {
-    	PdfObject obj;
-    	PdfLayer layer;
-    	for (int i = 0; i < arr.size(); i++) {
-    		obj = arr.getPdfObject(i);
-    		if (obj.isIndirect()) {
-    			layer = (PdfLayer)ocgmap.get(obj.toString());
-    			layer.setOnPanel(true);
-    			registerLayer(layer);
-    			if (parent != null) {
-    				parent.addChild(layer);
-    			}
-    			if (arr.size() > i + 1 && arr.getPdfObject(i + 1).isArray()) {
-    				i++;
-    				addOrder(layer, (PdfArray)arr.getPdfObject(i), ocgmap);
-    			}
-    		}
-    		else if (obj.isArray()) {
-    		    PdfArray sub = (PdfArray)obj;
-    			if (sub.isEmpty()) return;
-    			obj = sub.getPdfObject(0);
-    			if (obj.isString()) {
-    				layer = new PdfLayer(obj.toString());
-    				layer.setOnPanel(true);
-    				registerLayer(layer);
-    				if (parent != null) {
-    					parent.addChild(layer);
-    				}
-    				PdfArray array = new PdfArray();
-    				for (Iterator j = sub.listIterator(); j.hasNext(); ) {
-    					array.add((PdfObject)j.next());
-    				}
-    				addOrder(layer, array, ocgmap);
-    			}
-    			else {
-    				addOrder(parent, (PdfArray)obj, ocgmap);
-    			}
-    		}
-    	}
+    private void addOrder(PdfLayer parent, PdfArray arr, Map<String, PdfLayer> ocgmap) {
+        PdfObject obj;
+        PdfLayer layer;
+        for (int i = 0; i < arr.size(); i++) {
+                obj = arr.getPdfObject(i);
+                if (obj.isIndirect()) {
+                        layer = ocgmap.get(obj.toString());
+                        layer.setOnPanel(true);
+                        registerLayer(layer);
+                        if (parent != null) {
+                                parent.addChild(layer);
+                        }
+                        if (arr.size() > i + 1 && arr.getPdfObject(i + 1).isArray()) {
+                                i++;
+                                addOrder(layer, (PdfArray)arr.getPdfObject(i), ocgmap);
+                        }
+                }
+                else if (obj.isArray()) {
+                    PdfArray sub = (PdfArray)obj;
+                        if (sub.isEmpty()) return;
+                        obj = sub.getPdfObject(0);
+                        if (obj.isString()) {
+                                layer = new PdfLayer(obj.toString());
+                                layer.setOnPanel(true);
+                                registerLayer(layer);
+                                if (parent != null) {
+                                        parent.addChild(layer);
+                                }
+                                PdfArray array = new PdfArray();
+                                for (Iterator<PdfObject> j = sub.listIterator(); j.hasNext(); ) {
+                                        array.add(j.next());
+                                }
+                                addOrder(layer, array, ocgmap);
+                        }
+                        else {
+                                addOrder(parent, (PdfArray)obj, ocgmap);
+                        }
+                }
+        }
     }
 
     /**
@@ -1633,14 +1634,14 @@ class PdfStamperImp extends PdfWriter {
      * @return	a Map with all the PdfLayers in the document (and the name/title of the layer as key)
      * @since	2.1.2
      */
-    public Map getPdfLayers() {
+    public Map<String, PdfLayer> getPdfLayers() {
     	if (documentOCG.isEmpty()) {
     		readOCProperties();
     	}
-    	HashMap map = new HashMap();
+    	HashMap<String, PdfLayer> map = new HashMap<String, PdfLayer>();
     	PdfLayer layer;
     	String key;
-    	for (Iterator i = documentOCG.iterator(); i.hasNext(); ) {
+    	for (Iterator<PdfOCG> i = documentOCG.iterator(); i.hasNext(); ) {
     		layer = (PdfLayer)i.next();
     		if (layer.getTitle() == null) {
     			key = layer.getAsString(PdfName.NAME).toString();

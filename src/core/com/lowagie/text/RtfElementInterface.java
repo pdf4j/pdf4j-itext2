@@ -1,5 +1,5 @@
 /*
- * $Id$
+ * $Id: RtfElementInterface.java 3393 2008-05-16 21:33:55Z xlv $
  *
  * Copyright 2008 by Bruno Lowagie
  *

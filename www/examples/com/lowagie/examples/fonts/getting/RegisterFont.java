@@ -1,5 +1,5 @@
 /*
- * $Id$
+ * $Id: RegisterFont.java 3393 2008-05-16 21:33:55Z xlv $
  *
  * This code is part of the 'iText Tutorial'.
  * You can find the complete tutorial at the following address:
@@ -17,7 +17,6 @@ import java.io.BufferedWriter;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.Iterator;
 
 import com.lowagie.text.Document;
 import com.lowagie.text.DocumentException;
@@ -69,13 +68,13 @@ public class RegisterFont {
             document.add(new Paragraph(text3, font3));
     		BufferedWriter out = new BufferedWriter(new FileWriter("registered.txt"));
             out.write("These fonts were registered at the FontFactory:\r\n");
-            for (Iterator i = FontFactory.getRegisteredFonts().iterator(); i.hasNext(); ) {
-                out.write((String) i.next());
+            for (String s: FontFactory.getRegisteredFonts()) {
+                out.write(s);
                 out.write("\r\n");
             }
             out.write("\r\n\r\nThese are the families these fonts belong to:\r\n");
-            for (Iterator i = FontFactory.getRegisteredFamilies().iterator(); i.hasNext(); ) {
-                out.write((String) i.next());
+            for (String s: FontFactory.getRegisteredFamilies()) {
+                out.write(s);
                 out.write("\r\n");
             }
             out.flush();

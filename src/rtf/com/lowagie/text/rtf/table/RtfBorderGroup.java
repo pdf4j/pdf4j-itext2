@@ -1,5 +1,5 @@
 /*
- * $Id$
+ * $Id: RtfBorderGroup.java 3393 2008-05-16 21:33:55Z xlv $
  *
  * Copyright 2001, 2002, 2003, 2004 by Mark Hall
  *
@@ -53,7 +53,6 @@ import java.awt.Color;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Hashtable;
-import java.util.Iterator;
 import java.util.Map;
 
 import com.lowagie.text.Rectangle;
@@ -65,7 +64,7 @@ import com.lowagie.text.rtf.document.RtfDocument;
  * The RtfBorderGroup represents a collection of RtfBorders to use in a RtfCell
  * or RtfTable.
  * 
- * @version $Id$
+ * @version $Id: RtfBorderGroup.java 3393 2008-05-16 21:33:55Z xlv $
  * @author Mark Hall (Mark.Hall@mail.room3b.eu)
  * @author Thomas Bickel (tmb99@inode.at)
  */
@@ -78,14 +77,14 @@ public class RtfBorderGroup extends RtfElement {
     /**
      * The borders in this RtfBorderGroup
      */
-    private Hashtable borders = null;
+    private Hashtable<Integer, RtfBorder> borders = null;
 
     /**
      * Constructs an empty RtfBorderGroup.
      */
     public RtfBorderGroup() {
         super(null);
-        this.borders = new Hashtable();
+        this.borders = new Hashtable<Integer, RtfBorder>();
     }
     
     /**
@@ -98,7 +97,7 @@ public class RtfBorderGroup extends RtfElement {
      */
     public RtfBorderGroup(int bordersToAdd, int borderStyle, float borderWidth, Color borderColor) {
         super(null);
-        this.borders = new Hashtable();
+        this.borders = new Hashtable<Integer, RtfBorder>();
         addBorder(bordersToAdd, borderStyle, borderWidth, borderColor);
     }
     
@@ -111,14 +110,12 @@ public class RtfBorderGroup extends RtfElement {
      */
     protected RtfBorderGroup(RtfDocument doc, int borderType, RtfBorderGroup borderGroup) {
         super(doc);
-        this.borders = new Hashtable();
+        this.borders = new Hashtable<Integer, RtfBorder>();
         this.borderType = borderType;
         if(borderGroup != null) {
-            Iterator it = borderGroup.getBorders().entrySet().iterator();
-            while(it.hasNext()) {
-                Map.Entry entry = (Map.Entry) it.next();
-                this.borders.put(entry.getKey(), new RtfBorder(this.document, this.borderType, (RtfBorder) entry.getValue()));
-            }
+        	for(Map.Entry<Integer, RtfBorder> entry: borderGroup.getBorders().entrySet()) {
+                this.borders.put(entry.getKey(), new RtfBorder(this.document, this.borderType, entry.getValue()));        		
+        	}
         }
     }
     
@@ -134,7 +131,7 @@ public class RtfBorderGroup extends RtfElement {
     protected RtfBorderGroup(RtfDocument doc, int borderType, int bordersToUse, float borderWidth, Color borderColor) {
         super(doc);
         this.borderType = borderType;
-        this.borders = new Hashtable();
+        this.borders = new Hashtable<Integer, RtfBorder>();
         addBorder(bordersToUse, RtfBorder.BORDER_SINGLE, borderWidth, borderColor);
     }
     
@@ -207,10 +204,9 @@ public class RtfBorderGroup extends RtfElement {
      */    
     public void writeContent(final OutputStream result) throws IOException
     {
-        Iterator it = this.borders.values().iterator();
-        while(it.hasNext()) {
-            ((RtfBorder) it.next()).writeContent(result);
-        }
+    	for(RtfBorder b: this.borders.values()) {
+            b.writeContent(result);
+    	}
     }        
     
     /**
@@ -218,7 +214,7 @@ public class RtfBorderGroup extends RtfElement {
      * 
      * @return The RtfBorders of this RtfBorderGroup
      */
-    protected Hashtable getBorders() {
+    protected Hashtable<Integer, RtfBorder> getBorders() {
         return this.borders;
     }
 }

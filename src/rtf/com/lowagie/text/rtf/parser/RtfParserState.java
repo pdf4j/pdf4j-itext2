@@ -1,5 +1,5 @@
 /*
- * $Id$
+ * $Id: RtfParserState.java 3393 2008-05-16 21:33:55Z xlv $
  *
  * Copyright 2007 by Howard Shank (hgshank@yahoo.com)
  *
@@ -50,6 +50,7 @@ package com.lowagie.text.rtf.parser;
 
 import java.util.Stack;
 
+import com.lowagie.text.rtf.parser.ctrlwords.RtfCtrlWordHandler;
 import com.lowagie.text.rtf.parser.destinations.RtfDestination;
 import com.lowagie.text.rtf.parser.destinations.RtfDestinationNull;
 import com.lowagie.text.rtf.parser.properties.RtfProperty;
@@ -88,7 +89,7 @@ public class RtfParserState {
 	 * Stack containing control word handlers. There could be multiple
 	 * control words in a group.
 	 */
-	public Stack ctrlWordHandlers = null;
+	public Stack<RtfCtrlWordHandler> ctrlWordHandlers = null;
 	/**
 	 * The current control word handler.
 	 */
@@ -113,7 +114,7 @@ public class RtfParserState {
 	 */
 	public RtfParserState() {
 		this.text = new StringBuffer();
-		this.ctrlWordHandlers = new Stack();
+		this.ctrlWordHandlers = new Stack<RtfCtrlWordHandler>();
 		this.properties = new RtfProperty();
 		this.destination = RtfDestinationNull.getInstance();
 		this.newGroup = false;
@@ -129,7 +130,7 @@ public class RtfParserState {
 		this.groupHandler = null;
 		this.destination = orig.destination;
 		this.text = new StringBuffer();
-		this.ctrlWordHandlers = new Stack();
+		this.ctrlWordHandlers = new Stack<RtfCtrlWordHandler>();
 		this.destination = orig.destination;
 		this.newGroup = false;
 	}

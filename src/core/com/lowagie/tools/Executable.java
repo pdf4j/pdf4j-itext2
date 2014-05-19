@@ -1,5 +1,6 @@
 /*
- * $Id$
+ * $Id: Executable.java 4167 2009-12-13 04:05:50Z xlv $
+ * $Name$
  *
  * Copyright 2005 by Bruno Lowagie / Roger Mistelli
  *
@@ -51,6 +52,7 @@ package com.lowagie.tools;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Method;
+import com.lowagie.text.error_messages.MessageLocalization;
 
 /**
  * This class enables you to call an executable that will show a PDF file.
@@ -253,7 +255,7 @@ public class Executable {
 	public static final void launchBrowser(String url) throws IOException {
 		try {
 			if (isMac()) {
-				Class macUtils = Class.forName("com.apple.mrj.MRJFileUtils");
+				Class<?> macUtils = Class.forName("com.apple.mrj.MRJFileUtils");
 				Method openURL = macUtils.getDeclaredMethod("openURL", new Class[] {String.class});
 				openURL.invoke(null, new Object[] {url});
 			}
@@ -267,13 +269,13 @@ public class Executable {
 	               if (Runtime.getRuntime().exec(new String[] {"which", browsers[count]}).waitFor() == 0)
 	                  browser = browsers[count];
 	            if (browser == null)
-	               throw new Exception("Could not find web browser.");
+	               throw new Exception(MessageLocalization.getComposedMessage("could.not.find.web.browser"));
 	            else
 	               Runtime.getRuntime().exec(new String[] {browser, url});
 	            }
 	         }
 	      catch (Exception e) {
-	         throw new IOException("Error attempting to launch web browser");
+	         throw new IOException(MessageLocalization.getComposedMessage("error.attempting.to.launch.web.browser"));
 	      }
 	}
 

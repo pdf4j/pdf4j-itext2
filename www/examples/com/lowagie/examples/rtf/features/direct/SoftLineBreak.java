@@ -1,5 +1,5 @@
 /*
- * $Id$
+ * $Id: SoftLineBreak.java 3393 2008-05-16 21:33:55Z xlv $
  *
  * This code is free software. It may only be copied or modified
  * if you include the following copyright notice:
@@ -32,7 +32,7 @@ import com.lowagie.text.rtf.direct.RtfDirectContent;
  * The SoftLineBreak example demonstrates using the RtfDirectContent
  * to add a soft linebreak to a Paragraph. 
  * 
- * @version $Revision$
+ * @version $Revision: 3393 $
  * @author Mark Hall (Mark.Hall@mail.room3b.eu)
  */
 public class SoftLineBreak {
@@ -59,13 +59,13 @@ public class SoftLineBreak {
             par.setSpacingAfter(10);
             
             // Add the contents before the linebreak
-            par.add("This paragraph contains a soft linebreak");
+            par.addObject("This paragraph contains a soft linebreak");
 
             // Add the soft linebreak
             par.add(RtfDirectContent.DIRECT_SOFT_LINEBREAK);
 
             // Add the contents after the linebreak
-            par.add("just before the just.");
+            par.addObject("just before the just.");
             
             // Add the paragraph to the document
             document.add(par);

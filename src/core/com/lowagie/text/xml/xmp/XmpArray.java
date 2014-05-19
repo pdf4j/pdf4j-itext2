@@ -1,5 +1,5 @@
 /*
- * $Id$
+ * $Id: XmpArray.java 3393 2008-05-16 21:33:55Z xlv $
  *
  * Copyright 2005 by Bruno Lowagie.
  *
@@ -50,12 +50,11 @@
 package com.lowagie.text.xml.xmp;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 
 /**
  * StringBuffer to construct an XMP array.
  */
-public class XmpArray extends ArrayList {
+public class XmpArray extends ArrayList<String> {
 
 	private static final long serialVersionUID = 5722854116328732742L;
 	/** An array that is unordered. */
@@ -84,9 +83,7 @@ public class XmpArray extends ArrayList {
 		StringBuffer buf = new StringBuffer("<");
 		buf.append(type);
 		buf.append('>');
-		String s;
-		for (Iterator i = iterator(); i.hasNext(); ) {
-			s = (String) i.next();
+		for (String s: this) {
 			buf.append("<rdf:li>");
 			buf.append(XmpSchema.escape(s));
 			buf.append("</rdf:li>");

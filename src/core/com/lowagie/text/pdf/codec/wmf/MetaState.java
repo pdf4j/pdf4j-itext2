@@ -1,5 +1,5 @@
 /*
- * $Id$
+ * $Id: MetaState.java 3393 2008-05-16 21:33:55Z xlv $
  *
  * Copyright 2001, 2002 Paulo Soares
  *
@@ -73,8 +73,8 @@ public class MetaState {
     public static final int ALTERNATE = 1;
     public static final int WINDING = 2;
 
-    public Stack savedStates;
-    public ArrayList MetaObjects;
+    public Stack<MetaState> savedStates;
+    public ArrayList<MetaObject> MetaObjects;
     public Point currentPoint;
     public MetaPen currentPen;
     public MetaBrush currentBrush;
@@ -95,8 +95,8 @@ public class MetaState {
 
     /** Creates new MetaState */
     public MetaState() {
-        savedStates = new Stack();
-        MetaObjects = new ArrayList();
+        savedStates = new Stack<MetaState>();
+        MetaObjects = new ArrayList<MetaObject>();
         currentPoint = new Point(0, 0);
         currentPen = new MetaPen();
         currentBrush = new MetaBrush();
@@ -139,7 +139,7 @@ public class MetaState {
     }
     
     public void selectMetaObject(int index, PdfContentByte cb) {
-        MetaObject obj = (MetaObject)MetaObjects.get(index);
+        MetaObject obj = MetaObjects.get(index);
         if (obj == null)
             return;
         int style;
@@ -213,7 +213,7 @@ public class MetaState {
         MetaState state = null;
         while (pops-- != 0) {
             cb.restoreState();
-            state = (MetaState)savedStates.pop();
+            state = savedStates.pop();
         }
         setMetaState(state);
     }

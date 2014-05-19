@@ -1,5 +1,5 @@
 /*
- * $Id$
+ * $Id: IanaEncodings.java 3393 2008-05-16 21:33:55Z xlv $
  *
  * Copyright 2003-2007 Paulo Soares and Bruno Lowagie.
  *
@@ -76,7 +76,7 @@ import java.util.HashMap;
 public class IanaEncodings {
 
 	/** The object that maps IANA to Java encodings. */
-    private static final HashMap map = new HashMap();
+    private static final HashMap<String, String> map = new HashMap<String, String>();
 
     static {        
         // add IANA to Java encoding mappings.
@@ -279,7 +279,7 @@ public class IanaEncodings {
      */    
     public static String getJavaEncoding(String iana) {
         String IANA = iana.toUpperCase();
-        String jdec = (String)map.get(IANA);
+        String jdec = map.get(IANA);
         if (jdec == null)
             jdec = iana;
         return jdec;

@@ -1,5 +1,5 @@
 /*
- * $Id$
+ * $Id: SAXmyHandler.java 3393 2008-05-16 21:33:55Z xlv $
  *
  * Copyright 2001, 2002 by Bruno Lowagie.
  *
@@ -70,7 +70,7 @@ public class SAXmyHandler extends SAXiTextHandler {
  * @param myTags a user defined tagmap
  */
     
-    public SAXmyHandler(DocListener document, HashMap myTags) {
+    public SAXmyHandler(DocListener document, HashMap<String, XmlPeer> myTags) {
         super(document, myTags);
     }
     
@@ -85,7 +85,7 @@ public class SAXmyHandler extends SAXiTextHandler {
     
     public void startElement(String uri, String lname, String name, Attributes attrs) {
         if (myTags.containsKey(name)) {
-            XmlPeer peer = (XmlPeer) myTags.get(name);
+            XmlPeer peer = myTags.get(name);
             handleStartingTags(peer.getTag(), peer.getAttributes(attrs));
         }
         else {
@@ -110,7 +110,7 @@ public class SAXmyHandler extends SAXiTextHandler {
     
     public void endElement(String uri, String lname, String name) {
         if (myTags.containsKey(name)) {
-            XmlPeer peer = (XmlPeer) myTags.get(name);
+            XmlPeer peer = myTags.get(name);
             handleEndingTags(peer.getTag());
         }
         else {

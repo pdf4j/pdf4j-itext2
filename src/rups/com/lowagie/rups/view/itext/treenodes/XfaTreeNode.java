@@ -1,5 +1,5 @@
 /*
- * $Id$
+ * $Id: XfaTreeNode.java 3312 2008-05-01 20:58:46Z xlv $
  *
  * Copyright 2007 Bruno Lowagie.
  *
@@ -60,14 +60,15 @@ public class XfaTreeNode extends FormTreeNode implements OutputStreamResource {
 	 * @param os	the OutputStream to which the XML is written.
 	 * @throws IOException	usual exception when there's a problem writing to an OutputStream
 	 */
+    @SuppressWarnings("unchecked")
 	public void writeTo(OutputStream os) throws IOException {
-		Enumeration children = this.children();
+		Enumeration<FormTreeNode> children = this.children();
 		FormTreeNode node;
 		PRStream stream;
 		String key = null;
 		String tmp = null;
 		while (children.hasMoreElements()) {
-			node = (FormTreeNode) children.nextElement();
+			node = children.nextElement();
 			if (key != null) {
 				os.write(BOUNDARY_START);
 				os.write(key.getBytes());

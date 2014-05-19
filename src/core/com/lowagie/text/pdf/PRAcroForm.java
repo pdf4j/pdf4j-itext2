@@ -1,5 +1,5 @@
 /*
- * $Id$
+ * $Id: PRAcroForm.java 3787 2009-03-17 01:25:12Z xlv $
  *
  * Copyright 2001, 2002 by Paulo Soares.
  *
@@ -78,9 +78,9 @@ public class PRAcroForm extends PdfDictionary {
         public PdfDictionary getInfo() { return info; }
         public PRIndirectReference getRef() { return ref; }
     };
-    ArrayList fields;
-    ArrayList stack;
-    HashMap fieldByName;
+    ArrayList<FieldInformation> fields;
+    ArrayList<PdfDictionary> stack;
+    HashMap<String, FieldInformation> fieldByName;
     PdfReader reader;
     
     /**
@@ -89,9 +89,9 @@ public class PRAcroForm extends PdfDictionary {
      */
     public PRAcroForm(PdfReader reader) {
         this.reader = reader;
-        fields = new ArrayList();
-        fieldByName = new HashMap();
-        stack = new ArrayList();
+        fields = new ArrayList<FieldInformation>();
+        fieldByName = new HashMap<String, FieldInformation>();
+        stack = new ArrayList<PdfDictionary>();
     }
     /**
      * Number of fields found
@@ -101,12 +101,12 @@ public class PRAcroForm extends PdfDictionary {
         return fields.size();
     }
     
-    public ArrayList getFields() {
+    public ArrayList<FieldInformation> getFields() {
         return fields;
     }
     
     public FieldInformation getField(String name) {
-        return (FieldInformation)fieldByName.get(name);
+        return fieldByName.get(name);
     }
     
     /**
@@ -115,7 +115,7 @@ public class PRAcroForm extends PdfDictionary {
      * @return a reference to the field, or null
      */
     public PRIndirectReference getRefByName(String name) {
-        FieldInformation fi = (FieldInformation)fieldByName.get(name);
+        FieldInformation fi = fieldByName.get(name);
         if (fi == null) return null;
         return fi.getRef();
     }
@@ -139,7 +139,7 @@ public class PRAcroForm extends PdfDictionary {
      * @param title the pathname of the field, up to this point or null
      */
     protected void iterateFields(PdfArray fieldlist, PRIndirectReference fieldDict, String title) {
-        for (Iterator it = fieldlist.listIterator(); it.hasNext();) {
+        for (Iterator<PdfObject> it = fieldlist.listIterator(); it.hasNext();) {
             PRIndirectReference ref = (PRIndirectReference)it.next();
             PdfDictionary dict = (PdfDictionary) PdfReader.getPdfObjectRelease(ref);
             
@@ -163,7 +163,7 @@ public class PRAcroForm extends PdfDictionary {
             }
             else {          // leaf node
                 if (myFieldDict != null) {
-                    PdfDictionary mergedDict = (PdfDictionary)stack.get(stack.size() - 1);
+                    PdfDictionary mergedDict = stack.get(stack.size() - 1);
                     if (isFieldDict)
                         mergedDict = mergeAttrib(mergedDict, dict);
                     
@@ -185,8 +185,7 @@ public class PRAcroForm extends PdfDictionary {
         PdfDictionary targ = new PdfDictionary();
         if (parent != null) targ.putAll(parent);
         
-        for (Iterator it = child.getKeys().iterator(); it.hasNext();) {
-            PdfName key = (PdfName) it.next();
+        for (PdfName key: child.getKeys()) {
             if (key.equals(PdfName.DR) || key.equals(PdfName.DA) ||
             key.equals(PdfName.Q)  || key.equals(PdfName.FF) ||
             key.equals(PdfName.DV) || key.equals(PdfName.V)
@@ -203,7 +202,7 @@ public class PRAcroForm extends PdfDictionary {
     protected void pushAttrib(PdfDictionary dict) {
         PdfDictionary dic = null;
         if (!stack.isEmpty()) {
-            dic = (PdfDictionary)stack.get(stack.size() - 1);
+            dic = stack.get(stack.size() - 1);
         }
         dic = mergeAttrib(dic, dict);
         stack.add(dic);

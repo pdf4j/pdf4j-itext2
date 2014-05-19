@@ -11,7 +11,7 @@
 			<site:book asin="0321304748">PDF Reference (4th Edition)</site:book>
 			<site:keyword>Fonts</site:keyword>
 		</site:amazonbooks>
-		<site:updated>$Date$</site:updated>
+		<site:updated>$Date: 2009-07-11 19:41:19 -0400 (Sat, 11 Jul 2009) $</site:updated>
 		<site:author>Bruno Lowagie</site:author>
 	</site:metadata>
 	

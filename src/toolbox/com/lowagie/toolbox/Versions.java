@@ -1,5 +1,5 @@
 /*
- * $Id$
+ * $Id: Versions.java 3393 2008-05-16 21:33:55Z xlv $
  * Copyright (c) 2005-2007 Carsten Hammer
  *
  * Permission is hereby granted, free of charge, to any person

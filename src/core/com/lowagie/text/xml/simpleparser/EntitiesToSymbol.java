@@ -1,5 +1,5 @@
 /*
- * $Id$
+ * $Id: EntitiesToSymbol.java 3393 2008-05-16 21:33:55Z xlv $
  *
  * Copyright 1999, 2000, 2001, 2002 Bruno Lowagie.
  *
@@ -64,10 +64,10 @@ public class EntitiesToSymbol {
      * This is a map that contains all possible id values of the entity tag
      * that can be translated to a character in font Symbol.
      */
-    public static final HashMap map;
+    public static final HashMap<String, Character> map;
     
     static {
-        map = new HashMap();
+        map = new HashMap<String, Character>();
         map.put("169", new Character((char)227));
         map.put("172", new Character((char)216));
         map.put("174", new Character((char)210));
@@ -371,7 +371,7 @@ public class EntitiesToSymbol {
      * @return	the corresponding character in font Symbol
      */
     public static char getCorrespondingSymbol(String name) {
-        Character symbol = (Character) map.get(name);
+        Character symbol = map.get(name);
         if (symbol == null) {
             return (char)0;
         }

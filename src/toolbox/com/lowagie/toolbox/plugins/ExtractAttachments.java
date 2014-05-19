@@ -1,5 +1,5 @@
 /*
- * $Id$
+ * $Id: ExtractAttachments.java 3787 2009-03-17 01:25:12Z xlv $
  * Copyright (c) 2005-2007 Paulo Soares, Bruno Lowagie, Carsten Hammer
  *
  * Permission is hereby granted, free of charge, to any person
@@ -64,7 +64,7 @@ import com.lowagie.toolbox.swing.PdfInformationPanel;
 public class ExtractAttachments extends AbstractTool {
 
 	static {
-		addVersion("$Id$");
+		addVersion("$Id: ExtractAttachments.java 3787 2009-03-17 01:25:12Z xlv $");
 	}
 
 	/**

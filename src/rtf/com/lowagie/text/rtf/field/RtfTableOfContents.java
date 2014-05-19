@@ -1,5 +1,5 @@
 /*
- * $Id$
+ * $Id: RtfTableOfContents.java 3626 2008-11-11 19:27:25Z xlv $
  *
  * Copyright 2004 by Mark Hall
  * Uses code Copyright 2002
@@ -65,7 +65,7 @@ import com.lowagie.text.Font;
  * and the user will have to update it first. A text to inform the user of this is
  * displayed instead.
  * 
- * @version $Id$
+ * @version $Id: RtfTableOfContents.java 3626 2008-11-11 19:27:25Z xlv $
  * @author Mark Hall (Mark.Hall@mail.room3b.eu)
  * @author Steffen.Stundzig (Steffen.Stundzig@smb-tec.com) 
  * @author Thomas Bickel (tmb99@inode.at)

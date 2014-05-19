@@ -1,5 +1,5 @@
 /*
- * $Id$
+ * $Id: Anchor.java 3393 2008-05-16 21:33:55Z xlv $
  *
  * Copyright 1999, 2000, 2001, 2002 by Bruno Lowagie.
  *
@@ -192,11 +192,11 @@ public class Anchor extends Phrase {
     public boolean process(ElementListener listener) {
         try {
             Chunk chunk;
-            Iterator i = getChunks().iterator();
+            Iterator<Chunk> i = getChunks().iterator();
             boolean localDestination = (reference != null && reference.startsWith("#"));
             boolean notGotoOK = true;
             while (i.hasNext()) {
-                chunk = (Chunk) i.next();
+                chunk = i.next();
                 if (name != null && notGotoOK && !chunk.isEmpty()) {
                     chunk.setLocalDestination(name);
                     notGotoOK = false;
@@ -218,10 +218,10 @@ public class Anchor extends Phrase {
      *
      * @return	an <CODE>ArrayList</CODE>
      */
-    public ArrayList getChunks() {
-        ArrayList tmp = new ArrayList();
+    public ArrayList<Chunk> getChunks() {
+        ArrayList<Chunk> tmp = new ArrayList<Chunk>();
         Chunk chunk;
-        Iterator i = iterator();
+        Iterator<Element> i = iterator();
         boolean localDestination = (reference != null && reference.startsWith("#"));
         boolean notGotoOK = true;
         while (i.hasNext()) {

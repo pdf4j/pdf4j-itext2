@@ -1,5 +1,5 @@
 /*
- * $Id$
+ * $Id: Background.java 3393 2008-05-16 21:33:55Z xlv $
  *
  * This code is part of the 'iText Tutorial'.
  * You can find the complete tutorial at the following address:
@@ -77,7 +77,7 @@ public class Background {
 			c = new Chunk("background chunk");
 			c.setBackground(new Color(0xFF, 0x00, 0x00), 5f, 30f, -10f, 0f);
 			p.add(c);
-			p.add(" example");
+			p.addObject(" example");
 			document.add(p);
 		} catch (DocumentException de) {
 			System.err.println(de.getMessage());

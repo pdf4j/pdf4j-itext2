@@ -1,5 +1,5 @@
 /*
- * $Id$
+ * $Id: PdfAnnotation.java 4167 2009-12-13 04:05:50Z xlv $
  *
  * Copyright 1999, 2000, 2001, 2002 Bruno Lowagie
  *
@@ -52,6 +52,8 @@ package com.lowagie.text.pdf;
 import java.awt.Color;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.HashSet;
+import com.lowagie.text.error_messages.MessageLocalization;
 
 import com.lowagie.text.Rectangle;
 /**
@@ -133,7 +135,7 @@ public class PdfAnnotation extends PdfDictionary {
      * @since	2.1.6; was removed in 2.1.5, but restored in 2.1.6
      */
     protected PdfIndirectReference reference;
-    protected HashMap templates;
+    protected HashSet<PdfTemplate> templates;
     protected boolean form = false;
     protected boolean annotation = true;
 
@@ -525,8 +527,8 @@ public class PdfAnnotation extends PdfDictionary {
         if (!form)
             return;
         if (templates == null)
-            templates = new HashMap();
-        templates.put(template, null);
+            templates = new HashSet<PdfTemplate>();
+        templates.add(template);
     }
 
     public void setAppearance(PdfName ap, String state, PdfTemplate template) {
@@ -546,8 +548,8 @@ public class PdfAnnotation extends PdfDictionary {
         if (!form)
             return;
         if (templates == null)
-            templates = new HashMap();
-        templates.put(template, null);
+            templates = new HashSet<PdfTemplate>();
+        templates.add(template);
     }
 
     public void setAppearanceState(String state) {
@@ -603,7 +605,7 @@ public class PdfAnnotation extends PdfDictionary {
         used = true;
     }
 
-    public HashMap getTemplates() {
+    public HashSet<PdfTemplate> getTemplates() {
         return templates;
     }
 
@@ -681,7 +683,7 @@ public class PdfAnnotation extends PdfDictionary {
             case ExtendedColor.TYPE_SEPARATION:
             case ExtendedColor.TYPE_PATTERN:
             case ExtendedColor.TYPE_SHADING:
-                throw new RuntimeException("Separations, patterns and shadings are not allowed in MK dictionary.");
+                throw new RuntimeException(MessageLocalization.getComposedMessage("separations.patterns.and.shadings.are.not.allowed.in.mk.dictionary"));
             default:
                 array.add(new PdfNumber(color.getRed() / 255f));
                 array.add(new PdfNumber(color.getGreen() / 255f));
@@ -814,7 +816,7 @@ public class PdfAnnotation extends PdfDictionary {
      */
     public static class PdfImportedLink {
     	float llx, lly, urx, ury;
-    	HashMap parameters = new HashMap();
+    	HashMap<PdfName, PdfObject> parameters = new HashMap<PdfName, PdfObject>();
     	PdfArray destination = null;
     	int newPage=0;
 
@@ -823,7 +825,7 @@ public class PdfAnnotation extends PdfDictionary {
     		try {
     			destination = (PdfArray) parameters.remove(PdfName.DEST);
     		} catch (ClassCastException ex) {
-    			throw new IllegalArgumentException("You have to consolidate the named destinations of your reader.");
+    			throw new IllegalArgumentException(MessageLocalization.getComposedMessage("you.have.to.consolidate.the.named.destinations.of.your.reader"));
     		}
     		if (destination != null) {
     			destination = new PdfArray(destination);
@@ -852,16 +854,16 @@ public class PdfAnnotation extends PdfDictionary {
     			PRIndirectReference pp = r.getPageOrigRef(i);
     			if (pp.getGeneration() == pr.getGeneration() && pp.getNumber() == pr.getNumber()) return i;
     		}
-    		throw new IllegalArgumentException("Page not found.");
+    		throw new IllegalArgumentException(MessageLocalization.getComposedMessage("page.not.found"));
     	}
 
     	public void setDestinationPage(int newPage) {
-    		if (!isInternal()) throw new IllegalArgumentException("Cannot change destination of external link");
+    		if (!isInternal()) throw new IllegalArgumentException(MessageLocalization.getComposedMessage("cannot.change.destination.of.external.link"));
     		this.newPage=newPage;
     	}
 
     	public void transformDestination(float a, float b, float c, float d, float e, float f) {
-    		if (!isInternal()) throw new IllegalArgumentException("Cannot change destination of external link");
+    		if (!isInternal()) throw new IllegalArgumentException(MessageLocalization.getComposedMessage("cannot.change.destination.of.external.link"));
     		if (destination.getAsName(1).equals(PdfName.XYZ)) {
     			float x = destination.getAsNumber(2).floatValue();
     			float y = destination.getAsNumber(3).floatValue();

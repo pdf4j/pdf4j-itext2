@@ -1,5 +1,5 @@
 /*
- * $Id$
+ * $Id: PdfLister.java 3788 2009-03-17 01:45:36Z xlv $
  *
  * Copyright 2002 Mark Thompson
  *
@@ -54,6 +54,7 @@
 import java.io.IOException;
 import java.io.PrintStream;
 import java.util.Iterator;
+
 /**
  * List a PDF file in human-readable form (for debugging reasons mostly)
  * @author Mark Thompson
@@ -100,10 +101,8 @@ public class PdfLister {
     public void listDict(PdfDictionary dictionary)
     {
         out.println("<<");
-        PdfName key;
         PdfObject value;
-        for (Iterator i = dictionary.getKeys().iterator(); i.hasNext(); ) {
-            key = (PdfName) i.next();
+        for (PdfName key: dictionary.getKeys()) {
             value = dictionary.get(key);
             out.print(key.toString());
             out.print(' ');
@@ -119,8 +118,8 @@ public class PdfLister {
     public void listArray(PdfArray array)
     {
         out.println('[');
-        for (Iterator i = array.listIterator(); i.hasNext(); ) {
-            PdfObject item = (PdfObject)i.next();
+        for (Iterator<PdfObject> i = array.listIterator(); i.hasNext(); ) {
+            PdfObject item = i.next();
             listAnyObject(item);
         }
         out.println(']');
@@ -178,8 +177,8 @@ public class PdfLister {
             listStream((PRStream)obj, readerInst);
             break;
         case PdfObject.ARRAY:
-            for (Iterator i = ((PdfArray)obj).listIterator(); i.hasNext();) {
-                PdfObject o = PdfReader.getPdfObject((PdfObject)i.next());
+            for (Iterator<PdfObject> i = ((PdfArray)obj).listIterator(); i.hasNext();) {
+                PdfObject o = PdfReader.getPdfObject(i.next());
                 listStream((PRStream)o, readerInst);
                 out.println("-----------");
             }

@@ -1,5 +1,5 @@
 /*
- * $Id$
+ * $Id: RtfProtectionTest.java 3787 2009-03-17 01:25:12Z xlv $
  * $Name$
  *
  * Copyright 2008 by Howard Shank
@@ -65,7 +65,7 @@ import com.lowagie.text.rtf.RtfTestBase;
  * The <code>RtfProtectionTest</code> is a very simple junit test, that checks
  * that the <code>RtfProtection</code> is producing the correct result.
  * 
- * @version $Id$
+ * @version $Id: RtfProtectionTest.java 3787 2009-03-17 01:25:12Z xlv $
  * @author Howard Shank (hgshank@yahoo.com)
  * @see com.lowagie.text.rtf.document.RtfProtection
  * @since 2.1.3

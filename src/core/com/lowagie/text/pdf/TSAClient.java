@@ -1,5 +1,5 @@
 /*
- * $Id$
+ * $Id: TSAClient.java 3989 2009-06-18 02:22:54Z xlv $
  *
  * Copyright 2009 Martin Brunecky
  *

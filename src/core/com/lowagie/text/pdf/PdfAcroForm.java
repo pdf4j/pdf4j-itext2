@@ -1,5 +1,5 @@
 /*
- * $Id$
+ * $Id: PdfAcroForm.java 3989 2009-06-18 02:22:54Z xlv $
  *
  * Copyright 2002 Bruno Lowagie
  *
@@ -49,8 +49,7 @@
 
 package com.lowagie.text.pdf;
 
-import java.util.HashMap;
-import java.util.Iterator;
+import java.util.HashSet;
 
 import com.lowagie.text.ExceptionConverter;
 import com.lowagie.text.Rectangle;
@@ -65,7 +64,7 @@ public class PdfAcroForm extends PdfDictionary {
 
 
     /** This is a map containing FieldTemplates. */
-    private HashMap fieldTemplates = new HashMap();
+    private HashSet<PdfTemplate> fieldTemplates = new HashSet<PdfTemplate>();
 
     /** This is an array containing DocumentFields. */
     private PdfArray documentFields = new PdfArray();
@@ -93,8 +92,8 @@ public class PdfAcroForm extends PdfDictionary {
      * @param ft
      */
 
-    public void addFieldTemplates(HashMap ft) {
-        fieldTemplates.putAll(ft);
+    public void addFieldTemplates(HashSet<PdfTemplate> ft) {
+        fieldTemplates.addAll(ft);
     }
 
     /**
@@ -120,8 +119,7 @@ public class PdfAcroForm extends PdfDictionary {
             put(PdfName.CO, calculationOrder);
         if (fieldTemplates.isEmpty()) return true;
         PdfDictionary dic = new PdfDictionary();
-        for (Iterator it = fieldTemplates.keySet().iterator(); it.hasNext();) {
-            PdfTemplate template = (PdfTemplate)it.next();
+        for (PdfTemplate template: fieldTemplates) {
             PdfFormField.mergeResources(dic, (PdfDictionary)template.getResources());
         }
         put(PdfName.DR, dic);

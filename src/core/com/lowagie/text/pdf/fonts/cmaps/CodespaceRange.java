@@ -34,7 +34,7 @@ package com.lowagie.text.pdf.fonts.cmaps;
  * This represents a single entry in the codespace range.
  *
  * @author Ben Litchfield (ben@benlitchfield.com)
- * @version $Revision$
+ * @version $Revision: 3787 $
  * @since	2.1.4
  */
 public class CodespaceRange

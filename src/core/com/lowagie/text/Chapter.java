@@ -1,5 +1,5 @@
 /*
- * $Id$
+ * $Id: Chapter.java 3393 2008-05-16 21:33:55Z xlv $
  *
  * Copyright 1999, 2000, 2001, 2002 by Bruno Lowagie.
  *
@@ -85,7 +85,7 @@ public class Chapter extends Section {
      */
     public Chapter(int number) {
         super(null, 1);
-        numbers = new ArrayList();
+        numbers = new ArrayList<Integer>();
         numbers.add(new Integer(number));
         triggerNewPage = true;
     }
@@ -99,7 +99,7 @@ public class Chapter extends Section {
     
     public Chapter(Paragraph title, int number) {
         super(title, 1);
-        numbers = new ArrayList();
+        numbers = new ArrayList<Integer>();
         numbers.add(new Integer(number));
         triggerNewPage = true;
     }

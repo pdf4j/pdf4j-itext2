@@ -1,5 +1,5 @@
 /*
- * $Id$
+ * $Id: Paragraph.java 3787 2009-03-17 01:25:12Z xlv $
  *
  * Copyright 1999, 2000, 2001, 2002 by Bruno Lowagie.
  *
@@ -224,7 +224,22 @@ public class Paragraph extends Phrase {
      * @param	o   object		the object to add.
      * @return true is adding the object succeeded
      */
-    public boolean add(Object o) {
+    public boolean addObject(Object o) {
+    	if (o instanceof Element) {
+	    	Element element = (Element) o;
+	    	return add(element);
+    	}
+    	return super.addObject(o);
+    }
+
+    
+    /**
+     * Adds an <CODE>Element</CODE> to the <CODE>Paragraph</CODE>.
+     *
+     * @param	o   object		the object to add.
+     * @return true is adding the object succeeded
+     */
+    public boolean add(Element o) {
         if (o instanceof List) {
             List list = (List) o;
             list.setIndentationLeft(list.getIndentationLeft() + indentationLeft);
@@ -237,9 +252,9 @@ public class Paragraph extends Phrase {
         }
         else if (o instanceof Paragraph) {
             super.add(o);
-            java.util.List chunks = getChunks();
+            java.util.List<Chunk> chunks = getChunks();
             if (!chunks.isEmpty()) {
-            	Chunk tmp = ((Chunk) chunks.get(chunks.size() - 1));
+            	Chunk tmp = chunks.get(chunks.size() - 1);
             	super.add(new Chunk("\n", tmp.getFont()));
             }
             else {

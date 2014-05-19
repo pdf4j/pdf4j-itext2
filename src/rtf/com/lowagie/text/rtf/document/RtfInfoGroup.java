@@ -1,5 +1,5 @@
 /*
- * $Id$
+ * $Id: RtfInfoGroup.java 3626 2008-11-11 19:27:25Z xlv $
  *
  * Copyright 2003, 2004 by Mark Hall
  *
@@ -60,7 +60,7 @@ import com.lowagie.text.rtf.RtfElement;
 /**
  * The RtfInfoGroup stores information group elements. 
  * 
- * @version $Id$
+ * @version $Id: RtfInfoGroup.java 3626 2008-11-11 19:27:25Z xlv $
  * @author Mark Hall (Mark.Hall@mail.room3b.eu)
  * @author Thomas Bickel (tmb99@inode.at)
  * @author Howard Shank (hgshank@yahoo.com)
@@ -81,7 +81,7 @@ public class RtfInfoGroup extends RtfElement {
     /**
      * The RtfInfoElements that belong to this RtfInfoGroup
      */
-    ArrayList infoElements = null;
+    ArrayList<RtfInfoElement> infoElements = null;
     
     /**
      * Constructs a RtfInfoGroup belonging to a RtfDocument
@@ -90,7 +90,7 @@ public class RtfInfoGroup extends RtfElement {
      */
     public RtfInfoGroup(RtfDocument doc) {
         super(doc);
-        infoElements = new ArrayList();
+        infoElements = new ArrayList<RtfInfoElement>();
     }
     
     /**
@@ -110,7 +110,7 @@ public class RtfInfoGroup extends RtfElement {
     	result.write(OPEN_GROUP);
 		result.write(INFO_GROUP);
 		for(int i = 0; i < infoElements.size(); i++) {
-			RtfInfoElement infoElement = (RtfInfoElement) infoElements.get(i);
+			RtfInfoElement infoElement = infoElements.get(i);
 			infoElement.writeContent(result);
 		}
 		

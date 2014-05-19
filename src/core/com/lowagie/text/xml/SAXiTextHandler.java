@@ -1,5 +1,5 @@
 /*
- * $Id$
+ * $Id: SAXiTextHandler.java 4167 2009-12-13 04:05:50Z xlv $
  *
  * Copyright 2001, 2002 by Bruno Lowagie.
  *
@@ -103,7 +103,7 @@ public class SAXiTextHandler extends DefaultHandler {
      * This is a <CODE>Stack</CODE> of objects, waiting to be added to the
      * document.
      */
-    protected Stack stack;
+    protected Stack<Element> stack;
 
     /** Counts the number of chapters in this document. */
     protected int chapters = 0;
@@ -138,11 +138,11 @@ public class SAXiTextHandler extends DefaultHandler {
     public SAXiTextHandler(DocListener document) {
         super();
         this.document = document;
-        stack = new Stack();
+        stack = new Stack<Element>();
     }
 
     /** This hashmap contains all the custom keys and peers. */
-    protected HashMap myTags;
+    protected HashMap<String, ? extends XmlPeer> myTags;
 
     /**
      * @param document
@@ -168,7 +168,7 @@ public class SAXiTextHandler extends DefaultHandler {
      * @param document
      * @param myTags
      */
-    public SAXiTextHandler(DocListener document, HashMap myTags) {
+    public SAXiTextHandler(DocListener document, HashMap<String, ? extends XmlPeer> myTags) {
         this(document);
         this.myTags = myTags;
     }
@@ -330,7 +330,7 @@ public class SAXiTextHandler extends DefaultHandler {
 
         // sections
         if (ElementTags.SECTION.equals(name)) {
-            Element previous = (Element) stack.pop();
+            Element previous = stack.pop();
             Section section;
             try {
                 section = ElementFactory.getSection((Section) previous, attributes);
@@ -456,7 +456,7 @@ public class SAXiTextHandler extends DefaultHandler {
             // Updated by Ricardo Coutinho. Only use if set in html!
 			Rectangle pageSize = null;
 			String orientation = null;
-            for (Iterator i = attributes.keySet().iterator(); i.hasNext();) {
+            for (Iterator <Object>i = attributes.keySet().iterator(); i.hasNext();) {
                 key = (String) i.next();
                 value = attributes.getProperty(key);
                 try {
@@ -514,7 +514,7 @@ public class SAXiTextHandler extends DefaultHandler {
 
     protected void addImage(Image img) throws EmptyStackException {
         // if there is an element on the stack...
-        Object current = stack.pop();
+        Element current = stack.pop();
         // ...and it's a Chapter or a Section, the Image can be
         // added directly
         if (current instanceof Chapter
@@ -526,7 +526,7 @@ public class SAXiTextHandler extends DefaultHandler {
         }
         // ...if not, we need to to a lot of stuff
         else {
-            Stack newStack = new Stack();
+            Stack<Element> newStack = new Stack<Element>();
             while (!(current instanceof Chapter
                     || current instanceof Section || current instanceof Cell)) {
                 newStack.push(current);
@@ -705,7 +705,7 @@ public class SAXiTextHandler extends DefaultHandler {
             // phrases, anchors, lists, tables
             if (ElementTags.PHRASE.equals(name) || ElementTags.ANCHOR.equals(name) || ElementTags.LIST.equals(name)
                     || ElementTags.PARAGRAPH.equals(name)) {
-                Element current = (Element) stack.pop();
+                Element current = stack.pop();
                 try {
                     TextElementArray previous = (TextElementArray) stack.pop();
                     previous.add(current);
@@ -739,12 +739,12 @@ public class SAXiTextHandler extends DefaultHandler {
 
             // rows
             if (ElementTags.ROW.equals(name)) {
-                ArrayList cells = new ArrayList();
+                ArrayList<Cell> cells = new ArrayList<Cell>();
                 int columns = 0;
                 Table table;
                 Cell cell;
                 while (true) {
-                    Element element = (Element) stack.pop();
+                    Element element = stack.pop();
                     if (element.type() == Element.CELL) {
                         cell = (Cell) element;
                         columns += cell.getColspan();
@@ -767,8 +767,8 @@ public class SAXiTextHandler extends DefaultHandler {
                 }
                 float total = 0;
                 int j = 0;
-                for (Iterator i = cells.iterator(); i.hasNext();) {
-                    cell = (Cell) i.next();
+                for (Iterator<Cell> i = cells.iterator(); i.hasNext();) {
+                    cell = i.next();
                     width = cell.getWidthAsString();
                     if (cell.getWidth() == 0) {
                         if (cell.getColspan() == 1 && cellWidths[j] == 0) {
@@ -787,6 +787,7 @@ public class SAXiTextHandler extends DefaultHandler {
                                     width.substring(0, width.length() - 1)
                                             + "f");
                             total += cellWidths[j];
+                            cellNulls[j] = false;
                         } catch (Exception e) {
                             // empty on purpose
                         }
@@ -829,7 +830,7 @@ public class SAXiTextHandler extends DefaultHandler {
 
             // chapters
             if (ElementTags.CHAPTER.equals(name)) {
-                document.add((Element) stack.pop());
+                document.add(stack.pop());
                 return;
             }
 
@@ -837,7 +838,7 @@ public class SAXiTextHandler extends DefaultHandler {
             if (isDocumentRoot(name)) {
                 try {
                     while (true) {
-                        Element element = (Element) stack.pop();
+                        Element element = stack.pop();
                         try {
                             TextElementArray previous = (TextElementArray) stack
                                     .pop();

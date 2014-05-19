@@ -68,7 +68,6 @@
 
 package com.lowagie.text.pdf;
 
-import java.util.Iterator;
 import java.util.LinkedList;
 
 import com.lowagie.text.ExceptionConverter;
@@ -693,7 +692,7 @@ public class CFFFont {
             if (fontName.equals(fonts[j].name)) break;
         if (j==fonts.length) return null;
         
-        LinkedList l = new LinkedList();
+        LinkedList<Item> l = new LinkedList<Item>();
         
         // copy the header
         
@@ -920,24 +919,18 @@ public class CFFFont {
         int[] currentOffset = new int[1];
         currentOffset[0] = 0;
         
-        Iterator listIter = l.iterator();
-        while ( listIter.hasNext() ) {
-            Item item = (Item) listIter.next();
+        for (Item item: l) {
             item.increment(currentOffset);
         }
         
-        listIter = l.iterator();
-        while ( listIter.hasNext() ) {
-            Item item = (Item) listIter.next();
+        for (Item item: l) {
             item.xref();
         }
         
         int size = currentOffset[0];
         byte[] b = new byte[size];
         
-        listIter = l.iterator();
-        while ( listIter.hasNext() ) {
-            Item item = (Item) listIter.next();
+        for (Item item: l) {
             item.emit(b);
         }
         

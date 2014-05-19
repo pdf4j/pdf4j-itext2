@@ -1,5 +1,5 @@
 /*
- * $Id$
+ * $Id: ElementFactory.java 4167 2009-12-13 04:05:50Z xlv $
  *
  * Copyright 2007 by Bruno Lowagie.
  *
@@ -57,6 +57,7 @@ import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.Properties;
 import java.util.StringTokenizer;
+import com.lowagie.text.error_messages.MessageLocalization;
 
 import com.lowagie.text.Anchor;
 import com.lowagie.text.Annotation;
@@ -329,14 +330,14 @@ public class ElementFactory {
 			value = attributes.getProperty(ElementTags.WIDTHS);
 			if (value != null) {
 				StringTokenizer widthTokens = new StringTokenizer(value, ";");
-				ArrayList values = new ArrayList();
+				ArrayList<String> values = new ArrayList<String>();
 				while (widthTokens.hasMoreTokens()) {
 					values.add(widthTokens.nextToken());
 				}
 				table = new Table(values.size());
 				float[] widths = new float[table.getColumns()];
 				for (int i = 0; i < values.size(); i++) {
-					value = (String) values.get(i);
+					value = values.get(i);
 					widths[i] = Float.parseFloat(value + "f");
 				}
 				table.setWidths(widths);
@@ -524,7 +525,7 @@ public class ElementFactory {
 
 		value = attributes.getProperty(ElementTags.URL);
 		if (value == null)
-			throw new MalformedURLException("The URL of the image is missing.");
+			throw new MalformedURLException(MessageLocalization.getComposedMessage("the.url.of.the.image.is.missing"));
 		Image image = Image.getInstance(value);
 
 		value = attributes.getProperty(ElementTags.ALIGN);

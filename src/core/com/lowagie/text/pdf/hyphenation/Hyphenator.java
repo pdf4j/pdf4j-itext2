@@ -32,7 +32,7 @@ import com.lowagie.text.pdf.BaseFont;
 public class Hyphenator {
     
     /** TODO: Don't use statics */
-    private static Hashtable hyphenTrees = new Hashtable();
+    private static Hashtable<String, HyphenationTree> hyphenTrees = new Hashtable<String, HyphenationTree>();
 
     private HyphenationTree hyphenTree = null;
     private int remainCharCount = 2;
@@ -69,10 +69,10 @@ public class Hyphenator {
         }
             // first try to find it in the cache
         if (hyphenTrees.containsKey(key)) {
-            return (HyphenationTree)hyphenTrees.get(key);
+            return hyphenTrees.get(key);
         }
         if (hyphenTrees.containsKey(lang)) {
-            return (HyphenationTree)hyphenTrees.get(lang);
+            return hyphenTrees.get(lang);
         }
 
         HyphenationTree hTree = getResourceHyphenationTree(key);

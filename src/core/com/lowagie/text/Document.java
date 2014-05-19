@@ -1,5 +1,5 @@
 /*
- * $Id$
+ * $Id: Document.java 4167 2009-12-13 04:05:50Z xlv $
  *
  * Copyright 1999, 2000, 2001, 2002 by Bruno Lowagie.
  *
@@ -52,7 +52,7 @@ package com.lowagie.text;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.Iterator;
+import com.lowagie.text.error_messages.MessageLocalization;
 
 /**
  * A generic Document class.
@@ -103,12 +103,12 @@ public class Document implements DocListener {
      * This constant may only be changed by Paulo Soares and/or Bruno Lowagie.
      * @since	2.1.6
      */
-	private static final String ITEXT = "iText";
+	private static final String ITEXT = "iText-jdk15";
     /**
      * This constant may only be changed by Paulo Soares and/or Bruno Lowagie.
      * @since	2.1.6
      */
-	private static final String RELEASE = "2.1.7";
+	private static final String RELEASE = "4.2.0";
 	/** This constant may only be changed by Paulo Soares and/or Bruno Lowagie. */
 	private static final String ITEXT_VERSION = ITEXT + " " + RELEASE + " by 1T3XT";
     
@@ -128,7 +128,7 @@ public class Document implements DocListener {
     public static float wmfFontCorrection = 0.86f;
     
 	/** The DocListener. */
-    private ArrayList listeners = new ArrayList();
+    private ArrayList<DocListener> listeners = new ArrayList<DocListener>();
     
 	/** Is the document open or not? */
     protected boolean open;
@@ -269,20 +269,16 @@ public class Document implements DocListener {
     
     public boolean add(Element element) throws DocumentException {
         if (close) {
-			throw new DocumentException(
-				"The document has been closed. You can't add any Elements.");
+			throw new DocumentException(MessageLocalization.getComposedMessage("the.document.has.been.closed.you.can.t.add.any.elements"));
         }
 		if (!open && element.isContent()) {
-			throw new DocumentException(
-				"The document is not open yet; you can only add Meta information.");
+			throw new DocumentException(MessageLocalization.getComposedMessage("the.document.is.not.open.yet.you.can.only.add.meta.information"));
         }
         boolean success = false;
-        DocListener listener;
         if (element instanceof ChapterAutoNumber) {
         	chapternumber = ((ChapterAutoNumber)element).setAutomaticNumber(chapternumber);
         }
-		for (Iterator iterator = listeners.iterator(); iterator.hasNext();) {
-            listener = (DocListener) iterator.next();
+		for (DocListener listener: listeners) {
             success |= listener.add(element);
         }
 		if (element instanceof LargeElement) {
@@ -305,9 +301,7 @@ public class Document implements DocListener {
 		if (!close) {
             open = true;
         }
-        DocListener listener;
-		for (Iterator iterator = listeners.iterator(); iterator.hasNext();) {
-            listener = (DocListener) iterator.next();
+		for (DocListener listener: listeners) {
             listener.setPageSize(pageSize);
 			listener.setMargins(marginLeft, marginRight, marginTop,
 					marginBottom);
@@ -325,9 +319,7 @@ public class Document implements DocListener {
     
     public boolean setPageSize(Rectangle pageSize) {
         this.pageSize = pageSize;
-        DocListener listener;
-		for (Iterator iterator = listeners.iterator(); iterator.hasNext();) {
-            listener = (DocListener) iterator.next();
+		for (DocListener listener: listeners) {
             listener.setPageSize(pageSize);
         }
         return true;
@@ -353,9 +345,7 @@ public class Document implements DocListener {
         this.marginRight = marginRight;
         this.marginTop = marginTop;
         this.marginBottom = marginBottom;
-        DocListener listener;
-		for (Iterator iterator = listeners.iterator(); iterator.hasNext();) {
-            listener = (DocListener) iterator.next();
+		for (DocListener listener: listeners) {
 			listener.setMargins(marginLeft, marginRight, marginTop,
 					marginBottom);
         }
@@ -373,9 +363,7 @@ public class Document implements DocListener {
         if (!open || close) {
             return false;
         }
-        DocListener listener;
-		for (Iterator iterator = listeners.iterator(); iterator.hasNext();) {
-            listener = (DocListener) iterator.next();
+		for (DocListener listener: listeners) {
             listener.newPage();
         }
         return true;
@@ -390,9 +378,7 @@ public class Document implements DocListener {
     
     public void setHeader(HeaderFooter header) {
         this.header = header;
-        DocListener listener;
-		for (Iterator iterator = listeners.iterator(); iterator.hasNext();) {
-            listener = (DocListener) iterator.next();
+		for (DocListener listener: listeners) {
             listener.setHeader(header);
         }
     }
@@ -403,9 +389,7 @@ public class Document implements DocListener {
     
     public void resetHeader() {
         this.header = null;
-        DocListener listener;
-		for (Iterator iterator = listeners.iterator(); iterator.hasNext();) {
-            listener = (DocListener) iterator.next();
+		for (DocListener listener: listeners) {
             listener.resetHeader();
         }
     }
@@ -419,9 +403,7 @@ public class Document implements DocListener {
     
     public void setFooter(HeaderFooter footer) {
         this.footer = footer;
-        DocListener listener;
-		for (Iterator iterator = listeners.iterator(); iterator.hasNext();) {
-            listener = (DocListener) iterator.next();
+		for (DocListener listener: listeners) {
             listener.setFooter(footer);
         }
     }
@@ -432,9 +414,7 @@ public class Document implements DocListener {
     
     public void resetFooter() {
         this.footer = null;
-        DocListener listener;
-		for (Iterator iterator = listeners.iterator(); iterator.hasNext();) {
-            listener = (DocListener) iterator.next();
+		for (DocListener listener: listeners) {
             listener.resetFooter();
         }
     }
@@ -445,9 +425,7 @@ public class Document implements DocListener {
     
     public void resetPageCount() {
         pageN = 0;
-        DocListener listener;
-		for (Iterator iterator = listeners.iterator(); iterator.hasNext();) {
-            listener = (DocListener) iterator.next();
+		for (DocListener listener: listeners) {
             listener.resetPageCount();
         }
     }
@@ -461,9 +439,7 @@ public class Document implements DocListener {
     
     public void setPageCount(int pageN) {
         this.pageN = pageN;
-        DocListener listener;
-		for (Iterator iterator = listeners.iterator(); iterator.hasNext();) {
-            listener = (DocListener) iterator.next();
+		for (DocListener listener: listeners) {
             listener.setPageCount(pageN);
         }
     }
@@ -490,9 +466,7 @@ public class Document implements DocListener {
             open = false;
             close = true;
         }
-        DocListener listener;
-		for (Iterator iterator = listeners.iterator(); iterator.hasNext();) {
-            listener = (DocListener) iterator.next();
+		for (DocListener listener: listeners) {
             listener.close();
         }
     }
@@ -880,9 +854,7 @@ public class Document implements DocListener {
      */    
     public boolean setMarginMirroring(boolean marginMirroring) {
         this.marginMirroring = marginMirroring;
-        DocListener listener;
-		for (Iterator iterator = listeners.iterator(); iterator.hasNext();) {
-            listener = (DocListener) iterator.next();
+		for (DocListener listener: listeners) {
             listener.setMarginMirroring(marginMirroring);
         }
         return true;
@@ -900,9 +872,7 @@ public class Document implements DocListener {
      */    
     public boolean setMarginMirroringTopBottom(boolean marginMirroringTopBottom) {
         this.marginMirroringTopBottom = marginMirroringTopBottom;
-        DocListener listener;
-		for (Iterator iterator = listeners.iterator(); iterator.hasNext();) {
-            listener = (DocListener) iterator.next();
+        for (DocListener listener: listeners) {
             listener.setMarginMirroringTopBottom(marginMirroringTopBottom);
         }
         return true;

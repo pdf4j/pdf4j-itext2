@@ -1,5 +1,5 @@
 /*
- * $Id$
+ * $Id: TextElementArray.java 3393 2008-05-16 21:33:55Z xlv $
  *
  * Copyright (c) 1999, 2000, 2001, 2002 Bruno Lowagie.
  *
@@ -66,8 +66,20 @@ public interface TextElementArray extends Element {
   /**
    * Adds an object to the <CODE>TextElementArray</CODE>.
    *
-   * @param	o			an object that has to be added
-   * @return	<CODE>true</CODE> if the addition succeeded; <CODE>false</CODE> otherwise
+	 * @param o
+	 *            an object that has to be added
+	 * @return <CODE>true</CODE> if the addition succeeded; <CODE>false</CODE>
+	 *         otherwise
    */
-    public boolean add(Object o);
+	public boolean addObject(Object o);
+
+	/**
+	 * Adds an object to the <CODE>TextElementArray</CODE>.
+	 * 
+	 * @param element
+	 *            an element that has to be added
+	 * @return <CODE>true</CODE> if the addition succeeded; <CODE>false</CODE>
+	 *         otherwise
+	 */
+	public boolean add(Element element);
 }

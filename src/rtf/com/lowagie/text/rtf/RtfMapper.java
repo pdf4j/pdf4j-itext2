@@ -88,7 +88,7 @@ import com.lowagie.text.rtf.text.RtfTab;
  * The RtfMapper provides mappings between com.lowagie.text.* classes
  * and the corresponding com.lowagie.text.rtf.** classes.
  * 
- * @version $Revision$
+ * @version $Revision: 3989 $
  * @author Mark Hall (Mark.Hall@mail.room3b.eu)
  */
 public class RtfMapper {
@@ -117,7 +117,7 @@ public class RtfMapper {
      * @throws DocumentException
      */
     public RtfBasicElement[] mapElement(Element element) throws DocumentException {
-        ArrayList rtfElements = new ArrayList();
+        ArrayList<RtfBasicElement> rtfElements = new ArrayList<RtfBasicElement>();
 
         if(element instanceof RtfBasicElement) {
             RtfBasicElement rtfElement = (RtfBasicElement) element;
@@ -200,6 +200,6 @@ public class RtfMapper {
     			break;
         }
         
-        return (RtfBasicElement[]) rtfElements.toArray(new RtfBasicElement[rtfElements.size()]);
+        return rtfElements.toArray(new RtfBasicElement[rtfElements.size()]);
     }
 }

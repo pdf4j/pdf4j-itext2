@@ -6,7 +6,7 @@
 
   RUPS JavaWebStart file
 -->
-<jnlp spec="1.1+" codebase="http://www.1t3xt.com/jnlp/" href="rups.jnlp" version="$Id$">
+<jnlp spec="1.1+" codebase="http://www.1t3xt.com/jnlp/" href="rups.jnlp" version="$Id: rups.jnlp 3989 2009-06-18 02:22:54Z xlv $">
   <information>
     <title>iText RUPS</title>
     <vendor>1T3XT BVBA</vendor>

@@ -1,5 +1,5 @@
 /*
- * $Id$
+ * $Id: ImageChunks.java 3393 2008-05-16 21:33:55Z xlv $
  *
  * This code is part of the 'iText Tutorial'.
  * You can find the complete tutorial at the following address:
@@ -67,7 +67,7 @@ public class ImageChunks {
             
             Phrase p1 = new Phrase("This is an image ");
             p1.add(ck);
-            p1.add(" just here.");
+            p1.addObject(" just here.");
             document.add(p1);
             document.add(p1);
             document.add(p1);

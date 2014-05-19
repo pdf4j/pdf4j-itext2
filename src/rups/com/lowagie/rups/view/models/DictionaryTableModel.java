@@ -1,5 +1,5 @@
 /*
- * $Id$
+ * $Id: DictionaryTableModel.java 3192 2008-03-27 19:07:33Z xlv $
  *
  * Copyright 2007 Bruno Lowagie.
  *
@@ -46,8 +46,8 @@ public class DictionaryTableModel extends AbstractTableModel {
 	 */
 	public DictionaryTableModel(PdfDictionary dictionary) {
 		this.dictionary = dictionary;
-		for (Iterator i = dictionary.getKeys().iterator(); i.hasNext(); )
-			this.keys.add((PdfName) i.next());
+		for (Iterator<PdfName> i = dictionary.getKeys().iterator(); i.hasNext(); )
+			this.keys.add(i.next());
 	}
 	
 	/**

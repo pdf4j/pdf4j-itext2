@@ -1,5 +1,5 @@
 /*
- * $Id$
+ * $Id: RtfListTable.java 3626 2008-11-11 19:27:25Z xlv $
  *
  * Copyright 2008 Howard Shank (hgshank@yahoo.com)
  *
@@ -62,7 +62,7 @@ import com.lowagie.text.rtf.document.RtfDocument;
 /**
  * The RtfListTable manages all RtfList objects and list override table in one RtfDocument.
  * 
- * @version $Id$
+ * @version $Id: RtfListTable.java 3626 2008-11-11 19:27:25Z xlv $
  * @author Mark Hall (Mark.Hall@mail.room3b.eu)
  * @author Howard Shank (hgshank@yahoo.com)
  */
@@ -89,11 +89,11 @@ public class RtfListTable extends RtfElement implements RtfExtendedElement {
     /**
      * The RtfList lists managed by this RtfListTable
      */
-    private ArrayList lists;
+    private ArrayList<RtfList> lists;
     /**
      * The RtfPictureList lists managed by this RtfListTable
      */
-    private ArrayList picturelists;
+    private ArrayList<RtfPictureList> picturelists;
     
     /**
      * Constructs a RtfListTable for a RtfDocument
@@ -103,8 +103,8 @@ public class RtfListTable extends RtfElement implements RtfExtendedElement {
     public RtfListTable(RtfDocument doc) {
         super(doc);
         
-        this.lists = new ArrayList();
-        this.picturelists = new ArrayList();
+        this.lists = new ArrayList<RtfList>();
+        this.picturelists = new ArrayList<RtfPictureList>();
     }
 
     /**
@@ -124,14 +124,14 @@ public class RtfListTable extends RtfElement implements RtfExtendedElement {
         this.document.outputDebugLinebreak(result);
         
         for(int i = 0; i < picturelists.size(); i++) {
-        	RtfPictureList l = (RtfPictureList)picturelists.get(i);
+        	RtfPictureList l = picturelists.get(i);
 //        	l.setID(document.getRandomInt());
         	l.writeDefinition(result);
         	this.document.outputDebugLinebreak(result);
         }
 
         for(int i = 0; i < lists.size(); i++) {
-        	RtfList l = (RtfList)lists.get(i);
+        	RtfList l = lists.get(i);
         	l.setID(document.getRandomInt());
         	l.writeDefinition(result);
         	this.document.outputDebugLinebreak(result);
@@ -150,11 +150,11 @@ public class RtfListTable extends RtfElement implements RtfExtendedElement {
             result.write(OPEN_GROUP);
             result.write(LIST_OVERRIDE);
             result.write(RtfList.LIST_ID);
-            result.write(intToByteArray( ((RtfList) lists.get(i)).getID() ));
+            result.write(intToByteArray( lists.get(i).getID() ));
             result.write(LIST_OVERRIDE_COUNT);
             result.write(intToByteArray(0));	// is this correct? Spec says valid values are 1 or 9.
             result.write(RtfList.LIST_NUMBER);
-            result.write(intToByteArray( ((RtfList) lists.get(i)).getListNumber()) );
+            result.write(intToByteArray( lists.get(i).getListNumber()) );
             result.write(CLOSE_GROUP);
             this.document.outputDebugLinebreak(result);
         }

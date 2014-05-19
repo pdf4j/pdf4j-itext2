@@ -63,7 +63,7 @@ import java.io.Serializable;
  *
  * @see TIFFDirectory
  */
-public class TIFFField extends Object implements Comparable, Serializable {
+public class TIFFField extends Object implements Comparable<TIFFField>, Serializable {
 
     private static final long serialVersionUID = 9088332901412823834L;
 
@@ -471,12 +471,12 @@ public class TIFFField extends Object implements Comparable, Serializable {
      * @throws ClassCastException if the parameter is not a
      *         <code>TIFFField</code>.
      */
-    public int compareTo(Object o) {
+    public int compareTo(TIFFField o) {
         if(o == null) {
             throw new IllegalArgumentException();
         }
 
-        int oTag = ((TIFFField)o).getTag();
+        int oTag = o.getTag();
 
         if(tag < oTag) {
             return -1;

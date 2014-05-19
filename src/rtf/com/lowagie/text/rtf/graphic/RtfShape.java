@@ -3,7 +3,6 @@ package com.lowagie.text.rtf.graphic;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.HashMap;
-import java.util.Iterator;
 
 import com.lowagie.text.DocWriter;
 import com.lowagie.text.rtf.RtfAddableElement;
@@ -22,7 +21,7 @@ import com.lowagie.text.rtf.RtfAddableElement;
  * in the standard iText point, but in EMU where 1 inch = 914400 EMU
  * or 1 cm = 360000 EMU. 
  * 
- * @version $Id$
+ * @version $Id: RtfShape.java 3626 2008-11-11 19:27:25Z xlv $
  * @author Mark Hall (Mark.Hall@mail.room3b.eu)
  * @author Thomas Bickel (tmb99@inode.at)
  */
@@ -183,7 +182,7 @@ public class RtfShape extends RtfAddableElement {
     /**
      * A HashMap with RtfShapePropertys that define further shape properties.
      */
-	private HashMap properties = null;
+	private HashMap<String, RtfShapeProperty> properties = null;
     /**
      * The wrapping mode. Defaults to SHAPE_WRAP_NONE;
      */
@@ -202,7 +201,7 @@ public class RtfShape extends RtfAddableElement {
 	public RtfShape(int type, RtfShapePosition position) {
 		this.type = type;
 		this.position = position;
-		this.properties = new HashMap();
+		this.properties = new HashMap<String, RtfShapeProperty>();
 	}
 
     /**
@@ -311,9 +310,7 @@ public class RtfShape extends RtfAddableElement {
     	this.doc.outputDebugLinebreak(result);
     	result.write(OPEN_GROUP);
     	result.write(DocWriter.getISOBytes("\\*\\shpinst"));
-    	Iterator it = this.properties.values().iterator();
-    	while(it.hasNext()) {
-    		RtfShapeProperty rsp = (RtfShapeProperty) it.next();
+    	for(RtfShapeProperty rsp: this.properties.values()) {
     		rsp.setRtfDocument(this.doc);
     		rsp.writeContent(result);
     	}

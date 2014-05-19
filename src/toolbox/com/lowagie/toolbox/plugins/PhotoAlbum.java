@@ -1,5 +1,5 @@
 /*
- * $Id$
+ * $Id: PhotoAlbum.java 3561 2008-07-15 22:17:57Z xlv $
  * Copyright (c) 2005-2007 Bruno Lowagie, Carsten Hammer
  *
  * Permission is hereby granted, free of charge, to any person
@@ -65,7 +65,7 @@ import com.lowagie.text.pdf.BaseFont;
 public class PhotoAlbum extends AbstractTool {
 
     static {
-        addVersion("$Id$");
+        addVersion("$Id: PhotoAlbum.java 3561 2008-07-15 22:17:57Z xlv $");
     }
 
     /**

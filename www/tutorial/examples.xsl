@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<!-- $Date$ -->
+<!-- $Date: 2008-05-01 15:55:48 -0400 (Thu, 01 May 2008) $ -->
 <!-- author: Bruno Lowagie        -->
 
 <xsl:stylesheet version="1.0"

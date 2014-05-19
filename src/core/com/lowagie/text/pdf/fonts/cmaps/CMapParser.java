@@ -34,6 +34,7 @@ import java.io.FileInputStream;
 import java.io.InputStream;
 import java.io.IOException;
 import java.io.PushbackInputStream;
+import com.lowagie.text.error_messages.MessageLocalization;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -44,7 +45,7 @@ import java.util.Map;
  * This will parser a CMap stream.
  *
  * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
- * @version $Revision$
+ * @version $Revision: 4167 $
  * @since	2.1.4
  */
 public class CMapParser
@@ -73,6 +74,7 @@ public class CMapParser
      *
      * @throws IOException If there is an error parsing the stream.
      */
+    @SuppressWarnings("unchecked")
     public CMap parse( InputStream input ) throws IOException
     {
         PushbackInputStream cmapStream = new PushbackInputStream( input );
@@ -116,8 +118,7 @@ public class CMapParser
                         }
                         else
                         {
-                            throw new IOException( "Error parsing CMap beginbfchar, expected{COSString " +
-                                                   "or COSName} and not " + nextToken );
+                            throw new IOException(MessageLocalization.getComposedMessage("error.parsing.cmap.beginbfchar.expected.cosstring.or.cosname.and.not.1", nextToken));
                         }
                     }
                 }
@@ -130,12 +131,12 @@ public class CMapParser
                         byte[] startCode = (byte[])parseNextToken( cmapStream );
                         byte[] endCode = (byte[])parseNextToken( cmapStream );
                         Object nextToken = parseNextToken( cmapStream );
-                        List array = null;
+                        List<byte[]> array = null;
                         byte[] tokenBytes = null;
                         if( nextToken instanceof List )
                         {
-                            array = (List)nextToken;
-                            tokenBytes = (byte[])array.get( 0 );
+                            array = (List<byte[]>)nextToken;
+                            tokenBytes = array.get( 0 );
                         }
                         else
                         {
@@ -165,7 +166,7 @@ public class CMapParser
                                 arrayIndex++;
                                 if( arrayIndex < array.size() )
                                 {
-                                    tokenBytes = (byte[])array.get( arrayIndex );
+                                    tokenBytes = array.get( arrayIndex );
                                 }
                             }
                         }
@@ -220,7 +221,7 @@ public class CMapParser
                 }
                 else
                 {
-                    throw new IOException( "Error: expected the end of a dictionary.");
+                    throw new IOException(MessageLocalization.getComposedMessage("error.expected.the.end.of.a.dictionary"));
                 }
                 break;
             }
@@ -231,7 +232,7 @@ public class CMapParser
             }
             case '[':
             {
-                List list = new ArrayList();
+                List<Object> list = new ArrayList<Object>();
                 
                 Object nextToken = parseNextToken( is ); 
                 while( nextToken != MARK_END_OF_ARRAY )
@@ -247,7 +248,7 @@ public class CMapParser
                 int theNextByte = is.read();
                 if( theNextByte == '<' )
                 {
-                    Map result = new HashMap();
+                    Map<String, Object> result = new HashMap<String, Object>();
                     //we are reading a dictionary
                     Object key = parseNextToken( is ); 
                     while( key instanceof LiteralName && key != MARK_END_OF_DICTIONARY )
@@ -281,8 +282,7 @@ public class CMapParser
                         }
                         else
                         {
-                            throw new IOException( "Error: expected hex character and not " + 
-                                (char)theNextByte + ":" + theNextByte );
+                            throw new IOException(MessageLocalization.getComposedMessage("error.expected.hex.character.and.not.char.thenextbyte.1", theNextByte));
                         }
                         intValue *= multiplyer;
                         if( multiplyer == 16 )

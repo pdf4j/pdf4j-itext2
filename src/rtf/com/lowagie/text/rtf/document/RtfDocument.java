@@ -1,5 +1,5 @@
 /*
- * $Id$
+ * $Id: RtfDocument.java 4167 2009-12-13 04:05:50Z xlv $
  *
  * Copyright 2003, 2004, 2005 by Mark Hall
  *
@@ -52,6 +52,7 @@ package com.lowagie.text.rtf.document;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import com.lowagie.text.error_messages.MessageLocalization;
 
 import com.lowagie.text.DocWriter;
 import com.lowagie.text.rtf.RtfBasicElement;
@@ -67,7 +68,7 @@ import com.lowagie.text.rtf.graphic.RtfImage;
  * The RtfDocument stores all document related data and also the main data stream.
  * INTERNAL CLASS - NOT TO BE USED DIRECTLY
  *
- * @version $Id$
+ * @version $Id: RtfDocument.java 4167 2009-12-13 04:05:50Z xlv $
  * @author Mark Hall (Mark.Hall@mail.room3b.eu)
  * @author Todd Bush [Tab support]
  * @author Thomas Bickel (tmb99@inode.at)
@@ -89,7 +90,7 @@ public class RtfDocument extends RtfElement {
     /**
      * Stores integers that have been generated as unique random numbers
      */
-    private ArrayList previousRandomInts = null;
+    private ArrayList<Integer> previousRandomInts = null;
     /**
      * Whether to automatically generate TOC entries for Chapters and Sections. Defaults to false
      */
@@ -126,7 +127,7 @@ public class RtfDocument extends RtfElement {
         this.mapper = new RtfMapper(this);
         this.documentHeader = new RtfDocumentHeader(this);
         this.documentHeader.init();
-        this.previousRandomInts = new ArrayList();
+        this.previousRandomInts = new ArrayList<Integer>();
         this.documentSettings = new RtfDocumentSettings(this);
     }
 
@@ -172,7 +173,7 @@ public class RtfDocument extends RtfElement {
                 	this.data = new RtfDiskCache();
                 	break;
                 default:
-                	throw new RuntimeException("unknown");
+                	throw new RuntimeException(MessageLocalization.getComposedMessage("unknown"));
             }
     		
         } catch(IOException ioe) {
@@ -250,7 +251,7 @@ public class RtfDocument extends RtfElement {
     public void filterSpecialChar(final OutputStream out, final String str, final boolean useHex, final boolean softLineBreaks) throws IOException
     {
         if(out == null) {
-            throw new NullPointerException("null OutpuStream");
+            throw new NullPointerException(MessageLocalization.getComposedMessage("null.outpustream"));
         }
 
         final boolean alwaysUseUniCode = this.documentSettings.isAlwaysUseUnicode();

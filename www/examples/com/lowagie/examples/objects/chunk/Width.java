@@ -1,5 +1,5 @@
 /*
- * $Id$
+ * $Id: Width.java 3393 2008-05-16 21:33:55Z xlv $
  *
  * This code is part of the 'iText Tutorial'.
  * You can find the complete tutorial at the following address:
@@ -55,11 +55,11 @@ public class Width {
 			float w = c.getWidthPoint();
 			Paragraph p = new Paragraph("The width of the chunk: '");
 			p.add(c);
-			p.add("' is ");
-			p.add(String.valueOf(w));
-			p.add(" points or ");
-			p.add(String.valueOf(w / 72f));
-			p.add(" inches.");
+			p.addObject("' is ");
+			p.addObject(String.valueOf(w));
+			p.addObject(" points or ");
+			p.addObject(String.valueOf(w / 72f));
+			p.addObject(" inches.");
 			document.add(p);
 			document.add(c);
 			document.add(Chunk.NEWLINE);

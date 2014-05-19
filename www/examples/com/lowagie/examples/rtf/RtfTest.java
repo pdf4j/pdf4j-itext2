@@ -1,5 +1,5 @@
 /*
- * $Id$
+ * $Id: RtfTest.java 3393 2008-05-16 21:33:55Z xlv $
  *
  * This code is free software. It may only be copied or modified
  * if you include the following copyright notice:

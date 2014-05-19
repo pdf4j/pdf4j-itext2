@@ -1,5 +1,5 @@
 /*
- * $Id$
+ * $Id: Annotation.java 3393 2008-05-16 21:33:55Z xlv $
  *
  * Copyright 1999, 2000, 2001, 2002 by Bruno Lowagie.
  *
@@ -141,7 +141,7 @@ public class Annotation implements Element {
 	protected int annotationtype;
 
 	/** This is the title of the <CODE>Annotation</CODE>. */
-	protected HashMap annotationAttributes = new HashMap();
+	protected HashMap<String, Object> annotationAttributes = new HashMap<String, Object>();
 
 	/** This is the lower left x-value */
 	protected float llx = Float.NaN;
@@ -425,8 +425,8 @@ public class Annotation implements Element {
 	 * @return an <CODE>ArrayList</CODE>
 	 */
 
-	public ArrayList getChunks() {
-		return new ArrayList();
+	public ArrayList<Chunk> getChunks() {
+		return new ArrayList<Chunk>();
 	}
 
 	// methods
@@ -578,7 +578,7 @@ public class Annotation implements Element {
 	 * 
 	 * @return a reference
 	 */
-	public HashMap attributes() {
+	public HashMap<String, Object> attributes() {
 		return annotationAttributes;
 	}
 	

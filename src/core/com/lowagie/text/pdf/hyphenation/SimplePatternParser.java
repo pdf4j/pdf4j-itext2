@@ -73,7 +73,7 @@ public class SimplePatternParser implements SimpleXMLDocHandler,
 
 	StringBuffer token;
 
-	ArrayList exception;
+	ArrayList<Object> exception;
 
 	char hyphenChar;
 
@@ -118,8 +118,8 @@ public class SimplePatternParser implements SimpleXMLDocHandler,
 		return pat.toString();
 	}
 
-	protected ArrayList normalizeException(ArrayList ex) {
-		ArrayList res = new ArrayList();
+	protected ArrayList<Object> normalizeException(ArrayList<Object> ex) {
+		ArrayList<Object> res = new ArrayList<Object>();
 		for (int i = 0; i < ex.size(); i++) {
 			Object item = ex.get(i);
 			if (item instanceof String) {
@@ -149,7 +149,7 @@ public class SimplePatternParser implements SimpleXMLDocHandler,
 		return res;
 	}
 
-	protected String getExceptionWord(ArrayList ex) {
+	protected String getExceptionWord(ArrayList<Object> ex) {
 		StringBuffer res = new StringBuffer();
 		for (int i = 0; i < ex.size(); i++) {
 			Object item = ex.get(i);
@@ -183,6 +183,7 @@ public class SimplePatternParser implements SimpleXMLDocHandler,
 	public void endDocument() {
 	}
 
+	@SuppressWarnings("unchecked")
 	public void endElement(String tag) {
 		if (token.length() > 0) {
 			String word = token.toString();
@@ -194,7 +195,7 @@ public class SimplePatternParser implements SimpleXMLDocHandler,
 				exception.add(word);
 				exception = normalizeException(exception);
 				consumer.addException(getExceptionWord(exception),
-						(ArrayList) exception.clone());
+						(ArrayList<Object>) exception.clone());
 				break;
 			case ELEM_PATTERNS:
 				consumer.addPattern(getPattern(word),
@@ -218,9 +219,9 @@ public class SimplePatternParser implements SimpleXMLDocHandler,
 	public void startDocument() {
 	}
 
-	public void startElement(String tag, java.util.HashMap h) {
+	public void startElement(String tag, java.util.HashMap<String, String> h) {
 		if (tag.equals("hyphen-char")) {
-			String hh = (String) h.get("value");
+			String hh = h.get("value");
 			if (hh != null && hh.length() == 1) {
 				hyphenChar = hh.charAt(0);
 			}
@@ -230,18 +231,19 @@ public class SimplePatternParser implements SimpleXMLDocHandler,
 			currElement = ELEM_PATTERNS;
 		} else if (tag.equals("exceptions")) {
 			currElement = ELEM_EXCEPTIONS;
-			exception = new ArrayList();
+			exception = new ArrayList<Object>();
 		} else if (tag.equals("hyphen")) {
 			if (token.length() > 0) {
 				exception.add(token.toString());
 			}
-			exception.add(new Hyphen((String) h.get(HtmlTags.PRE), (String) h
-					.get("no"), (String) h.get("post")));
+			exception.add(new Hyphen(h.get(HtmlTags.PRE), h
+					.get("no"), h.get("post")));
 			currElement = ELEM_HYPHEN;
 		}
 		token.setLength(0);
 	}
 
+	@SuppressWarnings("unchecked")
 	public void text(String str) {
 		StringTokenizer tk = new StringTokenizer(str);
 		while (tk.hasMoreTokens()) {
@@ -255,7 +257,7 @@ public class SimplePatternParser implements SimpleXMLDocHandler,
 				exception.add(word);
 				exception = normalizeException(exception);
 				consumer.addException(getExceptionWord(exception),
-						(ArrayList) exception.clone());
+						(ArrayList<Object>) exception.clone());
 				exception.clear();
 				break;
 			case ELEM_PATTERNS:
@@ -271,7 +273,7 @@ public class SimplePatternParser implements SimpleXMLDocHandler,
 		System.out.println("class: " + c);
 	}
 
-	public void addException(String w, ArrayList e) {
+	public void addException(String w, ArrayList<Object> e) {
 		System.out.println("exception: " + w + " : " + e.toString());
 	}
 

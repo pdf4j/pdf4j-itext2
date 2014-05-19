@@ -1,5 +1,5 @@
 /*
- * $Id$
+ * $Id: PdfPTableEventForwarder.java 3393 2008-05-16 21:33:55Z xlv $
  *
  * Copyright 2005 Bruno Lowagie
  *
@@ -50,7 +50,6 @@
 package com.lowagie.text.pdf.events;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 
 import com.lowagie.text.pdf.PdfContentByte;
 import com.lowagie.text.pdf.PdfPTable;
@@ -66,7 +65,7 @@ import com.lowagie.text.pdf.PdfPTableEvent;
 public class PdfPTableEventForwarder implements PdfPTableEvent {
 
 	/** ArrayList containing all the PageEvents that have to be executed. */
-	protected ArrayList events = new ArrayList();
+	protected ArrayList<PdfPTableEvent> events = new ArrayList<PdfPTableEvent>();
 	
 	/** 
 	 * Add a page event to the forwarder.
@@ -80,9 +79,7 @@ public class PdfPTableEventForwarder implements PdfPTableEvent {
 	 * @see com.lowagie.text.pdf.PdfPTableEvent#tableLayout(com.lowagie.text.pdf.PdfPTable, float[][], float[], int, int, com.lowagie.text.pdf.PdfContentByte[])
 	 */
 	public void tableLayout(PdfPTable table, float[][] widths, float[] heights, int headerRows, int rowStart, PdfContentByte[] canvases) {
-		PdfPTableEvent event;
-		for (Iterator i = events.iterator(); i.hasNext(); ) {
-			event = (PdfPTableEvent)i.next();
+		for (PdfPTableEvent event: events) {
 			event.tableLayout(table, widths, heights, headerRows, rowStart, canvases);
 		}
 	}

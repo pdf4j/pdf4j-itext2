@@ -348,10 +348,10 @@ public class TernaryTree implements Cloneable, Serializable {
 
     public Object clone() {
         TernaryTree t = new TernaryTree();
-        t.lo = (char[])this.lo.clone();
-        t.hi = (char[])this.hi.clone();
-        t.eq = (char[])this.eq.clone();
-        t.sc = (char[])this.sc.clone();
+        t.lo = this.lo.clone();
+        t.hi = this.hi.clone();
+        t.eq = this.eq.clone();
+        t.sc = this.sc.clone();
         t.kv = (CharVector)this.kv.clone();
         t.root = this.root;
         t.freenode = this.freenode;
@@ -392,7 +392,7 @@ public class TernaryTree implements Cloneable, Serializable {
         Iterator iter = new Iterator();
         while (iter.hasMoreElements()) {
             v[i] = iter.getValue();
-            k[i++] = (String)iter.nextElement();
+            k[i++] = iter.nextElement();
         }
         init();
         insertBalanced(k, v, 0, n);
@@ -453,11 +453,11 @@ public class TernaryTree implements Cloneable, Serializable {
     }
 
 
-    public Enumeration keys() {
+    public Enumeration<String> keys() {
         return new Iterator();
     }
 
-    public class Iterator implements Enumeration {
+    public class Iterator implements Enumeration<String> {
 
         /**
          * current node index
@@ -483,7 +483,7 @@ public class TernaryTree implements Cloneable, Serializable {
                 child = c;
             }
 
-            public Object clone() {
+            public Item clone() {
                 return new Item(parent, child);
             }
 
@@ -492,7 +492,7 @@ public class TernaryTree implements Cloneable, Serializable {
         /**
          * Node stack
          */
-        Stack ns;
+        Stack<Item> ns;
 
         /**
          * key stack implemented with a StringBuffer
@@ -501,7 +501,7 @@ public class TernaryTree implements Cloneable, Serializable {
 
         public Iterator() {
             cur = -1;
-            ns = new Stack();
+            ns = new Stack<Item>();
             ks = new StringBuffer();
             rewind();
         }
@@ -513,7 +513,7 @@ public class TernaryTree implements Cloneable, Serializable {
             run();
         }
 
-        public Object nextElement() {
+        public String nextElement() {
             String res = curkey;
             cur = up();
             run();
@@ -549,7 +549,7 @@ public class TernaryTree implements Cloneable, Serializable {
             boolean climb = true;
 
             while (climb) {
-                i = (Item)ns.pop();
+                i = ns.pop();
                 i.child++;
                 switch (i.child) {
                 case 1:

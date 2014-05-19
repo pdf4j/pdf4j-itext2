@@ -1,5 +1,5 @@
 /*
- * $Id$
+ * $Id: PdfChunk.java 4167 2009-12-13 04:05:50Z xlv $
  *
  * Copyright 1999, 2000, 2001, 2002 Bruno Lowagie
  *
@@ -51,7 +51,7 @@ package com.lowagie.text.pdf;
 
 import java.awt.Color;
 import java.util.HashMap;
-import java.util.Iterator;
+import java.util.HashSet;
 import java.util.Map;
 
 import com.lowagie.text.Chunk;
@@ -77,30 +77,31 @@ public class PdfChunk {
     private static final PdfChunk thisChunk[] = new PdfChunk[1];
     private static final float ITALIC_ANGLE = 0.21256f;
 /** The allowed attributes in variable <CODE>attributes</CODE>. */
-    private static final HashMap keysAttributes = new HashMap();
+    private static final HashSet<String> keysAttributes = new HashSet<String>();
     
 /** The allowed attributes in variable <CODE>noStroke</CODE>. */
-    private static final HashMap keysNoStroke = new HashMap();
+    private static final HashSet<String> keysNoStroke = new HashSet<String>();
     
     static {
-        keysAttributes.put(Chunk.ACTION, null);
-        keysAttributes.put(Chunk.UNDERLINE, null);
-        keysAttributes.put(Chunk.REMOTEGOTO, null);
-        keysAttributes.put(Chunk.LOCALGOTO, null);
-        keysAttributes.put(Chunk.LOCALDESTINATION, null);
-        keysAttributes.put(Chunk.GENERICTAG, null);
-        keysAttributes.put(Chunk.NEWPAGE, null);
-        keysAttributes.put(Chunk.IMAGE, null);
-        keysAttributes.put(Chunk.BACKGROUND, null);
-        keysAttributes.put(Chunk.PDFANNOTATION, null);
-        keysAttributes.put(Chunk.SKEW, null);
-        keysAttributes.put(Chunk.HSCALE, null);
-        keysAttributes.put(Chunk.SEPARATOR, null);
-        keysAttributes.put(Chunk.TAB, null);
-        keysNoStroke.put(Chunk.SUBSUPSCRIPT, null);
-        keysNoStroke.put(Chunk.SPLITCHARACTER, null);
-        keysNoStroke.put(Chunk.HYPHENATION, null);
-        keysNoStroke.put(Chunk.TEXTRENDERMODE, null);
+        keysAttributes.add(Chunk.ACTION);
+        keysAttributes.add(Chunk.UNDERLINE);
+        keysAttributes.add(Chunk.REMOTEGOTO);
+        keysAttributes.add(Chunk.LOCALGOTO);
+        keysAttributes.add(Chunk.LOCALDESTINATION);
+        keysAttributes.add(Chunk.GENERICTAG);
+        keysAttributes.add(Chunk.NEWPAGE);
+        keysAttributes.add(Chunk.IMAGE);
+        keysAttributes.add(Chunk.BACKGROUND);
+        keysAttributes.add(Chunk.PDFANNOTATION);
+        keysAttributes.add(Chunk.SKEW);
+        keysAttributes.add(Chunk.HSCALE);
+        keysAttributes.add(Chunk.SEPARATOR);
+        keysAttributes.add(Chunk.TAB);
+        keysAttributes.add(Chunk.CHAR_SPACING);
+        keysNoStroke.add(Chunk.SUBSUPSCRIPT);
+        keysNoStroke.add(Chunk.SPLITCHARACTER);
+        keysNoStroke.add(Chunk.HYPHENATION);
+        keysNoStroke.add(Chunk.TEXTRENDERMODE);
     }
     
     // membervariables
@@ -124,7 +125,7 @@ public class PdfChunk {
  * This attributes require the measurement of characters widths when rendering
  * such as underline.
  */
-    protected HashMap attributes = new HashMap();
+    protected HashMap<String, Object> attributes = new HashMap<String, Object>();
     
 /**
  * Non metric attributes.
@@ -132,7 +133,7 @@ public class PdfChunk {
  * This attributes do not require the measurement of characters widths when rendering
  * such as Color.
  */
-    protected HashMap noStroke = new HashMap();
+    protected HashMap<String, Object> noStroke = new HashMap<String, Object>();
     
 /** <CODE>true</CODE> if the chunk split was cause by a newline. */
     protected boolean newlineSplit;
@@ -214,15 +215,14 @@ public class PdfChunk {
         }
         font = new PdfFont(baseFont, size);
         // other style possibilities
-        HashMap attr = chunk.getAttributes();
+        HashMap<String, Object> attr = chunk.getAttributes();
         if (attr != null) {
-            for (Iterator i = attr.entrySet().iterator(); i.hasNext();) {
-                Map.Entry entry = (Map.Entry) i.next();
-                Object name = entry.getKey();
-                if (keysAttributes.containsKey(name)) {
+            for (Map.Entry<String, Object> entry: attr.entrySet()) {
+                String name = entry.getKey();
+                if (keysAttributes.contains(name)) {
                     attributes.put(name, entry.getValue());
                 }
-                else if (keysNoStroke.containsKey(name)) {
+                else if (keysNoStroke.contains(name)) {
                     noStroke.put(name, entry.getValue());
                 }
             }
@@ -303,7 +303,7 @@ public class PdfChunk {
             if (image.getScaledWidth() > width) {
                 PdfChunk pc = new PdfChunk(Chunk.OBJECT_REPLACEMENT_CHARACTER, this);
                 value = "";
-                attributes = new HashMap();
+                attributes = new HashMap<String, Object>();
                 image = null;
                 font = PdfFont.getDefaultFont();
                 return pc;
@@ -341,7 +341,7 @@ public class PdfChunk {
                     PdfChunk pc = new PdfChunk(returnValue, this);
                     return pc;
                 }
-                currentWidth += font.width(cidChar);
+                currentWidth += getCharWidth(cidChar);
                 if (character == ' ') {
                     lastSpace = currentPosition + 1;
                     lastSpaceWidth = currentWidth;
@@ -374,9 +374,9 @@ public class PdfChunk {
                 }
                 surrogate = Utilities.isSurrogatePair(valueArray, currentPosition);
                 if (surrogate)
-                    currentWidth += font.width(Utilities.convertToUtf32(valueArray[currentPosition], valueArray[currentPosition + 1]));
+                    currentWidth += getCharWidth(Utilities.convertToUtf32(valueArray[currentPosition], valueArray[currentPosition + 1]));
                 else
-                    currentWidth += font.width(character);
+                    currentWidth += getCharWidth(character);
                 if (character == ' ') {
                     lastSpace = currentPosition + 1;
                     lastSpaceWidth = currentWidth;
@@ -467,9 +467,9 @@ public class PdfChunk {
             // the width of every character is added to the currentWidth
             surrogate = Utilities.isSurrogatePair(value, currentPosition);
             if (surrogate)
-                currentWidth += font.width(Utilities.convertToUtf32(value, currentPosition));
+                currentWidth += getCharWidth(Utilities.convertToUtf32(value, currentPosition));
             else
-                currentWidth += font.width(value.charAt(currentPosition));
+                currentWidth += getCharWidth(value.charAt(currentPosition));
             if (currentWidth > width)
                 break;
             if (surrogate)
@@ -525,6 +525,10 @@ public class PdfChunk {
  */
     
     float width() {
+        if (isAttribute(Chunk.CHAR_SPACING)) {
+        	Float cs = (Float) getAttribute(Chunk.CHAR_SPACING);
+            return font.width(value) + value.length() * cs.floatValue();
+		}
         return font.width(value);
     }
     
@@ -835,6 +839,10 @@ public class PdfChunk {
     float getCharWidth(int c) {
         if (noPrint(c))
             return 0;
+        if (isAttribute(Chunk.CHAR_SPACING)) {
+        	Float cs = (Float) getAttribute(Chunk.CHAR_SPACING);
+			return font.width(c) + cs.floatValue();
+		}
         return font.width(c);
     }
     

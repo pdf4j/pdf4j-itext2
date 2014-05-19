@@ -1,5 +1,5 @@
 /*
- * $Id$
+ * $Id: GlyphList.java 3393 2008-05-16 21:33:55Z xlv $
  *
  * Copyright 2001-2006 Paulo Soares
  *
@@ -57,8 +57,8 @@ import java.util.StringTokenizer;
 import com.lowagie.text.pdf.fonts.FontsResourceAnchor;
 
 public class GlyphList {
-    private static HashMap unicode2names = new HashMap();
-    private static HashMap names2unicode = new HashMap();
+    private static HashMap<Integer, String> unicode2names = new HashMap<Integer, String>();
+    private static HashMap<String, int[]> names2unicode = new HashMap<String, int[]>();
         
     static {
         InputStream is = null;
@@ -114,10 +114,10 @@ public class GlyphList {
     }
     
     public static int[] nameToUnicode(String name) {
-        return (int[])names2unicode.get(name);
+        return names2unicode.get(name);
     }
     
     public static String unicodeToName(int num) {
-        return (String)unicode2names.get(new Integer(num));
+        return unicode2names.get(new Integer(num));
     }
 }

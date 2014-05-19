@@ -50,6 +50,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Hashtable;
+import com.lowagie.text.error_messages.MessageLocalization;
 
 import com.lowagie.text.pdf.RandomAccessFileOrArray;
 
@@ -88,7 +89,7 @@ public class TIFFDirectory extends Object implements Serializable {
     TIFFField[] fields;
     
     /** A Hashtable indexing the fields by tag number. */
-    Hashtable fieldIndex = new Hashtable();
+    Hashtable<Integer, Integer> fieldIndex = new Hashtable<Integer, Integer>();
     
     /** The offset of this IFD. */
     long IFDOffset = 8;
@@ -123,15 +124,13 @@ public class TIFFDirectory extends Object implements Serializable {
         stream.seek(0L);
         int endian = stream.readUnsignedShort();
         if (!isValidEndianTag(endian)) {
-            throw new
-            IllegalArgumentException("Bad endianness tag (not 0x4949 or 0x4d4d).");
+            throw new IllegalArgumentException(MessageLocalization.getComposedMessage("bad.endianness.tag.not.0x4949.or.0x4d4d"));
         }
         isBigEndian = (endian == 0x4d4d);
         
         int magic = readUnsignedShort(stream);
         if (magic != 42) {
-            throw new
-            IllegalArgumentException("Bad magic number, should be 42.");
+            throw new IllegalArgumentException(MessageLocalization.getComposedMessage("bad.magic.number.should.be.42"));
         }
         
         // Get the initial ifd offset as an unsigned int (using a long)
@@ -139,8 +138,7 @@ public class TIFFDirectory extends Object implements Serializable {
         
         for (int i = 0; i < directory; i++) {
             if (ifd_offset == 0L) {
-                throw new
-                IllegalArgumentException("Directory number too large.");
+                throw new IllegalArgumentException(MessageLocalization.getComposedMessage("directory.number.too.large"));
             }
             
             stream.seek(ifd_offset);
@@ -175,8 +173,7 @@ public class TIFFDirectory extends Object implements Serializable {
         stream.seek(0L);
         int endian = stream.readUnsignedShort();
         if (!isValidEndianTag(endian)) {
-            throw new
-            IllegalArgumentException("Bad endianness tag (not 0x4949 or 0x4d4d).");
+            throw new IllegalArgumentException(MessageLocalization.getComposedMessage("bad.endianness.tag.not.0x4949.or.0x4d4d"));
         }
         isBigEndian = (endian == 0x4d4d);
         
@@ -277,7 +274,7 @@ public class TIFFDirectory extends Object implements Serializable {
                         
                         // Can be multiple strings
                         int index = 0, prevIndex = 0;
-                        ArrayList v = new ArrayList();
+                        ArrayList<String> v = new ArrayList<String>();
                         
                         while (index < count) {
                             
@@ -292,7 +289,7 @@ public class TIFFDirectory extends Object implements Serializable {
                         count = v.size();
                         String strings[] = new String[count];
                         for (int c = 0 ; c < count; c++) {
-                            strings[c] = (String)v.get(c);
+                            strings[c] = v.get(c);
                         }
                         
                         obj = strings;
@@ -398,7 +395,7 @@ public class TIFFDirectory extends Object implements Serializable {
      * or null if the tag is not present.
      */
     public TIFFField getField(int tag) {
-        Integer i = (Integer)fieldIndex.get(new Integer(tag));
+        Integer i = fieldIndex.get(new Integer(tag));
         if (i == null) {
             return null;
         } else {
@@ -419,11 +416,11 @@ public class TIFFDirectory extends Object implements Serializable {
      */
     public int[] getTags() {
         int[] tags = new int[fieldIndex.size()];
-        Enumeration e = fieldIndex.keys();
+        Enumeration<Integer> e = fieldIndex.keys();
         int i = 0;
         
         while (e.hasMoreElements()) {
-            tags[i++] = ((Integer)e.nextElement()).intValue();
+            tags[i++] = e.nextElement().intValue();
         }
         
         return tags;
@@ -444,7 +441,7 @@ public class TIFFDirectory extends Object implements Serializable {
      * TIFF_UNDEFINED.
      */
     public byte getFieldAsByte(int tag, int index) {
-        Integer i = (Integer)fieldIndex.get(new Integer(tag));
+        Integer i = fieldIndex.get(new Integer(tag));
         byte [] b = fields[i.intValue()].getAsBytes();
         return b[index];
     }
@@ -466,7 +463,7 @@ public class TIFFDirectory extends Object implements Serializable {
      * TIFF_SHORT, TIFF_SSHORT, TIFF_SLONG or TIFF_LONG.
      */
     public long getFieldAsLong(int tag, int index) {
-        Integer i = (Integer)fieldIndex.get(new Integer(tag));
+        Integer i = fieldIndex.get(new Integer(tag));
         return fields[i.intValue()].getAsLong(index);
     }
     
@@ -487,7 +484,7 @@ public class TIFFDirectory extends Object implements Serializable {
      * TIFF_ASCII).
      */
     public float getFieldAsFloat(int tag, int index) {
-        Integer i = (Integer)fieldIndex.get(new Integer(tag));
+        Integer i = fieldIndex.get(new Integer(tag));
         return fields[i.intValue()].getAsFloat(index);
     }
     
@@ -507,7 +504,7 @@ public class TIFFDirectory extends Object implements Serializable {
      * TIFF_ASCII).
      */
     public double getFieldAsDouble(int tag, int index) {
-        Integer i = (Integer)fieldIndex.get(new Integer(tag));
+        Integer i = fieldIndex.get(new Integer(tag));
         return fields[i.intValue()].getAsDouble(index);
     }
     
@@ -618,14 +615,12 @@ public class TIFFDirectory extends Object implements Serializable {
         stream.seek(0L);
         int endian = stream.readUnsignedShort();
         if (!isValidEndianTag(endian)) {
-            throw new
-            IllegalArgumentException("Bad endianness tag (not 0x4949 or 0x4d4d).");
+            throw new IllegalArgumentException(MessageLocalization.getComposedMessage("bad.endianness.tag.not.0x4949.or.0x4d4d"));
         }
         boolean isBigEndian = (endian == 0x4d4d);
         int magic = readUnsignedShort(stream, isBigEndian);
         if (magic != 42) {
-            throw new
-            IllegalArgumentException("Bad magic number, should be 42.");
+            throw new IllegalArgumentException(MessageLocalization.getComposedMessage("bad.magic.number.should.be.42"));
         }
         
         stream.seek(4L);

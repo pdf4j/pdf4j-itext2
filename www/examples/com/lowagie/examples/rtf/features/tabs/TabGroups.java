@@ -1,5 +1,5 @@
 /*
- * $Id$
+ * $Id: TabGroups.java 3393 2008-05-16 21:33:55Z xlv $
  *
  * This code is free software. It may only be copied or modified
  * if you include the following copyright notice:
@@ -34,7 +34,7 @@ import com.lowagie.text.rtf.text.RtfTabGroup;
  * The TabGroups example demonstrates how using the RtfTabGroup class
  * simplifies the repeated use of a set of tab stops.
  * 
- * @version $Revision$
+ * @version $Revision: 3393 $
  * @author Mark Hall (Mark.Hall@mail.room3b.eu)
  */
 public class TabGroups {
@@ -62,7 +62,7 @@ public class TabGroups {
             // Add the tab group to the paragraph
             par.add(tabGroup);
             // Specify the tab positions using "\t"
-            par.add("Description\tDate\tAmount");
+            par.addObject("Description\tDate\tAmount");
             document.add(par);
             
             DecimalFormat nf = new DecimalFormat("#.00");
@@ -74,14 +74,14 @@ public class TabGroups {
                 par = new Paragraph();
                 // The RtfTabGroup can be reused for further paragraphs
                 par.add(tabGroup);
-                par.add("Item " + (i + 1) + "\t" + (12 + i) + ".03.2007\t" + nf.format(value));
+                par.addObject("Item " + (i + 1) + "\t" + (12 + i) + ".03.2007\t" + nf.format(value));
                 document.add(par);
             }
 
             par = new Paragraph("", new Font(Font.TIMES_ROMAN, 12, Font.BOLD));
             par.add(tabGroup);
             // If a tab in the RtfTabGroup is not needed, just add an empty tab stop in the text
-            par.add("Total\t\t" + nf.format(sum));
+            par.addObject("Total\t\t" + nf.format(sum));
             document.add(par);
             
             document.close();

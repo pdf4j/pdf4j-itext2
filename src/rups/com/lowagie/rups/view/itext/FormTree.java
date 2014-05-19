@@ -1,5 +1,5 @@
 /*
- * $Id$
+ * $Id: FormTree.java 3312 2008-05-01 20:58:46Z xlv $
  *
  * Copyright 2007 Bruno Lowagie.
  *
@@ -130,6 +130,7 @@ public class FormTree extends JTree implements TreeSelectionListener, Observer {
 	 * @param	form_node	the parent node in the form tree
 	 * @param	object_node	the object node that will be used to create a child node
 	 */
+    @SuppressWarnings("unchecked")
 	private void loadFields(TreeNodeFactory factory, FormTreeNode form_node, PdfObjectTreeNode object_node) {
 		if (object_node == null)
 			return;
@@ -138,9 +139,9 @@ public class FormTree extends JTree implements TreeSelectionListener, Observer {
 			loadFields(factory, form_node, (PdfObjectTreeNode)object_node.getFirstChild());
 		}
 		else if (object_node.isArray()) {
-			Enumeration children = object_node.children();
+			Enumeration<PdfObjectTreeNode> children = object_node.children();
 			while (children.hasMoreElements()) {
-				loadFields(factory, form_node, (PdfObjectTreeNode)children.nextElement());
+				loadFields(factory, form_node, children.nextElement());
 			}
 		}
 		else if (object_node.isDictionary()) {
@@ -156,6 +157,7 @@ public class FormTree extends JTree implements TreeSelectionListener, Observer {
 	 * @param	form_node	the parent node in the form tree
 	 * @param	object_node	the object node that will be used to create a child node
 	 */
+    @SuppressWarnings("unchecked")
 	private void loadXfa(TreeNodeFactory factory, XfaTreeNode form_node, PdfObjectTreeNode object_node) {
 		if (object_node == null)
 			return;
@@ -164,12 +166,12 @@ public class FormTree extends JTree implements TreeSelectionListener, Observer {
 			loadXfa(factory, form_node, (PdfObjectTreeNode)object_node.getFirstChild());
 		}
 		else if (object_node.isArray()) {
-			Enumeration children = object_node.children();
+			Enumeration<PdfObjectTreeNode> children = object_node.children();
 			PdfObjectTreeNode key;
 			PdfObjectTreeNode value;
 			while (children.hasMoreElements()) {
-				key = (PdfObjectTreeNode)children.nextElement();
-				value = (PdfObjectTreeNode)children.nextElement();
+				key = children.nextElement();
+				value = children.nextElement();
 				if (value.isIndirectReference()) {
 					factory.expandNode(value);
 					value = (PdfObjectTreeNode)value.getFirstChild();

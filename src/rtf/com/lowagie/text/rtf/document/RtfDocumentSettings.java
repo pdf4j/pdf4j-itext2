@@ -1,5 +1,5 @@
 /*
- * $Id$
+ * $Id: RtfDocumentSettings.java 3626 2008-11-11 19:27:25Z xlv $
  *
  * Copyright 2003, 2004, 2005 by Mark Hall
  *
@@ -59,7 +59,7 @@ import com.lowagie.text.rtf.style.RtfParagraphStyle;
  * how the actual document is then generated and some settings may mean that some
  * RTF readers can't read the document or render it wrongly.
  * 
- * @version $Id$
+ * @version $Id: RtfDocumentSettings.java 3626 2008-11-11 19:27:25Z xlv $
  * @author Mark Hall (Mark.Hall@mail.room3b.eu)
  * @author Thomas Bickel (tmb99@inode.at)
  * @author Howard Shank (hgshank@yahoo.com)

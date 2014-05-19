@@ -1,5 +1,5 @@
 /*
- * $Id$
+ * $Id: LocalGoto.java 3393 2008-05-16 21:33:55Z xlv $
  *
  * This code is part of the 'iText Tutorial'.
  * You can find the complete tutorial at the following address:
@@ -60,7 +60,7 @@ public class LocalGoto {
             // a paragraph with a local goto
             Paragraph p1 = new Paragraph("We will do something special with this paragraph. If you click on ", FontFactory.getFont(FontFactory.HELVETICA, 12));
             p1.add(new Chunk("this word", FontFactory.getFont(FontFactory.HELVETICA, 12, Font.NORMAL, new Color(0, 0, 255))).setLocalGoto("test"));
-            p1.add(" you will automatically jump to another location in this document.");
+            p1.addObject(" you will automatically jump to another location in this document.");
             
             // some paragraph
             Paragraph p2 = new Paragraph("blah, blah, blah");

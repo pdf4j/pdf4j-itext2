@@ -58,7 +58,7 @@ import com.lowagie.text.ExceptionConverter;
  */
 public class DocumentFont extends BaseFont {
     // code, [glyph, width]
-    private HashMap metrics = new HashMap();
+    private HashMap<Integer, int[]> metrics = new HashMap<Integer, int[]>();
     private String fontName;
     private PRIndirectReference refFont;
     private PdfDictionary font;
@@ -546,7 +546,7 @@ public class DocumentFont extends BaseFont {
         if (cjkMirror != null)
             return cjkMirror.getWidth(char1);
         else if (isType0) {
-            int[] ws = (int[])metrics.get(new Integer(char1));
+            int[] ws = metrics.get(new Integer(char1));
             if (ws != null)
                 return ws[1];
             else
@@ -564,7 +564,7 @@ public class DocumentFont extends BaseFont {
             int len = chars.length;
             int total = 0;
             for (int k = 0; k < len; ++k) {
-                int[] ws = (int[])metrics.get(new Integer(chars[k]));
+                int[] ws = metrics.get(new Integer(chars[k]));
                 if (ws != null)
                     total += ws[1];
             }
@@ -583,7 +583,7 @@ public class DocumentFont extends BaseFont {
             byte[] b = new byte[len * 2];
             int bptr = 0;
             for (int k = 0; k < len; ++k) {
-                int[] ws = (int[])metrics.get(new Integer(chars[k]));
+                int[] ws = metrics.get(new Integer(chars[k]));
                 if (ws != null) {
                     int g = ws[0];
                     b[bptr++] = (byte)(g / 256);
@@ -620,7 +620,7 @@ public class DocumentFont extends BaseFont {
         if (cjkMirror != null)
             return PdfEncodings.convertToBytes((char)char1, CJKFont.CJK_ENCODING);
         else if (isType0) {
-            int[] ws = (int[])metrics.get(new Integer(char1));
+            int[] ws = metrics.get(new Integer(char1));
             if (ws != null) {
                 int g = ws[0];
                 return new byte[]{(byte)(g / 256), (byte)(g)};

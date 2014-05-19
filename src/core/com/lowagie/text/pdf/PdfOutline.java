@@ -1,5 +1,5 @@
 /*
- * $Id$
+ * $Id: PdfOutline.java 3393 2008-05-16 21:33:55Z xlv $
  *
  * Copyright 1999, 2000, 2001, 2002 Bruno Lowagie
  *
@@ -53,7 +53,6 @@ import java.awt.Color;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
-import java.util.Iterator;
 
 import com.lowagie.text.Chunk;
 import com.lowagie.text.Font;
@@ -89,7 +88,7 @@ public class PdfOutline extends PdfDictionary {
      */
     private PdfAction action;
        
-    protected ArrayList kids = new ArrayList();
+    protected ArrayList<PdfOutline> kids = new ArrayList<PdfOutline>();
     
     protected PdfWriter writer;
     
@@ -269,8 +268,7 @@ public class PdfOutline extends PdfDictionary {
     public PdfOutline(PdfOutline parent, PdfAction action, Paragraph title, boolean open) {
         super();
         StringBuffer buf = new StringBuffer();
-        for (Iterator i = title.getChunks().iterator(); i.hasNext(); ) {
-            Chunk chunk = (Chunk) i.next();
+        for (Chunk chunk: title.getChunks()) {
             buf.append(chunk.getContent());
         }
         this.action = action;
@@ -305,8 +303,7 @@ public class PdfOutline extends PdfDictionary {
     public PdfOutline(PdfOutline parent, PdfDestination destination, Paragraph title, boolean open) {
         super();
         StringBuffer buf = new StringBuffer();
-        for (Iterator i = title.getChunks().iterator(); i.hasNext(); ) {
-            Chunk chunk = (Chunk) i.next();
+        for (Chunk chunk: title.getChunks()) {
             buf.append(chunk.getContent());
         }
         this.destination = destination;
@@ -449,7 +446,7 @@ public class PdfOutline extends PdfDictionary {
      * Returns the kids of this outline
      * @return an ArrayList with PdfOutlines
      */
-    public ArrayList getKids() {
+    public ArrayList<PdfOutline> getKids() {
         return kids;
     }
     
@@ -457,7 +454,7 @@ public class PdfOutline extends PdfDictionary {
      * Sets the kids of this outline
      * @param kids
      */
-    public void setKids(ArrayList kids) {
+    public void setKids(ArrayList<PdfOutline> kids) {
         this.kids = kids;
     }
     

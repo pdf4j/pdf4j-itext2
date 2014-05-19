@@ -1,5 +1,5 @@
 /*
- * $Id$
+ * $Id: PagesTable.java 4167 2009-12-13 04:05:50Z xlv $
  *
  * Copyright 2007 Bruno Lowagie.
  *
@@ -31,7 +31,7 @@ import javax.swing.event.ListSelectionEvent;
 import com.lowagie.rups.controller.PdfReaderController;
 import com.lowagie.rups.model.ObjectLoader;
 import com.lowagie.rups.model.TreeNodeFactory;
-import com.lowagie.rups.view.PageNavigationListener;
+import com.lowagie.rups.view.PageSelectionListener;
 import com.lowagie.rups.view.itext.treenodes.PdfObjectTreeNode;
 import com.lowagie.rups.view.itext.treenodes.PdfPageTreeNode;
 import com.lowagie.rups.view.itext.treenodes.PdfPagesTreeNode;
@@ -52,13 +52,13 @@ public class PagesTable extends JTable implements JTableAutoModelInterface, Obse
 	/** Nodes in the FormTree correspond with nodes in the main PdfTree. */
 	protected PdfReaderController controller;
 	/***/
-	protected PageNavigationListener listener;
+	protected PageSelectionListener listener;
 
 	/**
 	 * Constructs a PagesTable.
 	 * @param	listener	the page navigation listener.
 	 */
-	public PagesTable(PdfReaderController controller, PageNavigationListener listener) {
+	public PagesTable(PdfReaderController controller, PageSelectionListener listener) {
 		this.controller = controller;
 		this.listener = listener;
 	}
@@ -66,6 +66,7 @@ public class PagesTable extends JTable implements JTableAutoModelInterface, Obse
 	/**
 	 * @see java.util.Observer#update(java.util.Observable, java.lang.Object)
 	 */
+    @SuppressWarnings("unchecked")
 	public void update(Observable observable, Object obj) {
 		if (obj == null) {
 			list = new ArrayList<PdfPageTreeNode>();
@@ -83,11 +84,11 @@ public class PagesTable extends JTable implements JTableAutoModelInterface, Obse
 			if (pages == null) {
 				return;
 			}
-			Enumeration p = pages.depthFirstEnumeration();
+			Enumeration<PdfObjectTreeNode> p = pages.depthFirstEnumeration();
 			PdfObjectTreeNode  child;
 			StringBuffer buf;
 			while (p.hasMoreElements()) {
-				child = (PdfObjectTreeNode)p.nextElement();
+				child = p.nextElement();
 				if (child instanceof PdfPageTreeNode) {
 					buf = new StringBuffer("Page ");
 					buf.append(++i);

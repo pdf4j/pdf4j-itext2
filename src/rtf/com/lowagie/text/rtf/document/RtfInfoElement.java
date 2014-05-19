@@ -1,5 +1,5 @@
 /*
- * $Id$
+ * $Id: RtfInfoElement.java 3626 2008-11-11 19:27:25Z xlv $
  *
  * Copyright 2003, 2004 by Mark Hall
  *
@@ -64,7 +64,7 @@ import com.lowagie.text.rtf.RtfElement;
  * Stores one information group element. Valid elements are
  * author, title, subject, keywords, producer and creationdate.
  * 
- * @version $Id$
+ * @version $Id: RtfInfoElement.java 3626 2008-11-11 19:27:25Z xlv $
  * @author Mark Hall (Mark.Hall@mail.room3b.eu)
  * @author Thomas Bickel (tmb99@inode.at)
  */

@@ -1,5 +1,5 @@
 /*
- * $Id$
+ * $Id: RtfFontList.java 3626 2008-11-11 19:27:25Z xlv $
  *
  * Copyright 2001, 2002, 2003, 2004 by Mark Hall
  *
@@ -62,7 +62,7 @@ import com.lowagie.text.rtf.document.RtfDocument;
  * The RtfFontList stores the list of fonts used in the rtf document. It also
  * has methods for writing this list to the document
  *
- * Version: $Id$
+ * Version: $Id: RtfFontList.java 3626 2008-11-11 19:27:25Z xlv $
  * @author Mark Hall (Mark.Hall@mail.room3b.eu)
  * @author Thomas Bickel (tmb99@inode.at)
  */
@@ -84,7 +84,7 @@ public class RtfFontList extends RtfElement implements RtfExtendedElement {
     /**
      * The list of fonts
      */
-    private ArrayList fontList = new ArrayList();
+    private ArrayList<RtfFont> fontList = new ArrayList<RtfFont>();
 
     /**
      * Creates a RtfFontList
@@ -140,7 +140,7 @@ public class RtfFontList extends RtfElement implements RtfExtendedElement {
             result.write(OPEN_GROUP);
             result.write(FONT_NUMBER);
             result.write(intToByteArray(i));
-            RtfFont rf = (RtfFont) fontList.get(i);
+            RtfFont rf = fontList.get(i);
             rf.writeDefinition(result);
             result.write(COMMA_DELIMITER);
             result.write(CLOSE_GROUP);

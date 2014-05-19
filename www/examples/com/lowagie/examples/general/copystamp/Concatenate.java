@@ -1,5 +1,5 @@
 /*
- * $Id$
+ * $Id: Concatenate.java 3393 2008-05-16 21:33:55Z xlv $
  *
  * This code is free software. It may only be copied or modified
  * if you include the following copyright notice:
@@ -19,6 +19,7 @@ package com.lowagie.examples.general.copystamp;
 
 import java.io.FileOutputStream;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import com.lowagie.text.Document;
@@ -46,7 +47,7 @@ public class Concatenate {
         	System.out.println("PdfCopy example");
             try {
                 int pageOffset = 0;
-                ArrayList master = new ArrayList();
+                List<HashMap<String, Object>> master = new ArrayList<HashMap<String, Object>>();
                 int f = 0;
                 String outFile = args[args.length-1];
                 Document document = null;
@@ -57,7 +58,7 @@ public class Concatenate {
                     reader.consolidateNamedDestinations();
                     // we retrieve the total number of pages
                     int n = reader.getNumberOfPages();
-                    List bookmarks = SimpleBookmark.getBookmark(reader);
+                    List<HashMap<String, Object>> bookmarks = SimpleBookmark.getBookmark(reader);
                     if (bookmarks != null) {
                         if (pageOffset != 0)
                             SimpleBookmark.shiftPageNumbers(bookmarks, pageOffset, null);

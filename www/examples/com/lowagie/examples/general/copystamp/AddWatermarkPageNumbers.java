@@ -1,5 +1,5 @@
 /*
- * $Id$
+ * $Id: AddWatermarkPageNumbers.java 3393 2008-05-16 21:33:55Z xlv $
  *
  * This code is part of the 'iText Tutorial'.
  * You can find the complete tutorial at the following address:
@@ -41,7 +41,7 @@ public class AddWatermarkPageNumbers {
             // we create a stamper that will copy the document to a new file
             PdfStamper stamp = new PdfStamper(reader, new FileOutputStream("watermark_pagenumbers.pdf"));
             // adding some metadata
-            HashMap moreInfo = new HashMap();
+            HashMap<String, String> moreInfo = new HashMap<String, String>();
             moreInfo.put("Author", "Bruno Lowagie");
             stamp.setMoreInfo(moreInfo);
             // adding content to each page

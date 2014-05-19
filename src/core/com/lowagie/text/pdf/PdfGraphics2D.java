@@ -1,5 +1,5 @@
 /*
- * $Id$
+ * $Id: PdfGraphics2D.java 3626 2008-11-11 19:27:25Z xlv $
  *
  * Copyright 2002 by Jim Moore <jim@scolamoore.com>.
  *
@@ -96,7 +96,6 @@ import java.text.AttributedCharacterIterator;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Hashtable;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
@@ -137,13 +136,21 @@ public class PdfGraphics2D extends Graphics2D {
     private PdfContentByte cb;
     
     /** Storage for BaseFont objects created. */
-    private HashMap baseFonts;
+    private HashMap<String, BaseFont> baseFonts;
     
     private boolean disposeCalled = false;
     
     private FontMapper fontMapper;
     
-    private ArrayList kids;
+    private static final class Kid {
+    	final int pos;
+    	final PdfGraphics2D graphics;
+    	Kid(int pos, PdfGraphics2D graphics) {
+    		this.pos = pos;
+    		this.graphics = graphics;
+    	}
+    }
+    private ArrayList<Kid> kids;
     
     private boolean kid = false;
     
@@ -198,7 +205,7 @@ public class PdfGraphics2D extends Graphics2D {
         this.jpegQuality = quality;
         this.onlyShapes = onlyShapes;
         this.transform = new AffineTransform();
-        this.baseFonts = new HashMap();
+        this.baseFonts = new HashMap<String, BaseFont>();
         if (!onlyShapes) {
             this.fontMapper = fontMapper;
             if (this.fontMapper == null)
@@ -257,7 +264,7 @@ public class PdfGraphics2D extends Graphics2D {
             int height = img.getHeight();
             WritableRaster raster = cm.createCompatibleWritableRaster(width, height);
             boolean isAlphaPremultiplied = cm.isAlphaPremultiplied();
-            Hashtable properties = new Hashtable();
+            Hashtable<String, Object> properties = new Hashtable<String, Object>();
             String[] keys = img.getPropertyNames();
             if (keys!=null) {
                 for (int i = 0; i < keys.length; i++) {
@@ -299,11 +306,11 @@ public class PdfGraphics2D extends Graphics2D {
      * before calling the actual string drawing routine
      * @param iter
      */
+    @SuppressWarnings("unchecked")
     protected void doAttributes(AttributedCharacterIterator iter) {
         underline = false;
-        Set set = iter.getAttributes().keySet();
-        for(Iterator iterator = set.iterator(); iterator.hasNext();) {
-            AttributedCharacterIterator.Attribute attribute = (AttributedCharacterIterator.Attribute)iterator.next();
+        Set<AttributedCharacterIterator.Attribute> set = iter.getAttributes().keySet();
+        for(AttributedCharacterIterator.Attribute attribute: set) {
             if (!(attribute instanceof TextAttribute))
                 continue;
             TextAttribute textattribute = (TextAttribute)attribute;
@@ -761,7 +768,7 @@ public class PdfGraphics2D extends Graphics2D {
     /**
      * @see Graphics2D#setRenderingHints(Map)
      */
-    public void setRenderingHints(Map hints) {
+    public void setRenderingHints(Map<?,?> hints) {
         rhints.clear();
         rhints.putAll(hints);
     }
@@ -769,7 +776,7 @@ public class PdfGraphics2D extends Graphics2D {
     /**
      * @see Graphics2D#addRenderingHints(Map)
      */
-    public void addRenderingHints(Map hints) {
+    public void addRenderingHints(Map<?,?> hints) {
         rhints.putAll(hints);
     }
     
@@ -933,9 +940,8 @@ public class PdfGraphics2D extends Graphics2D {
             g2.followPath(g2.clip, CLIP);
         g2.kid = true;
         if (this.kids == null)
-            this.kids = new ArrayList();
-        this.kids.add(new Integer(cb.getInternalBuffer().size()));
-        this.kids.add(g2);
+            this.kids = new ArrayList<Kid>();
+        this.kids.add(new Kid(cb.getInternalBuffer().size(), g2));
         return g2;
     }
     
@@ -1001,7 +1007,7 @@ public class PdfGraphics2D extends Graphics2D {
     
     private BaseFont getCachedBaseFont(Font f) {
         synchronized (baseFonts) {
-            BaseFont bf = (BaseFont)baseFonts.get(f.getFontName());
+            BaseFont bf = baseFonts.get(f.getFontName());
             if (bf == null) {
                 bf = fontMapper.awtToPdf(f);
                 baseFonts.put(f.getFontName(), bf);
@@ -1302,9 +1308,9 @@ public class PdfGraphics2D extends Graphics2D {
         int pos = 0;
         ByteBuffer buf2 = cb.getInternalBuffer();
         if (kids != null) {
-            for (int k = 0; k < kids.size(); k += 2) {
-                pos = ((Integer)kids.get(k)).intValue();
-                PdfGraphics2D g2 = (PdfGraphics2D)kids.get(k + 1);
+            for (Kid kid: kids) {
+                pos = kid.pos;
+                PdfGraphics2D g2 = kid.graphics;
                 g2.cb.restoreState();
                 g2.cb.restoreState();
                 buf.append(buf2.getBuffer(), last, pos - last);
@@ -1460,7 +1466,7 @@ public class PdfGraphics2D extends Graphics2D {
                 ImageWriteParam iwparam = new JPEGImageWriteParam(Locale.getDefault());
                 iwparam.setCompressionMode(ImageWriteParam.MODE_EXPLICIT);
                 iwparam.setCompressionQuality(jpegQuality);//Set here your compression rate
-                ImageWriter iw = (ImageWriter)ImageIO.getImageWritersByFormatName("jpg").next();
+                ImageWriter iw = ImageIO.getImageWritersByFormatName("jpg").next();
                 ImageOutputStream ios = ImageIO.createImageOutputStream(baos);
                 iw.setOutput(ios);
                 iw.write(null, new IIOImage(scaled, null, null), iwparam);

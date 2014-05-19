@@ -1,5 +1,5 @@
 /*
- * $Id$
+ * $Id: OptionalContent.java 3989 2009-06-18 02:22:54Z xlv $
  *
  * This code is part of the 'iText Tutorial'.
  * You can find the complete tutorial at the following address:
@@ -96,7 +96,7 @@ public class OptionalContent {
             tp.setLayer(l4);
             tp.setBoundingBox(new Rectangle(0, -10, 100, 20));
             cb.addTemplate(tp, 200, 500);
-            ArrayList state = new ArrayList();
+            ArrayList<Object> state = new ArrayList<Object>();
             state.add("toggle");
             state.add(l1);
             state.add(l2);

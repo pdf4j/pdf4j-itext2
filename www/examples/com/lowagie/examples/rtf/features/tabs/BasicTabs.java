@@ -1,5 +1,5 @@
 /*
- * $Id$
+ * $Id: BasicTabs.java 3393 2008-05-16 21:33:55Z xlv $
  *
  * This code is free software. It may only be copied or modified
  * if you include the following copyright notice:
@@ -31,7 +31,7 @@ import com.lowagie.text.rtf.text.RtfTab;
  * The BasicTabs example demonstrates the basic concepts of using the
  * RtfTab class to define tab stops.
  * 
- * @version $Revision$
+ * @version $Revision: 3393 $
  * @author Mark Hall (Mark.Hall@mail.room3b.eu)
  */
 public class BasicTabs {
@@ -56,7 +56,7 @@ public class BasicTabs {
             par.add(new RtfTab(400, RtfTab.TAB_RIGHT_ALIGN));
             
             // Add the text to the paragraph, placing the tab stops with \t
-            par.add("\tFirst the text on the left-hand side\tThis text is right aligned.");
+            par.addObject("\tFirst the text on the left-hand side\tThis text is right aligned.");
             
             document.add(par);
 

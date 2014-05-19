@@ -1,4 +1,4 @@
-/* $Id$
+/* $Id: RtfProperty.java 3393 2008-05-16 21:33:55Z xlv $
  *
  * Copyright 2007 by Howard Shank (hgshank@yahoo.com)
  *
@@ -166,7 +166,7 @@ public class RtfProperty {
 	public static final String DOCUMENT_DEFAULT_FONT_NUMER = DOCUMENT + "defaultFontNumber";
 	
 	/** Properties for this RtfProperty object */
-	protected HashMap properties = new HashMap();
+	protected HashMap<String, Object> properties = new HashMap<String, Object>();
 	
 	private boolean modifiedCharacter = false; 
 	private boolean modifiedParagraph = false; 
@@ -175,7 +175,7 @@ public class RtfProperty {
 
 	
 	/** The <code>RtfPropertyListener</code>. */
-    private ArrayList listeners = new ArrayList();
+    private ArrayList<RtfPropertyListener> listeners = new ArrayList<RtfPropertyListener>();
 	/**
 	 * Set all property objects to default values.
 	 * @since 2.0.8
@@ -419,13 +419,13 @@ public class RtfProperty {
 	 * @param propertyGroup The group name to obtain.
 	 * @return Properties object with requested values.
 	 */
-	public HashMap getProperties(String propertyGroup) {
-		HashMap props = new HashMap();
+	public HashMap<String, Object> getProperties(String propertyGroup) {
+		HashMap<String, Object> props = new HashMap<String, Object>();
 		if(!properties.isEmpty()) {
 			//properties.get
-			Iterator it = properties.keySet().iterator();
+			Iterator<String> it = properties.keySet().iterator();
 			while(it.hasNext()) {
-				String key = (String)it.next();
+				String key = it.next();
 				if(key.startsWith(propertyGroup)) {
 					props.put(key, this.properties.get(key));
 				}
@@ -531,9 +531,7 @@ public class RtfProperty {
 	
 	public void beforeChange(String propertyName) {
 		// call listener for all
-		RtfPropertyListener listener;
-		for (Iterator iterator = listeners.iterator(); iterator.hasNext();) {
-            listener = (RtfPropertyListener) iterator.next();
+		for (RtfPropertyListener listener: listeners) {
             listener.beforePropertyChange(propertyName);
         }
 		
@@ -556,9 +554,7 @@ public class RtfProperty {
 	
 	public void afterChange(String propertyName) {
 		// call listener for all
-		RtfPropertyListener listener;
-		for (Iterator iterator = listeners.iterator(); iterator.hasNext();) {
-            listener = (RtfPropertyListener) iterator.next();
+		for (RtfPropertyListener listener: listeners) {
             listener.afterPropertyChange(propertyName);
         }
 

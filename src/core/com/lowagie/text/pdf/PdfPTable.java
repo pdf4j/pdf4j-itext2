@@ -1,5 +1,5 @@
 /*
- * $Id$
+ * $Id: PdfPTable.java 4167 2009-12-13 04:05:50Z xlv $
  *
  * Copyright 2001, 2002 Paulo Soares
  *
@@ -50,7 +50,9 @@
 package com.lowagie.text.pdf;
 
 import java.util.ArrayList;
+import com.lowagie.text.error_messages.MessageLocalization;
 
+import com.lowagie.text.Chunk;
 import com.lowagie.text.DocumentException;
 import com.lowagie.text.Element;
 import com.lowagie.text.ElementListener;
@@ -93,7 +95,7 @@ public class PdfPTable implements LargeElement{
      */    
     public static final int TEXTCANVAS = 3;
     
-    protected ArrayList rows = new ArrayList();
+    protected ArrayList<PdfPRow> rows = new ArrayList<PdfPRow>();
     protected float totalHeight = 0;
     protected PdfPCell currentRow[];
     protected int currentRowIdx = 0;
@@ -155,7 +157,7 @@ public class PdfPTable implements LargeElement{
     /**
      * Holds value of property extendLastRow.
      */
-    private boolean extendLastRow;
+    private boolean[] extendLastRow = { false, false };
     
     /**
      * Holds value of property headersInEvent.
@@ -201,9 +203,9 @@ public class PdfPTable implements LargeElement{
      */    
     public PdfPTable(float relativeWidths[]) {
         if (relativeWidths == null)
-            throw new NullPointerException("The widths array in PdfPTable constructor can not be null.");
+            throw new NullPointerException(MessageLocalization.getComposedMessage("the.widths.array.in.pdfptable.constructor.can.not.be.null"));
         if (relativeWidths.length == 0)
-            throw new IllegalArgumentException("The widths array in PdfPTable constructor can not have zero length.");
+            throw new IllegalArgumentException(MessageLocalization.getComposedMessage("the.widths.array.in.pdfptable.constructor.can.not.have.zero.length"));
         this.relativeWidths = new float[relativeWidths.length];
         System.arraycopy(relativeWidths, 0, this.relativeWidths, 0, relativeWidths.length);
         absoluteWidths = new float[relativeWidths.length];
@@ -219,7 +221,7 @@ public class PdfPTable implements LargeElement{
      */    
     public PdfPTable(int numColumns) {
         if (numColumns <= 0)
-            throw new IllegalArgumentException("The number of columns in PdfPTable constructor must be greater than zero.");
+            throw new IllegalArgumentException(MessageLocalization.getComposedMessage("the.number.of.columns.in.pdfptable.constructor.must.be.greater.than.zero"));
         relativeWidths = new float[numColumns];
         for (int k = 0; k < numColumns; ++k)
             relativeWidths[k] = 1;
@@ -241,8 +243,7 @@ public class PdfPTable implements LargeElement{
                 break;
             currentRow[k] = new PdfPCell(table.currentRow[k]);
         }
-        for (int k = 0; k < table.rows.size(); ++k) {
-            PdfPRow row = (PdfPRow)(table.rows.get(k));
+        for (PdfPRow row: table.rows) {
             if (row != null)
                 row = new PdfPRow(row);
             rows.add(row);
@@ -306,7 +307,7 @@ public class PdfPTable implements LargeElement{
      */    
     public void setWidths(float relativeWidths[]) throws DocumentException {
         if (relativeWidths.length != getNumberOfColumns())
-            throw new DocumentException("Wrong number of columns.");
+            throw new DocumentException(MessageLocalization.getComposedMessage("wrong.number.of.columns"));
         this.relativeWidths = new float[relativeWidths.length];
         System.arraycopy(relativeWidths, 0, this.relativeWidths, 0, relativeWidths.length);
         absoluteWidths = new float[relativeWidths.length];
@@ -366,7 +367,7 @@ public class PdfPTable implements LargeElement{
      */    
     public void setTotalWidth(float columnWidth[]) throws DocumentException {
         if (columnWidth.length != getNumberOfColumns())
-            throw new DocumentException("Wrong number of columns.");
+            throw new DocumentException(MessageLocalization.getComposedMessage("wrong.number.of.columns"));
         totalWidth = 0;
         for (int k = 0; k < columnWidth.length; ++k)
             totalWidth += columnWidth[k];
@@ -382,7 +383,7 @@ public class PdfPTable implements LargeElement{
      */    
     public void setWidthPercentage(float columnWidth[], Rectangle pageSize) throws DocumentException {
         if (columnWidth.length != getNumberOfColumns())
-            throw new IllegalArgumentException("Wrong number of columns.");
+            throw new IllegalArgumentException(MessageLocalization.getComposedMessage("wrong.number.of.columns"));
         float totalWidth = 0;
         for (int k = 0; k < columnWidth.length; ++k)
             totalWidth += columnWidth[k];
@@ -528,34 +529,34 @@ public class PdfPTable implements LargeElement{
     		return false;
     	
     	int row = currRow - 1;
-    	PdfPRow aboveRow = (PdfPRow)rows.get(row);
+    	PdfPRow aboveRow = rows.get(row);
     	if (aboveRow == null)
     		return false;
-    	PdfPCell aboveCell = (PdfPCell)aboveRow.getCells()[currCol];
+    	PdfPCell aboveCell = aboveRow.getCells()[currCol];
     	while ((aboveCell == null) && (row > 0)) {
-    		aboveRow  = (PdfPRow)rows.get(--row);
+    		aboveRow  = rows.get(--row);
     		if (aboveRow == null)
     			return false;
-    		aboveCell = (PdfPCell)aboveRow.getCells()[currCol];
+    		aboveCell = aboveRow.getCells()[currCol];
     	}
     	
     	int distance = currRow - row;
 
     	if (aboveCell == null) {
         	int col = currCol - 1;
-        	aboveCell = (PdfPCell)aboveRow.getCells()[col];
+        	aboveCell = aboveRow.getCells()[col];
         	while ((aboveCell == null) && (row > 0))
-        		aboveCell = (PdfPCell)aboveRow.getCells()[--col];
+        		aboveCell = aboveRow.getCells()[--col];
         	return aboveCell != null && aboveCell.getRowspan() > distance;
     	}
     	
     	if ((aboveCell.getRowspan() == 1) && (distance > 1)) {
         	int col = currCol - 1;
-        	aboveRow = (PdfPRow)rows.get(row + 1);
+        	aboveRow = rows.get(row + 1);
         	distance--;
-        	aboveCell = (PdfPCell)aboveRow.getCells()[col];
+        	aboveCell = aboveRow.getCells()[col];
         	while ((aboveCell == null) && (col > 0))
-        		aboveCell = (PdfPCell)aboveRow.getCells()[--col];
+        		aboveCell = aboveRow.getCells()[--col];
     	}
     	
     	return aboveCell != null && aboveCell.getRowspan() > distance;
@@ -645,7 +646,7 @@ public class PdfPTable implements LargeElement{
      */    
     public float writeSelectedRows(int colStart, int colEnd, int rowStart, int rowEnd, float xPos, float yPos, PdfContentByte[] canvases) {
         if (totalWidth <= 0)
-            throw new RuntimeException("The table width must be greater than zero.");
+            throw new RuntimeException(MessageLocalization.getComposedMessage("the.table.width.must.be.greater.than.zero"));
         
         int totalRows = rows.size();
         if (rowStart < 0)
@@ -669,7 +670,7 @@ public class PdfPTable implements LargeElement{
         
         float yPosStart = yPos;
         for (int k = rowStart; k < rowEnd; ++k) {
-            PdfPRow row = (PdfPRow)rows.get(k);
+            PdfPRow row = rows.get(k);
             if (row != null) {
                 row.writeCells(colStart, colEnd, xPos, yPos, canvases);
                 yPos -= row.getMaxHeights();
@@ -680,7 +681,7 @@ public class PdfPTable implements LargeElement{
             float heights[] = new float[rowEnd - rowStart + 1];
             heights[0] = yPosStart;
             for (int k = rowStart; k < rowEnd; ++k) {
-                PdfPRow row = (PdfPRow)rows.get(k);
+                PdfPRow row = rows.get(k);
                 float hr = 0;
                 if (row != null)
                     hr = row.getMaxHeights();
@@ -840,12 +841,12 @@ public class PdfPTable implements LargeElement{
      * @param idx the row index (starts at 0)
      * @param firsttime	is this the first time the row heigh is calculated?
      * @return the height of a particular row
-     * @since	3.0.0
+     * @since	5.0.0
      */    
     public float getRowHeight(int idx, boolean firsttime) {
         if (totalWidth <= 0 || idx < 0 || idx >= rows.size())
             return 0;
-        PdfPRow row = (PdfPRow)rows.get(idx);
+        PdfPRow row = rows.get(idx);
         if (row == null)
             return 0;
         if (firsttime)
@@ -860,7 +861,7 @@ public class PdfPTable implements LargeElement{
         	while (rowSpanAbove(idx - rs, i)) {
         		rs++;
         	}
-        	tmprow = (PdfPRow)rows.get(idx - rs);
+        	tmprow = rows.get(idx - rs);
         	cell = tmprow.getCells()[i];
         	float tmp = 0;
         	if (cell.getRowspan() == rs + 1) {
@@ -889,7 +890,7 @@ public class PdfPTable implements LargeElement{
     public float getRowspanHeight(int rowIndex, int cellIndex) {
         if (totalWidth <= 0 || rowIndex < 0 || rowIndex >= rows.size())
             return 0;
-        PdfPRow row = (PdfPRow)rows.get(rowIndex);
+        PdfPRow row = rows.get(rowIndex);
         if (row == null || cellIndex >= row.getCells().length)
             return 0;
         PdfPCell cell = row.getCells()[cellIndex];
@@ -912,7 +913,7 @@ public class PdfPTable implements LargeElement{
         float total = 0;
         int size = Math.min(rows.size(), headerRows);
         for (int k = 0; k < size; ++k) {
-            PdfPRow row = (PdfPRow)rows.get(k);
+            PdfPRow row = rows.get(k);
             if (row != null)
                 total += row.getMaxHeights();
         }
@@ -931,7 +932,7 @@ public class PdfPTable implements LargeElement{
         int start = Math.max(0, headerRows - footerRows);
         int size = Math.min(rows.size(), headerRows);
         for (int k = start; k < size; ++k) {
-            PdfPRow row = (PdfPRow)rows.get(k);
+            PdfPRow row = rows.get(k);
             if (row != null)
                 total += row.getMaxHeights();
         }
@@ -948,7 +949,7 @@ public class PdfPTable implements LargeElement{
         if (rowNumber < 0 || rowNumber >= rows.size())
             return false;
         if (totalWidth > 0) {
-            PdfPRow row = (PdfPRow)rows.get(rowNumber);
+            PdfPRow row = rows.get(rowNumber);
             if (row != null)
                 totalHeight -= row.getMaxHeights();
         }
@@ -974,7 +975,7 @@ public class PdfPTable implements LargeElement{
      * Removes all of the rows except headers
      */
     public void deleteBodyRows() {
-        ArrayList rows2 = new ArrayList();
+        ArrayList<PdfPRow> rows2 = new ArrayList<PdfPRow>();
         for (int k = 0; k < headerRows; ++k)
             rows2.add(rows.get(k));
         rows = rows2;
@@ -1020,8 +1021,8 @@ public class PdfPTable implements LargeElement{
      *
      * @return	an <CODE>ArrayList</CODE>
      */
-    public ArrayList getChunks() {
-        return new ArrayList();
+    public ArrayList<Chunk> getChunks() {
+        return new ArrayList<Chunk>();
     }
     
     /**
@@ -1111,7 +1112,7 @@ public class PdfPTable implements LargeElement{
      * @return the row at position idx
      */
     public PdfPRow getRow(int idx) {
-        return (PdfPRow)rows.get(idx);
+        return rows.get(idx);
     }
 
     /**
@@ -1119,7 +1120,7 @@ public class PdfPTable implements LargeElement{
      * 
      * @return an arraylist
      */
-    public ArrayList getRows() {
+    public ArrayList<PdfPRow> getRows() {
         return rows;
     }
     
@@ -1130,8 +1131,8 @@ public class PdfPTable implements LargeElement{
      * @return	a selection of rows
      * @since	2.1.6
      */
-    public ArrayList getRows(int start, int end) {
-    	ArrayList list = new ArrayList();
+    public ArrayList<PdfPRow> getRows(int start, int end) {
+    	ArrayList<PdfPRow> list = new ArrayList<PdfPRow>();
     	if (start < 0 || end > size()) {
     		return list;
     	}
@@ -1242,7 +1243,7 @@ public class PdfPTable implements LargeElement{
             int n = 0;
             if (includeHeaders) {
                 for (int k = 0; k < headerRows; ++k) {
-                    PdfPRow row = (PdfPRow)rows.get(k);
+                    PdfPRow row = rows.get(k);
                     if (row == null)
                         ++n;
                     else
@@ -1250,7 +1251,7 @@ public class PdfPTable implements LargeElement{
                 }
             }
             for (; firstRow < lastRow; ++firstRow) {
-                    PdfPRow row = (PdfPRow)rows.get(firstRow);
+                    PdfPRow row = rows.get(firstRow);
                     if (row == null)
                         ++n;
                     else
@@ -1329,7 +1330,7 @@ public class PdfPTable implements LargeElement{
         		this.runDirection = runDirection;
         		break;
         	default:
-        		throw new RuntimeException("Invalid run direction: " + runDirection);
+        		throw new RuntimeException(MessageLocalization.getComposedMessage("invalid.run.direction.1", runDirection));
         }
     }
     
@@ -1424,20 +1425,49 @@ public class PdfPTable implements LargeElement{
      * @return true if the last row will extend; false otherwise
      */
     public boolean isExtendLastRow() {
-        return extendLastRow;
+        return extendLastRow[0];
     }
     
     /**
-     * When set the last row will be extended to fill all the remaining space
-     * to the bottom boundary.
+     * When set the last row on every page will be extended to fill
+     * all the remaining space to the bottom boundary.
      * 
-     * @param extendLastRow true to extend the last row; false otherwise
+     * @param extendLastRows true to extend the last row; false otherwise
      */
-    public void setExtendLastRow(boolean extendLastRow) {
-        this.extendLastRow = extendLastRow;
+    public void setExtendLastRow(boolean extendLastRows) {
+        extendLastRow[0] = extendLastRows;
+		extendLastRow[1] = extendLastRows;
     }
     
     /**
+     * When set the last row on every page will be extended to fill
+     * all the remaining space to the bottom boundary; except maybe the
+     * final row.
+     * 
+     * @param extendLastRows true to extend the last row on each page; false otherwise
+     * @param extendFinalRow false if you don't want to extend the final row of the complete table
+	 * @since iText 5.0.0
+	 */
+	public void setExtendLastRow(boolean extendLastRows, boolean extendFinalRow) {
+		extendLastRow[0] = extendLastRows;
+		extendLastRow[1] = extendFinalRow;
+	}
+	
+    /**
+     * Gets the value of the last row extension, taking into account
+     * if the final row is reached or not.
+     * 
+     * @return true if the last row will extend; false otherwise
+     * @since iText 5.0.0
+     */
+    public boolean isExtendLastRow(boolean newPageFollows) {
+    	if (newPageFollows) {
+            return extendLastRow[0];	
+    	}
+		return extendLastRow[1];
+    }
+
+	/**
      * Gets the header status inclusion in PdfPTableEvent.
      * 
      * @return true if the headers are included; false otherwise

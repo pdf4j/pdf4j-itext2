@@ -1,5 +1,5 @@
 /*
- * $Id$
+ * $Id: DublinCoreSchema.java 3626 2008-11-11 19:27:25Z xlv $
  *
  * Copyright 2005 by Bruno Lowagie.
  *

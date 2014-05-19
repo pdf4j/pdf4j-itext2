@@ -1,5 +1,5 @@
 /*
- * $Id$
+ * $Id: Glossary.java 3393 2008-05-16 21:33:55Z xlv $
  *
  * This code is part of the 'iText Tutorial'.
  * You can find the complete tutorial at the following address:
@@ -16,7 +16,6 @@ package com.lowagie.examples.objects.chunk;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.Iterator;
 import java.util.TreeMap;
 
 import com.lowagie.text.Chunk;
@@ -39,7 +38,7 @@ import com.lowagie.text.pdf.PdfWriter;
 public class Glossary extends PdfPageEventHelper {
     
     /** keeps a glossary of words and the pages they appear on */
-    public TreeMap glossary = new TreeMap();
+    public TreeMap<String, Integer> glossary = new TreeMap<String, Integer>();
     
     /**
      * All the text that is passed to this event, gets registered in the glossary.
@@ -114,12 +113,11 @@ public class Glossary extends PdfPageEventHelper {
             
             // we add the glossary
             document.newPage();
-            for (Iterator i = generic.glossary.keySet().iterator(); i.hasNext(); ) {
-                String key = (String) i.next();
-                int page = ((Integer) generic.glossary.get(key)).intValue();
+            for (String key: generic.glossary.keySet()) {
+                int page = generic.glossary.get(key).intValue();
                 Paragraph g = new Paragraph(key);
-                g.add(" : page ");
-                g.add(String.valueOf(page));
+                g.addObject(" : page ");
+                g.addObject(String.valueOf(page));
                 document.add(g);
             }
 		} catch (DocumentException de) {

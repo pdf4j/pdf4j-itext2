@@ -1,5 +1,5 @@
 /*
- * $Id$
+ * $Id: RtfColorList.java 3626 2008-11-11 19:27:25Z xlv $
  *
  * Copyright 2001, 2002, 2003, 2004 by Mark Hall
  *
@@ -63,7 +63,7 @@ import com.lowagie.text.rtf.document.RtfDocument;
  * The RtfColorList stores all colors that appear in the document. Black
  * and White are always added
  * 
- * @version $Id$
+ * @version $Id: RtfColorList.java 3626 2008-11-11 19:27:25Z xlv $
  * @author Mark Hall (Mark.Hall@mail.room3b.eu)
  * @author Thomas Bickel (tmb99@inode.at)
  */
@@ -77,7 +77,7 @@ public class RtfColorList extends RtfElement implements RtfExtendedElement {
     /**
      * ArrayList containing all colors of this RtfColorList
      */
-    ArrayList colorList = new ArrayList();
+    ArrayList<RtfColor> colorList = new ArrayList<RtfColor>();
     
     /**
      * Constructs a new RtfColorList for the RtfDocument. Will add the default
@@ -128,7 +128,7 @@ public class RtfColorList extends RtfElement implements RtfExtendedElement {
         result.write(OPEN_GROUP);
         result.write(COLOR_TABLE);
         for(int i = 0; i < colorList.size(); i++) {
-            RtfColor color = (RtfColor) colorList.get(i);
+            RtfColor color = colorList.get(i);
             color.writeDefinition(result);
         }
         result.write(CLOSE_GROUP);

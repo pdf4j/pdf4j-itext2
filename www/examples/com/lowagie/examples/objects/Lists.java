@@ -1,5 +1,5 @@
 /*
- * $Id$
+ * $Id: Lists.java 3393 2008-05-16 21:33:55Z xlv $
  *
  * This code is part of the 'iText Tutorial'.
  * You can find the complete tutorial at the following address:
@@ -78,11 +78,11 @@ public class Lists {
             
             Paragraph paragraph = new Paragraph("some movies I really like:");
             list = new List(false, 10);
-            list.add("Wild At Heart");
-            list.add("Casablanca");
-            list.add("When Harry met Sally");
-            list.add("True Romance");
-            list.add("Le mari de la coiffeuse");
+            list.addObject("Wild At Heart");
+            list.addObject("Casablanca");
+            list.addObject("When Harry met Sally");
+            list.addObject("True Romance");
+            list.addObject("Le mari de la coiffeuse");
             paragraph.add(list);
             document.add(paragraph);
             
@@ -94,29 +94,29 @@ public class Lists {
             List sublist;
             sublist = new List(false, true, 10);
             sublist.setListSymbol(new Chunk("", FontFactory.getFont(FontFactory.HELVETICA, 8)));
-            sublist.add("The Foundation Trilogy");
-            sublist.add("The Complete Robot");
-            sublist.add("Caves of Steel");
-            sublist.add("The Naked Sun");
+            sublist.addObject("The Foundation Trilogy");
+            sublist.addObject("The Complete Robot");
+            sublist.addObject("Caves of Steel");
+            sublist.addObject("The Naked Sun");
             list.add(sublist);
             listItem = new ListItem("John Irving");
             list.add(listItem);
             sublist = new List(false, true, 10);
             sublist.setFirst('a');
             sublist.setListSymbol(new Chunk("", FontFactory.getFont(FontFactory.HELVETICA, 8)));
-            sublist.add("The World according to Garp");
-            sublist.add("Hotel New Hampshire");
-            sublist.add("A prayer for Owen Meany");
-            sublist.add("Widow for a year");
+            sublist.addObject("The World according to Garp");
+            sublist.addObject("Hotel New Hampshire");
+            sublist.addObject("A prayer for Owen Meany");
+            sublist.addObject("Widow for a year");
             list.add(sublist);
             listItem = new ListItem("Kurt Vonnegut");
             list.add(listItem);
             sublist = new List(false, true, 10);
             sublist.setListSymbol(new Chunk("", FontFactory.getFont(FontFactory.HELVETICA, 8)));
-            sublist.add("Slaughterhouse 5");
-            sublist.add("Welcome to the Monkey House");
-            sublist.add("The great pianola");
-            sublist.add("Galapagos");
+            sublist.addObject("Slaughterhouse 5");
+            sublist.addObject("Welcome to the Monkey House");
+            sublist.addObject("The great pianola");
+            sublist.addObject("Galapagos");
             list.add(sublist);
             document.add(list);
 		} catch (DocumentException de) {

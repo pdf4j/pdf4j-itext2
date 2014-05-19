@@ -1,5 +1,5 @@
 /*
- * $Id$
+ * $Id: RtfDestinationListTable.java 3561 2008-07-15 22:17:57Z xlv $
  *
  * Copyright 2007 by Howard Shank (hgshank@yahoo.com)
  *

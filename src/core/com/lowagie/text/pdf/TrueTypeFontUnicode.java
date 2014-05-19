@@ -1,5 +1,5 @@
 /*
- * $Id$
+ * $Id: TrueTypeFontUnicode.java 4167 2009-12-13 04:05:50Z xlv $
  *
  * Copyright 2001, 2002 Paulo Soares
  *
@@ -53,6 +53,8 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
+import com.lowagie.text.error_messages.MessageLocalization;
 
 import com.lowagie.text.DocumentException;
 import com.lowagie.text.Utilities;
@@ -63,7 +65,7 @@ import com.lowagie.text.Utilities;
  * as Thai.
  * @author  Paulo Soares (psoares@consiste.pt)
  */
-class TrueTypeFontUnicode extends TrueTypeFont implements Comparator{
+class TrueTypeFontUnicode extends TrueTypeFont implements Comparator<int[]>{
     
     /**
      * <CODE>true</CODE> if the encoding is vertical.
@@ -97,11 +99,11 @@ class TrueTypeFontUnicode extends TrueTypeFont implements Comparator{
         if ((fileName.toLowerCase().endsWith(".ttf") || fileName.toLowerCase().endsWith(".otf") || fileName.toLowerCase().endsWith(".ttc")) && ((enc.equals(IDENTITY_H) || enc.equals(IDENTITY_V)) && emb)) {
             process(ttfAfm, forceRead);
             if (os_2.fsType == 2)
-                throw new DocumentException(fileName + style + " cannot be embedded due to licensing restrictions.");
+                throw new DocumentException(MessageLocalization.getComposedMessage("1.cannot.be.embedded.due.to.licensing.restrictions", fileName + style));
             // Sivan
             if ((cmap31 == null && !fontSpecific) || (cmap10 == null && fontSpecific))
                 directTextToByte=true;
-                //throw new DocumentException(fileName + " " + style + " does not contain an usable cmap.");
+                //throw new DocumentException(MessageLocalization.getComposedMessage("1.2.does.not.contain.an.usable.cmap", fileName, style));
             if (fontSpecific) {
                 fontSpecific = false;
                 String tempEncoding = encoding;
@@ -112,7 +114,7 @@ class TrueTypeFontUnicode extends TrueTypeFont implements Comparator{
             }
         }
         else
-            throw new DocumentException(fileName + " " + style + " is not a TTF font file.");
+            throw new DocumentException(MessageLocalization.getComposedMessage("1.2.is.not.a.ttf.font.file", fileName, style));
         vertical = enc.endsWith("V");
     }
     
@@ -316,9 +318,9 @@ class TrueTypeFontUnicode extends TrueTypeFont implements Comparator{
      * @param o2 the second element
      * @return the comparison
      */    
-    public int compare(Object o1, Object o2) {
-        int m1 = ((int[])o1)[0];
-        int m2 = ((int[])o2)[0];
+    public int compare(int[] o1, int[] o2) {
+        int m1 = o1[0];
+        int m2 = o2[0];
         if (m1 < m2)
             return -1;
         if (m1 == m2)
@@ -335,10 +337,11 @@ class TrueTypeFontUnicode extends TrueTypeFont implements Comparator{
      * @throws IOException on error
      * @throws DocumentException error in generating the object
      */
+    @SuppressWarnings("unchecked")
     void writeFont(PdfWriter writer, PdfIndirectReference ref, Object params[]) throws DocumentException, IOException {
-        HashMap longTag = (HashMap)params[0];
-        addRangeUni(longTag, true, subset);
-        Object metrics[] = longTag.values().toArray();
+    	HashMap<Integer, int[]> longTag = (HashMap<Integer, int[]>)params[0];
+        addRangeUni(longTag, subset);
+        int metrics[][] = longTag.values().toArray(new int[0][]);
         Arrays.sort(metrics, this);
         PdfIndirectReference ind_font = null;
         PdfObject pobj = null;
@@ -350,10 +353,10 @@ class TrueTypeFontUnicode extends TrueTypeFont implements Comparator{
                 stream = new PdfStream(new byte[]{(byte)0x80});
             }
             else {
-                int top = ((int[])metrics[metrics.length - 1])[0];
+                int top = metrics[metrics.length - 1][0];
                 byte[] bt = new byte[top / 8 + 1];
                 for (int k = 0; k < metrics.length; ++k) {
-                    int v = ((int[])metrics[k])[0];
+                    int v = metrics[k][0];
                     bt[v / 8] |= rotbits[v % 8];
                 }
                 stream = new PdfStream(bt);
@@ -374,7 +377,7 @@ class TrueTypeFontUnicode extends TrueTypeFont implements Comparator{
         } else {
             byte[] b;
             if (subset || directoryOffset != 0) {
-                TrueTypeFontSubSet sb = new TrueTypeFontSubSet(fileName, new RandomAccessFileOrArray(rf), longTag, directoryOffset, false, false);
+                TrueTypeFontSubSet sb = new TrueTypeFontSubSet(fileName, new RandomAccessFileOrArray(rf), new HashSet<Integer>(longTag.keySet()), directoryOffset, false, false);
                 b = sb.process();
             }
             else {
@@ -438,8 +441,8 @@ class TrueTypeFontUnicode extends TrueTypeFont implements Comparator{
      */    
     public int[] getMetricsTT(int c) {
         if (cmapExt != null)
-            return (int[])cmapExt.get(new Integer(c));
-        HashMap map = null;
+            return cmapExt.get(new Integer(c));
+    	HashMap<Integer, int[]> map = null;
         if (fontSpecific)
             map = cmap10;
         else
@@ -448,12 +451,12 @@ class TrueTypeFontUnicode extends TrueTypeFont implements Comparator{
             return null;
         if (fontSpecific) {
             if ((c & 0xffffff00) == 0 || (c & 0xffffff00) == 0xf000)
-                return (int[])map.get(new Integer(c & 0xff));
+                return map.get(new Integer(c & 0xff));
             else
                 return null;
         }
         else
-            return (int[])map.get(new Integer(c));
+            return map.get(new Integer(c));
     }
     
     /**

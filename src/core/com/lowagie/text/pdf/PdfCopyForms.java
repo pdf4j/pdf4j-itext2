@@ -52,6 +52,7 @@ package com.lowagie.text.pdf;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.security.cert.Certificate;
+import java.util.HashMap;
 import java.util.List;
 
 import com.lowagie.text.DocWriter;
@@ -97,7 +98,7 @@ public class PdfCopyForms
      * @param pagesToKeep the pages to keep
      * @throws DocumentException on error
      */    
-    public void addDocument(PdfReader reader, List pagesToKeep) throws DocumentException, IOException {
+    public void addDocument(PdfReader reader, List<Integer> pagesToKeep) throws DocumentException, IOException {
         fc.addDocument(reader, pagesToKeep);
     }
 
@@ -183,7 +184,7 @@ public class PdfCopyForms
      * <CODE>SimpleBookmark#</CODE>.
      * @param outlines the bookmarks or <CODE>null</CODE> to remove any
      */    
-    public void setOutlines(List outlines) {
+    public void setOutlines(List<HashMap<String, Object>> outlines) {
         fc.setOutlines(outlines);
     }
     

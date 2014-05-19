@@ -154,6 +154,8 @@ package com.lowagie.text.pdf;
  * @author Doug Felt
  */
 
+import com.lowagie.text.error_messages.MessageLocalization;
+
 public final class BidiOrder {
     private byte[] initialTypes;
     private byte[] embeddings; // generated from processing format codes
@@ -241,7 +243,7 @@ public final class BidiOrder {
     public BidiOrder(byte[] types) {
         validateTypes(types);
         
-        this.initialTypes = (byte[])types.clone(); // client type array remains unchanged
+        this.initialTypes = types.clone(); // client type array remains unchanged
         
         runAlgorithm();
     }
@@ -258,7 +260,7 @@ public final class BidiOrder {
         validateTypes(types);
         validateParagraphEmbeddingLevel(paragraphEmbeddingLevel);
         
-        this.initialTypes = (byte[])types.clone(); // client type array remains unchanged
+        this.initialTypes = types.clone(); // client type array remains unchanged
         this.paragraphEmbeddingLevel = paragraphEmbeddingLevel;
         
         runAlgorithm();
@@ -290,7 +292,7 @@ public final class BidiOrder {
         
         // Initialize output types.
         // Result types initialized to input types.
-        resultTypes = (byte[])initialTypes.clone();
+        resultTypes = initialTypes.clone();
         
         
         // 1) determining the paragraph level
@@ -849,7 +851,7 @@ public final class BidiOrder {
         
         validateLineBreaks(linebreaks, textLength);
         
-        byte[] result = (byte[])resultLevels.clone(); // will be returned to caller
+        byte[] result = resultLevels.clone(); // will be returned to caller
         
         // don't worry about linebreaks since if there is a break within
         // a series of WS values preceding S, the linebreak itself
@@ -1094,16 +1096,16 @@ public final class BidiOrder {
      */
     private static void validateTypes(byte[] types) {
         if (types == null) {
-            throw new IllegalArgumentException("types is null");
+            throw new IllegalArgumentException(MessageLocalization.getComposedMessage("types.is.null"));
         }
         for (int i = 0; i < types.length; ++i) {
             if (types[i] < TYPE_MIN || types[i] > TYPE_MAX) {
-                throw new IllegalArgumentException("illegal type value at " + i + ": " + types[i]);
+                throw new IllegalArgumentException(MessageLocalization.getComposedMessage("illegal.type.value.at.1.2", String.valueOf(i), String.valueOf(types[i])));
             }
         }
         for (int i = 0; i < types.length - 1; ++i) {
             if (types[i] == B) {
-                throw new IllegalArgumentException("B type before end of paragraph at index: " + i);
+                throw new IllegalArgumentException(MessageLocalization.getComposedMessage("b.type.before.end.of.paragraph.at.index.1", i));
             }
         }
     }
@@ -1116,7 +1118,7 @@ public final class BidiOrder {
         if (paragraphEmbeddingLevel != -1 &&
         paragraphEmbeddingLevel != 0 &&
         paragraphEmbeddingLevel != 1) {
-            throw new IllegalArgumentException("illegal paragraph embedding level: " + paragraphEmbeddingLevel);
+            throw new IllegalArgumentException(MessageLocalization.getComposedMessage("illegal.paragraph.embedding.level.1", paragraphEmbeddingLevel));
         }
     }
     
@@ -1128,12 +1130,12 @@ public final class BidiOrder {
         for (int i = 0; i < linebreaks.length; ++i) {
             int next = linebreaks[i];
             if (next <= prev) {
-                throw new IllegalArgumentException("bad linebreak: " + next + " at index: " + i);
+                throw new IllegalArgumentException(MessageLocalization.getComposedMessage("bad.linebreak.1.at.index.2", String.valueOf(next), String.valueOf(i)));
             }
             prev = next;
         }
         if (prev != textLength) {
-            throw new IllegalArgumentException("last linebreak must be at " + textLength);
+            throw new IllegalArgumentException(MessageLocalization.getComposedMessage("last.linebreak.must.be.at.1", textLength));
         }
     }
     

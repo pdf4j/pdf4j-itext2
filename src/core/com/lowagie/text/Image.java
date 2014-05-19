@@ -1,5 +1,5 @@
 /*
- * $Id$
+ * $Id: Image.java 4167 2009-12-13 04:05:50Z xlv $
  *
  * Copyright 1999, 2000, 2001, 2002 by Bruno Lowagie.
  *
@@ -57,6 +57,7 @@ import java.io.InputStream;
 import java.lang.reflect.Constructor;
 import java.net.MalformedURLException;
 import java.net.URL;
+import com.lowagie.text.error_messages.MessageLocalization;
 
 import com.lowagie.text.pdf.PRIndirectReference;
 import com.lowagie.text.pdf.PdfArray;
@@ -434,8 +435,7 @@ public abstract class Image extends Rectangle {
 					}
 				}
 			}
-			throw new IOException(
-					"The byte array is not a recognized imageformat.");
+			throw new IOException(MessageLocalization.getComposedMessage("the.byte.array.is.not.a.recognized.imageformat"));
 		} finally {
 			if (is != null) {
 				is.close();
@@ -540,8 +540,7 @@ public abstract class Image extends Rectangle {
 			int typeCCITT, int parameters, byte[] data, int transparency[])
 			throws BadElementException {
 		if (transparency != null && transparency.length != 2)
-			throw new BadElementException(
-					"Transparency length must be equal to 2 with CCITT images");
+			throw new BadElementException(MessageLocalization.getComposedMessage("transparency.length.must.be.equal.to.2.with.ccitt.images"));
 		Image img = new ImgCCITT(width, height, reverseBits, typeCCITT,
 				parameters, data);
 		img.transparency = transparency;
@@ -572,8 +571,7 @@ public abstract class Image extends Rectangle {
 			int bpc, byte data[], int transparency[])
 			throws BadElementException {
 		if (transparency != null && transparency.length != components * 2)
-			throw new BadElementException(
-					"Transparency length must be equal to (componentes * 2)");
+			throw new BadElementException(MessageLocalization.getComposedMessage("transparency.length.must.be.equal.to.componentes.2"));
 		if (components == 1 && bpc == 1) {
 			byte g4[] = CCITTG4Encoder.compress(data, width, height);
 			return Image.getInstance(width, height, false, Image.CCITTG4,
@@ -632,11 +630,10 @@ public abstract class Image extends Rectangle {
 		try {
 			pg.grabPixels();
 		} catch (InterruptedException e) {
-			throw new IOException(
-					"java.awt.Image Interrupted waiting for pixels!");
+			throw new IOException(MessageLocalization.getComposedMessage("java.awt.image.interrupted.waiting.for.pixels"));
 		}
 		if ((pg.getStatus() & java.awt.image.ImageObserver.ABORT) != 0) {
-			throw new IOException("java.awt.Image fetch aborted or errored");
+			throw new IOException(MessageLocalization.getComposedMessage("java.awt.image.fetch.aborted.or.errored"));
 		}
 		int w = pg.getWidth();
 		int h = pg.getHeight();
@@ -832,11 +829,10 @@ public abstract class Image extends Rectangle {
         try {
             pg.grabPixels();
         } catch (InterruptedException e) {
-            throw new IOException(
-                    "java.awt.Image Interrupted waiting for pixels!");
+            throw new IOException(MessageLocalization.getComposedMessage("java.awt.image.interrupted.waiting.for.pixels"));
         }
         if ((pg.getStatus() & java.awt.image.ImageObserver.ABORT) != 0) {
-            throw new IOException("java.awt.Image fetch aborted or errored");
+            throw new IOException(MessageLocalization.getComposedMessage("java.awt.image.fetch.aborted.or.errored"));
         }
         int w = pg.getWidth();
         int h = pg.getHeight();
@@ -967,10 +963,10 @@ public abstract class Image extends Rectangle {
 		if (image == null)
 			return null;
 		try {
-			Class cs = image.getClass();
-			Constructor constructor = cs
+			Class<? extends Image> cs = image.getClass();
+			Constructor<? extends Image> constructor = cs
 					.getDeclaredConstructor(new Class[] { Image.class });
-			return (Image) constructor.newInstance(new Object[] { image });
+			return constructor.newInstance(new Object[] { image });
 		} catch (Exception e) {
 			throw new ExceptionConverter(e);
 		}
@@ -1930,7 +1926,7 @@ public abstract class Image extends Rectangle {
 	 */
 	public void makeMask() throws DocumentException {
 		if (!isMaskCandidate())
-			throw new DocumentException("This image can not be an image mask.");
+			throw new DocumentException(MessageLocalization.getComposedMessage("this.image.can.not.be.an.image.mask"));
 		mask = true;
 	}
 
@@ -1967,11 +1963,9 @@ public abstract class Image extends Rectangle {
 	 */
 	public void setImageMask(Image mask) throws DocumentException {
 		if (this.mask)
-			throw new DocumentException(
-					"An image mask cannot contain another image mask.");
+			throw new DocumentException(MessageLocalization.getComposedMessage("an.image.mask.cannot.contain.another.image.mask"));
 		if (!mask.mask)
-			throw new DocumentException(
-					"The image mask is not a mask. Did you do makeMask()?");
+			throw new DocumentException(MessageLocalization.getComposedMessage("the.image.mask.is.not.a.mask.did.you.do.makemask"));
 		imageMask = mask;
 		smask = (mask.bpc > 1 && mask.bpc <= 8);
 	}

@@ -1,5 +1,5 @@
 /*
- * $Id$
+ * $Id: PdfName.java 4167 2009-12-13 04:05:50Z xlv $
  *
  * Copyright 1999-2006 Bruno Lowagie
  *
@@ -52,6 +52,7 @@ package com.lowagie.text.pdf;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.*;
+import com.lowagie.text.error_messages.MessageLocalization;
 
 /**
  * <CODE>PdfName</CODE> is an object that can be used as a name in a PDF-file.
@@ -71,7 +72,7 @@ import java.util.*;
  * @see		BadPdfFormatException
  */
 
-public class PdfName extends PdfObject implements Comparable{
+public class PdfName extends PdfObject implements Comparable<PdfName>{
 
     // CLASS CONSTANTS (a variety of standard names used in PDF))
     /**
@@ -294,6 +295,8 @@ public class PdfName extends PdfObject implements Comparable{
     /** A name */
     public static final PdfName CHARPROCS = new PdfName("CharProcs");
     /** A name */
+    public static final PdfName CHECKSUM = new PdfName("CheckSum");
+    /** A name */
     public static final PdfName CI = new PdfName("CI");
     /** A name */
     public static final PdfName CIDFONTTYPE0 = new PdfName("CIDFontType0");
@@ -460,6 +463,8 @@ public class PdfName extends PdfObject implements Comparable{
     public static final PdfName DISPLAYDOCTITLE = new PdfName("DisplayDocTitle");
     /** A name */
     public static final PdfName DIV = new PdfName("Div");
+    /** A name */
+    public static final PdfName DL = new PdfName("DL");
     /** A name */
     public static final PdfName DM = new PdfName("Dm");
     /** A name */
@@ -1721,7 +1726,7 @@ public class PdfName extends PdfObject implements Comparable{
      * map strings to all known static names
      * @since 2.1.6
      */
-    public static Map staticNames;
+    public static Map<String, PdfName> staticNames;
 
     /**
      * Use reflection to cache all the static public final names so
@@ -1733,7 +1738,7 @@ public class PdfName extends PdfObject implements Comparable{
 
     static {
         Field fields[] = PdfName.class.getDeclaredFields();
-        staticNames = new HashMap( fields.length );
+        staticNames = new HashMap<String, PdfName>( fields.length );
         final int flags = Modifier.STATIC | Modifier.PUBLIC | Modifier.FINAL;
         try {
             for (int fldIdx = 0; fldIdx < fields.length; ++fldIdx) {
@@ -1774,7 +1779,7 @@ public class PdfName extends PdfObject implements Comparable{
         // The minimum number of characters in a name is 0, the maximum is 127 (the '/' not included)
         int length = name.length();
         if (lengthCheck && length > 127)
-            throw new IllegalArgumentException("The name '" + name + "' is too long (" + length + " characters).");
+            throw new IllegalArgumentException(MessageLocalization.getComposedMessage("the.name.1.is.too.long.2.characters", name, String.valueOf(length)));
         bytes = encodeName(name);
     }
 
@@ -1794,14 +1799,13 @@ public class PdfName extends PdfObject implements Comparable{
      * Returns a negative integer, zero, or a positive integer as this object
      * is less than, equal to, or greater than the specified object.<p>
      *
-     * @param object the Object to be compared.
+     * @param name the Object to be compared.
      * @return a negative integer, zero, or a positive integer as this object
      * is less than, equal to, or greater than the specified object.
      * @throws ClassCastException if the specified object's type prevents it
      * from being compared to this Object.
      */
-    public int compareTo(Object object) {
-        PdfName name = (PdfName) object;
+    public int compareTo(PdfName name) {
         byte myBytes[] = bytes;
         byte objBytes[] = name.bytes;
         int len = Math.min(myBytes.length, objBytes.length);
@@ -1829,7 +1833,7 @@ public class PdfName extends PdfObject implements Comparable{
         if (this == obj)
             return true;
         if (obj instanceof PdfName)
-            return compareTo(obj) == 0;
+            return compareTo((PdfName)obj) == 0;
         return false;
     }
 

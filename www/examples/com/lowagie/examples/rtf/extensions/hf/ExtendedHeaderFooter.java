@@ -1,5 +1,5 @@
 /*
- * $Id$
+ * $Id: ExtendedHeaderFooter.java 3393 2008-05-16 21:33:55Z xlv $
  *
  * This code is free software. It may only be copied or modified
  * if you include the following copyright notice:
@@ -36,7 +36,7 @@ import com.lowagie.text.rtf.headerfooter.RtfHeaderFooter;
  * RtfHeaderFooter object to create more complex headers or footers
  * using more complex elements such as multiple paragraphs or tables.
  * 
- * @version $Revision$
+ * @version $Revision: 3393 $
  * @author Mark Hall (Mark.Hall@mail.room3b.eu)
  */
 public class ExtendedHeaderFooter {

@@ -58,7 +58,7 @@ public interface SimpleXMLDocHandler {
      * @param tag the tag name
      * @param h the tag's attributes
      */    
-    public void startElement(String tag, HashMap h);
+    public void startElement(String tag, HashMap<String, String> h);
     /**
      * Called when an end tag is found.
      * @param tag the tag name

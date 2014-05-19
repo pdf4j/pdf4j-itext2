@@ -1,5 +1,5 @@
 /*
- * $Id$
+ * $Id: ListFields.java 3787 2009-03-17 01:25:12Z xlv $
  *
  * This code is part of the 'iText Tutorial'.
  * You can find the complete tutorial at the following address:
@@ -49,10 +49,9 @@ public class ListFields {
                     break;
                 }
                 PdfLister list = new PdfLister(stream);
-                HashMap refToField = new HashMap();
-                ArrayList fields = form.getFields();
-                for (int k = 0; k < fields.size(); ++k) {
-                    PRAcroForm.FieldInformation field = (PRAcroForm.FieldInformation)fields.get(k);
+                HashMap<Integer, PRAcroForm.FieldInformation> refToField = new HashMap<Integer, PRAcroForm.FieldInformation>();
+                ArrayList<PRAcroForm.FieldInformation> fields = form.getFields();
+                for (PRAcroForm.FieldInformation field: fields) {
                     refToField.put(new Integer(field.getRef().getNumber()), field);
                 }
                 for (int page = 1; page <= reader.getNumberOfPages(); ++page) {
@@ -74,7 +73,7 @@ public class ListFields {
                             if (tName != null)
                                 fName = tName.toString() + "." + fName;
                             if (ref != null) {
-                                field = (PRAcroForm.FieldInformation)refToField.get(new Integer(ref.getNumber()));
+                                field = refToField.get(new Integer(ref.getNumber()));
                             }
                             ref = annotDict.getAsIndirectObject(PdfName.PARENT);
                             annotDict = annotDict.getAsDict(PdfName.PARENT);

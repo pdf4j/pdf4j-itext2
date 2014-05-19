@@ -6,7 +6,7 @@
 
   iText JavaWebStart file
 -->
-<jnlp spec="1.1+" codebase="http://www.1t3xt.com/jnlp/" href="toolbox.jnlp" version="$Id$">
+<jnlp spec="1.1+" codebase="http://www.1t3xt.com/jnlp/" href="toolbox.jnlp" version="$Id: toolbox.jnlp 3989 2009-06-18 02:22:54Z xlv $">
   <information>
     <title>iText Toolbox</title>
     <vendor>1T3XT BVBA</vendor>

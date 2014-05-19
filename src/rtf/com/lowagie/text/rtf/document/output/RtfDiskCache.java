@@ -1,5 +1,5 @@
 /*
- * $Id$
+ * $Id: RtfDiskCache.java 3393 2008-05-16 21:33:55Z xlv $
  *
  * Copyright 2005 by Mark Hall
  *
@@ -63,7 +63,7 @@ import java.io.OutputStream;
  * to store the rtf document data. Not so fast, but doesn't use any
  * memory (just disk space).
  * 
- * @version $Revision$
+ * @version $Revision: 3393 $
  * @author Mark Hall (Mark.Hall@mail.room3b.eu)
  */
 public class RtfDiskCache implements RtfDataCache {

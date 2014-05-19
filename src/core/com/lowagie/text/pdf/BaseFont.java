@@ -1,5 +1,5 @@
 /*
- * $Id$
+ * $Id: BaseFont.java 4167 2009-12-13 04:05:50Z xlv $
  *
  * Copyright 2000-2006 by Paulo Soares.
  *
@@ -48,13 +48,12 @@
  */
 
 package com.lowagie.text.pdf;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.StringTokenizer;
+import com.lowagie.text.error_messages.MessageLocalization;
 
 import com.lowagie.text.DocumentException;
 
@@ -238,7 +237,7 @@ public abstract class BaseFont {
     /** The fake CID code that represents a newline. */    
     public static final char CID_NEWLINE = '\u7fff';
     
-    protected ArrayList subsetRanges;
+    protected ArrayList<int[]> subsetRanges;
     /** The font type.
      */    
     int fontType;
@@ -274,10 +273,10 @@ public abstract class BaseFont {
     protected boolean fontSpecific = true;
     
 /** cache for the fonts already used. */
-    protected static HashMap fontCache = new HashMap();
+    protected static HashMap<String, BaseFont> fontCache = new HashMap<String, BaseFont>();
     
 /** list of the 14 built in fonts. */
-    protected static final HashMap BuiltinFonts14 = new HashMap();
+    protected static final HashMap<String, PdfName> BuiltinFonts14 = new HashMap<String, PdfName>();
     
     /** Forces the output of the width array. Only matters for the 14
      * built-in fonts.
@@ -671,7 +670,7 @@ public abstract class BaseFont {
         String key = name + "\n" + encoding + "\n" + embedded;
         if (cached) {
             synchronized (fontCache) {
-                fontFound = (BaseFont)fontCache.get(key);
+                fontFound = fontCache.get(key);
             }
             if (fontFound != null)
                 return fontFound;
@@ -693,10 +692,10 @@ public abstract class BaseFont {
         else if (noThrow)
             return null;
         else
-            throw new DocumentException("Font '" + name + "' with '" + encoding + "' is not recognized.");
+            throw new DocumentException(MessageLocalization.getComposedMessage("font.1.with.2.is.not.recognized", name, encoding));
         if (cached) {
             synchronized (fontCache) {
-                fontFound = (BaseFont)fontCache.get(key);
+                fontFound = fontCache.get(key);
                 if (fontFound != null)
                     return fontFound;
                 fontCache.put(key, fontBuilt);
@@ -1418,7 +1417,7 @@ public abstract class BaseFont {
         return true;
     }
     
-    private static void addFont(PRIndirectReference fontRef, IntHashtable hits, ArrayList fonts) {
+    private static void addFont(PRIndirectReference fontRef, IntHashtable hits, ArrayList<Object[]> fonts) {
         PdfObject obj = PdfReader.getPdfObject(fontRef);
         if (obj == null || !obj.isDictionary())
             return;
@@ -1431,7 +1430,7 @@ public abstract class BaseFont {
         hits.put(fontRef.getNumber(), 1);
     }
     
-    private static void recourseFonts(PdfDictionary page, IntHashtable hits, ArrayList fonts, int level) {
+    private static void recourseFonts(PdfDictionary page, IntHashtable hits, ArrayList<Object[]> fonts, int level) {
         ++level;
         if (level > 50) // in case we have an endless loop
             return;
@@ -1440,8 +1439,8 @@ public abstract class BaseFont {
             return;
         PdfDictionary font = resources.getAsDict(PdfName.FONT);
         if (font != null) {
-            for (Iterator it = font.getKeys().iterator(); it.hasNext();) {
-                PdfObject ft = font.get((PdfName)it.next());        
+            for (PdfName n: font.getKeys()) {
+                PdfObject ft = font.get(n);        
                 if (ft == null || !ft.isIndirect())
                     continue;
                 int hit = ((PRIndirectReference)ft).getNumber();
@@ -1452,8 +1451,8 @@ public abstract class BaseFont {
         }
         PdfDictionary xobj = resources.getAsDict(PdfName.XOBJECT);
         if (xobj != null) {
-            for (Iterator it = xobj.getKeys().iterator(); it.hasNext();) {
-                recourseFonts(xobj.getAsDict((PdfName)it.next()), hits, fonts, level);
+            for (PdfName name: xobj.getKeys()) {
+                recourseFonts(xobj.getAsDict(name), hits, fonts, level);
             }
         }
     }
@@ -1465,9 +1464,9 @@ public abstract class BaseFont {
      * @param reader the document where the fonts are to be listed from
      * @return the list of fonts and references
      */    
-    public static ArrayList getDocumentFonts(PdfReader reader) {
+    public static ArrayList<Object[]> getDocumentFonts(PdfReader reader) {
         IntHashtable hits = new IntHashtable();
-        ArrayList fonts = new ArrayList();
+        ArrayList<Object[]> fonts = new ArrayList<Object[]>();
         int npages = reader.getNumberOfPages();
         for (int k = 1; k <= npages; ++k)
             recourseFonts(reader.getPageN(k), hits, fonts, 1);
@@ -1482,9 +1481,9 @@ public abstract class BaseFont {
      * @param page the page to list the fonts from
      * @return the list of fonts and references
      */    
-    public static ArrayList getDocumentFonts(PdfReader reader, int page) {
+    public static ArrayList<Object[]> getDocumentFonts(PdfReader reader, int page) {
         IntHashtable hits = new IntHashtable();
-        ArrayList fonts = new ArrayList();
+        ArrayList<Object[]> fonts = new ArrayList<Object[]>();
         recourseFonts(reader.getPageN(page), hits, fonts, 1);
         return fonts;
     }
@@ -1537,7 +1536,7 @@ public abstract class BaseFont {
      */
     public void addSubsetRange(int[] range) {
         if (subsetRanges == null)
-            subsetRanges = new ArrayList();
+            subsetRanges = new ArrayList<int[]>();
         subsetRanges.add(range);
     }
     

@@ -1,5 +1,5 @@
 /*
- * $Id$
+ * $Id: Type1Font.java 4167 2009-12-13 04:05:50Z xlv $
  *
  * Copyright 2001-2006 Paulo Soares
  *
@@ -54,6 +54,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.StringTokenizer;
+import com.lowagie.text.error_messages.MessageLocalization;
 
 import com.lowagie.text.Document;
 import com.lowagie.text.DocumentException;
@@ -140,14 +141,14 @@ class Type1Font extends BaseFont
  *  Integer, Integer, String and int[]. This is the code, width, name and char bbox.
  *  The key is the name of the char and also an Integer with the char number.
  */
-    private HashMap CharMetrics = new HashMap();
+    private HashMap<Object, Object[]> CharMetrics = new HashMap<Object, Object[]>();
 /** Represents the section KernPairs in the AFM file. The key is
  *  the name of the first character and the value is a <CODE>Object[]</CODE>
  *  with 2 elements for each kern pair. Position 0 is the name of
  *  the second character and position 1 is the kerning distance. This is
  *  repeated for all the pairs.
  */
-    private HashMap KernPairs = new HashMap();
+    private HashMap<String, Object[]> KernPairs = new HashMap<String, Object[]>();
 /** The file in use.
  */
     private String fileName;
@@ -172,7 +173,7 @@ class Type1Font extends BaseFont
     Type1Font(String afmFile, String enc, boolean emb, byte ttfAfm[], byte pfb[], boolean forceRead)
     	throws DocumentException, IOException {
         if (emb && ttfAfm != null && pfb == null)
-            throw new DocumentException("Two byte arrays are needed if the Type1 font is embedded.");
+            throw new DocumentException(MessageLocalization.getComposedMessage("two.byte.arrays.are.needed.if.the.type1.font.is.embedded"));
         if (emb && ttfAfm != null)
             this.pfb = pfb;
         encoding = enc;
@@ -190,7 +191,7 @@ class Type1Font extends BaseFont
                     resourceAnchor = new FontsResourceAnchor();
                 is = getResourceStream(RESOURCE_PATH + afmFile + ".afm", resourceAnchor.getClass().getClassLoader());
                 if (is == null) {
-                    String msg = afmFile + " not found as resource. (The *.afm files must exist as resources in the package com.lowagie.text.pdf.fonts)";
+                    String msg = MessageLocalization.getComposedMessage("1.not.found.as.resource", afmFile);
                     System.err.println(msg);
                     throw new DocumentException(msg);
                 }
@@ -271,7 +272,7 @@ class Type1Font extends BaseFont
             }
         }
         else
-            throw new DocumentException(afmFile + " is not an AFM or PFM font file.");
+            throw new DocumentException(MessageLocalization.getComposedMessage("1.is.not.an.afm.or.pfm.font.file", afmFile));
 
         EncodingScheme = EncodingScheme.trim();
         if (EncodingScheme.equals("AdobeStandardEncoding") || EncodingScheme.equals("StandardEncoding")) {
@@ -292,12 +293,12 @@ class Type1Font extends BaseFont
     int getRawWidth(int c, String name) {
         Object metrics[];
         if (name == null) { // font specific
-            metrics = (Object[])CharMetrics.get(new Integer(c));
+            metrics = CharMetrics.get(new Integer(c));
         }
         else {
             if (name.equals(".notdef"))
                 return 0;
-            metrics = (Object[])CharMetrics.get(name);
+            metrics = CharMetrics.get(name);
         }
         if (metrics != null)
             return ((Integer)(metrics[1])).intValue();
@@ -319,7 +320,7 @@ class Type1Font extends BaseFont
         String second = GlyphList.unicodeToName(char2);
         if (second == null)
             return 0;
-        Object obj[] = (Object[])KernPairs.get(first);
+        Object obj[] = KernPairs.get(first);
         if (obj == null)
             return 0;
         for (int k = 0; k < obj.length; k += 2) {
@@ -391,7 +392,7 @@ class Type1Font extends BaseFont
             }
         }
         if (!isMetrics)
-            throw new DocumentException("Missing StartCharMetrics in " + fileName);
+            throw new DocumentException(MessageLocalization.getComposedMessage("missing.startcharmetrics.in.1", fileName));
         while ((line = rf.readLine()) != null)
         {
             StringTokenizer tok = new StringTokenizer(line);
@@ -434,9 +435,9 @@ class Type1Font extends BaseFont
             CharMetrics.put(N, metrics);
         }
         if (isMetrics)
-            throw new DocumentException("Missing EndCharMetrics in " + fileName);
+            throw new DocumentException(MessageLocalization.getComposedMessage("missing.endcharmetrics.in.1", fileName));
         if (!CharMetrics.containsKey("nonbreakingspace")) {
-            Object[] space = (Object[])CharMetrics.get("space");
+            Object[] space = CharMetrics.get("space");
             if (space != null)
                 CharMetrics.put("nonbreakingspace", space);
         }
@@ -455,7 +456,7 @@ class Type1Font extends BaseFont
             }
         }
         if (!isMetrics)
-            throw new DocumentException("Missing EndFontMetrics in " + fileName);
+            throw new DocumentException(MessageLocalization.getComposedMessage("missing.endfontmetrics.in.1", fileName));
         while ((line = rf.readLine()) != null)
         {
             StringTokenizer tok = new StringTokenizer(line);
@@ -467,7 +468,7 @@ class Type1Font extends BaseFont
                 String first = tok.nextToken();
                 String second = tok.nextToken();
                 Integer width = new Integer((int)Float.parseFloat(tok.nextToken()));
-                Object relates[] = (Object[])KernPairs.get(first);
+                Object relates[] = KernPairs.get(first);
                 if (relates == null)
                     KernPairs.put(first, new Object[]{second, width});
                 else
@@ -487,7 +488,7 @@ class Type1Font extends BaseFont
             }
         }
         if (isMetrics)
-            throw new DocumentException("Missing EndKernPairs in " + fileName);
+            throw new DocumentException(MessageLocalization.getComposedMessage("missing.endkernpairs.in.1", fileName));
         rf.close();
     }
     
@@ -515,9 +516,9 @@ class Type1Font extends BaseFont
             int bytePtr = 0;
             for (int k = 0; k < 3; ++k) {
                 if (rf.read() != 0x80)
-                    throw new DocumentException("Start marker missing in " + filePfb);
+                    throw new DocumentException(MessageLocalization.getComposedMessage("start.marker.missing.in.1", filePfb));
                 if (rf.read() != PFB_TYPES[k])
-                    throw new DocumentException("Incorrect segment type in " + filePfb);
+                    throw new DocumentException(MessageLocalization.getComposedMessage("incorrect.segment.type.in.1", filePfb));
                 int size = rf.read();
                 size += rf.read() << 8;
                 size += rf.read() << 16;
@@ -526,7 +527,7 @@ class Type1Font extends BaseFont
                 while (size != 0) {
                     int got = rf.read(st, bytePtr, size);
                     if (got < 0)
-                        throw new DocumentException("Premature end in " + filePfb);
+                        throw new DocumentException(MessageLocalization.getComposedMessage("premature.end.in.1", filePfb));
                     bytePtr += got;
                     size -= got;
                 }
@@ -788,7 +789,7 @@ class Type1Font extends BaseFont
         String second = GlyphList.unicodeToName(char2);
         if (second == null)
             return false;
-        Object obj[] = (Object[])KernPairs.get(first);
+        Object obj[] = KernPairs.get(first);
         if (obj == null) {
             obj = new Object[]{second, new Integer(kern)};
             KernPairs.put(first, obj);
@@ -812,12 +813,12 @@ class Type1Font extends BaseFont
     protected int[] getRawCharBBox(int c, String name) {
         Object metrics[];
         if (name == null) { // font specific
-            metrics = (Object[])CharMetrics.get(new Integer(c));
+            metrics = CharMetrics.get(new Integer(c));
         }
         else {
             if (name.equals(".notdef"))
                 return null;
-            metrics = (Object[])CharMetrics.get(name);
+            metrics = CharMetrics.get(name);
         }
         if (metrics != null)
             return ((int[])(metrics[3]));

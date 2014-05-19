@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-/* $Id$ */
+/* $Id: HyphenationTree.java 3192 2008-03-27 19:07:33Z xlv $ */
  
 package com.lowagie.text.pdf.hyphenation;
 
@@ -42,7 +42,7 @@ public class HyphenationTree extends TernaryTree
     /**
      * This map stores hyphenation exceptions
      */
-    protected HashMap stoplist;
+    protected HashMap<String, ArrayList<Object>> stoplist;
 
     /**
      * This map stores the character classes
@@ -55,7 +55,7 @@ public class HyphenationTree extends TernaryTree
     private transient TernaryTree ivalues;
 
     public HyphenationTree() {
-        stoplist = new HashMap(23);    // usually a small table
+        stoplist = new HashMap<String, ArrayList<Object>>(23);    // usually a small table
         classmap = new TernaryTree();
         vspace = new ByteVector();
         vspace.alloc(1);    // this reserves index 0, which we don't use
@@ -346,7 +346,7 @@ public class HyphenationTree extends TernaryTree
         String sw = new String(word, 1, len);
         if (stoplist.containsKey(sw)) {
             // assume only simple hyphens (Hyphen.pre="-", Hyphen.post = Hyphen.no = null)
-            ArrayList hw = (ArrayList)stoplist.get(sw);
+        	ArrayList<Object> hw = stoplist.get(sw);
             int j = 0;
             for (i = 0; i < hw.size(); i++) {
                 Object o = hw.get(i);
@@ -424,7 +424,7 @@ public class HyphenationTree extends TernaryTree
      * @param hyphenatedword a vector of alternating strings and
      * {@link Hyphen hyphen} objects.
      */
-    public void addException(String word, ArrayList hyphenatedword) {
+    public void addException(String word, ArrayList<Object> hyphenatedword) {
         stoplist.put(word, hyphenatedword);
     }
 

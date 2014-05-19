@@ -1,5 +1,5 @@
 /*
- * $Id$
+ * $Id: TrueTypeFont.java 4167 2009-12-13 04:05:50Z xlv $
  *
  * Copyright 2001-2006 Paulo Soares
  *
@@ -53,8 +53,9 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
+import java.util.HashSet;
 import java.util.Map;
+import com.lowagie.text.error_messages.MessageLocalization;
 
 import com.lowagie.text.Document;
 import com.lowagie.text.DocumentException;
@@ -140,7 +141,7 @@ class TrueTypeFont extends BaseFont {
      * is the offset from the start of the file and position 1 is the length
      * of the table.
      */
-    protected HashMap tables;
+    protected HashMap<String, int[]> tables;
     /** The file in use.
      */
     protected RandomAccessFileOrArray rf;
@@ -184,7 +185,7 @@ class TrueTypeFont extends BaseFont {
      * is the glyph number and position 1 is the glyph width normalized to 1000
      * units.
      */
-    protected HashMap cmap10;
+    protected HashMap<Integer, int[]> cmap10;
     /** The map containing the code information for the table 'cmap', encoding 3.1
      * in Unicode.
      * <P>
@@ -192,9 +193,9 @@ class TrueTypeFont extends BaseFont {
      * is the glyph number and position 1 is the glyph width normalized to 1000
      * units.
      */
-    protected HashMap cmap31;
+    protected HashMap<Integer, int[]> cmap31;
 
-    protected HashMap cmapExt;
+    protected HashMap<Integer, int[]> cmapExt;
 
     /** The map containing the kerning information. It represents the content of
      * table 'kern'. The key is an <CODE>Integer</CODE> where the top 16 bits
@@ -374,10 +375,10 @@ class TrueTypeFont extends BaseFont {
         if (fileName.toLowerCase().endsWith(".ttf") || fileName.toLowerCase().endsWith(".otf") || fileName.toLowerCase().endsWith(".ttc")) {
             process(ttfAfm, forceRead);
             if (!justNames && embedded && os_2.fsType == 2)
-                throw new DocumentException(fileName + style + " cannot be embedded due to licensing restrictions.");
+                throw new DocumentException(MessageLocalization.getComposedMessage("1.cannot.be.embedded.due.to.licensing.restrictions", fileName + style));
         }
         else
-            throw new DocumentException(fileName + style + " is not a TTF, OTF or TTC font file.");
+            throw new DocumentException(MessageLocalization.getComposedMessage("1.is.not.a.ttf.otf.or.ttc.font.file", fileName + style));
         if (!encoding.startsWith("#"))
             PdfEncodings.convertToBytes(" ", enc); // check if the encoding exists
         createEncoding();
@@ -405,9 +406,9 @@ class TrueTypeFont extends BaseFont {
      */
     void fillTables() throws DocumentException, IOException {
         int table_location[];
-        table_location = (int[])tables.get("head");
+        table_location = tables.get("head");
         if (table_location == null)
-            throw new DocumentException("Table 'head' does not exist in " + fileName + style);
+            throw new DocumentException(MessageLocalization.getComposedMessage("table.1.does.not.exist.in.2", "head", fileName + style));
         rf.seek(table_location[0] + 16);
         head.flags = rf.readUnsignedShort();
         head.unitsPerEm = rf.readUnsignedShort();
@@ -418,9 +419,9 @@ class TrueTypeFont extends BaseFont {
         head.yMax = rf.readShort();
         head.macStyle = rf.readUnsignedShort();
         
-        table_location = (int[])tables.get("hhea");
+        table_location = tables.get("hhea");
         if (table_location == null)
-            throw new DocumentException("Table 'hhea' does not exist " + fileName + style);
+            throw new DocumentException(MessageLocalization.getComposedMessage("table.1.does.not.exist.in.2", "hhea", fileName + style));
         rf.seek(table_location[0] + 4);
         hhea.Ascender = rf.readShort();
         hhea.Descender = rf.readShort();
@@ -434,9 +435,9 @@ class TrueTypeFont extends BaseFont {
         rf.skipBytes(12);
         hhea.numberOfHMetrics = rf.readUnsignedShort();
         
-        table_location = (int[])tables.get("OS/2");
+        table_location = tables.get("OS/2");
         if (table_location == null)
-            throw new DocumentException("Table 'OS/2' does not exist in " + fileName + style);
+            throw new DocumentException(MessageLocalization.getComposedMessage("table.1.does.not.exist.in.2", "OS/2", fileName + style));
         rf.seek(table_location[0]);
         int version = rf.readUnsignedShort();
         os_2.xAvgCharWidth = rf.readShort();
@@ -480,7 +481,7 @@ class TrueTypeFont extends BaseFont {
         else
             os_2.sCapHeight = (int)(0.7 * head.unitsPerEm);
         
-        table_location = (int[])tables.get("post");
+        table_location = tables.get("post");
         if (table_location == null) {
             italicAngle = -Math.atan2(hhea.caretSlopeRun, hhea.caretSlopeRise) * 180 / Math.PI;
             return;
@@ -502,9 +503,9 @@ class TrueTypeFont extends BaseFont {
      */
     String getBaseFont() throws DocumentException, IOException {
         int table_location[];
-        table_location = (int[])tables.get("name");
+        table_location = tables.get("name");
         if (table_location == null)
-            throw new DocumentException("Table 'name' does not exist in " + fileName + style);
+            throw new DocumentException(MessageLocalization.getComposedMessage("table.1.does.not.exist.in.2", "name", fileName + style));
         rf.seek(table_location[0] + 2);
         int numRecords = rf.readUnsignedShort();
         int startOfStorage = rf.readUnsignedShort();
@@ -534,13 +535,13 @@ class TrueTypeFont extends BaseFont {
      */    
     String[][] getNames(int id) throws DocumentException, IOException {
         int table_location[];
-        table_location = (int[])tables.get("name");
+        table_location = tables.get("name");
         if (table_location == null)
-            throw new DocumentException("Table 'name' does not exist in " + fileName + style);
+            throw new DocumentException(MessageLocalization.getComposedMessage("table.1.does.not.exist.in.2", "name", fileName + style));
         rf.seek(table_location[0] + 2);
         int numRecords = rf.readUnsignedShort();
         int startOfStorage = rf.readUnsignedShort();
-        ArrayList names = new ArrayList();
+        ArrayList<String[]> names = new ArrayList<String[]>();
         for (int k = 0; k < numRecords; ++k) {
             int platformID = rf.readUnsignedShort();
             int platformEncodingID = rf.readUnsignedShort();
@@ -565,7 +566,7 @@ class TrueTypeFont extends BaseFont {
         }
         String thisName[][] = new String[names.size()][];
         for (int k = 0; k < names.size(); ++k)
-            thisName[k] = (String[])names.get(k);
+            thisName[k] = names.get(k);
         return thisName;
     }
     
@@ -575,13 +576,13 @@ class TrueTypeFont extends BaseFont {
      */    
     String[][] getAllNames() throws DocumentException, IOException {
         int table_location[];
-        table_location = (int[])tables.get("name");
+        table_location = tables.get("name");
         if (table_location == null)
-            throw new DocumentException("Table 'name' does not exist in " + fileName + style);
+            throw new DocumentException(MessageLocalization.getComposedMessage("table.1.does.not.exist.in.2", "name", fileName + style));
         rf.seek(table_location[0] + 2);
         int numRecords = rf.readUnsignedShort();
         int startOfStorage = rf.readUnsignedShort();
-        ArrayList names = new ArrayList();
+        ArrayList<String[]> names = new ArrayList<String[]>();
         for (int k = 0; k < numRecords; ++k) {
             int platformID = rf.readUnsignedShort();
             int platformEncodingID = rf.readUnsignedShort();
@@ -604,13 +605,13 @@ class TrueTypeFont extends BaseFont {
         }
         String thisName[][] = new String[names.size()][];
         for (int k = 0; k < names.size(); ++k)
-            thisName[k] = (String[])names.get(k);
+            thisName[k] = names.get(k);
         return thisName;
     }
     
     void checkCff() {
         int table_location[];
-        table_location = (int[])tables.get("CFF ");
+        table_location = tables.get("CFF ");
         if (table_location != null) {
             cff = true;
             cffOffset = table_location[0];
@@ -625,7 +626,7 @@ class TrueTypeFont extends BaseFont {
      * @since	2.1.5
      */
     void process(byte ttfAfm[], boolean preload) throws DocumentException, IOException {
-        tables = new HashMap();
+        tables = new HashMap<String, int[]>();
         
         try {
             if (ttfAfm == null)
@@ -635,21 +636,21 @@ class TrueTypeFont extends BaseFont {
             if (ttcIndex.length() > 0) {
                 int dirIdx = Integer.parseInt(ttcIndex);
                 if (dirIdx < 0)
-                    throw new DocumentException("The font index for " + fileName + " must be positive.");
+                    throw new DocumentException(MessageLocalization.getComposedMessage("the.font.index.for.1.must.be.positive", fileName));
                 String mainTag = readStandardString(4);
                 if (!mainTag.equals("ttcf"))
-                    throw new DocumentException(fileName + " is not a valid TTC file.");
+                    throw new DocumentException(MessageLocalization.getComposedMessage("1.is.not.a.valid.ttc.file", fileName));
                 rf.skipBytes(4);
                 int dirCount = rf.readInt();
                 if (dirIdx >= dirCount)
-                    throw new DocumentException("The font index for " + fileName + " must be between 0 and " + (dirCount - 1) + ". It was " + dirIdx + ".");
+                    throw new DocumentException(MessageLocalization.getComposedMessage("the.font.index.for.1.must.be.between.0.and.2.it.was.3", fileName, String.valueOf(dirCount - 1), String.valueOf(dirIdx)));
                 rf.skipBytes(dirIdx * 4);
                 directoryOffset = rf.readInt();
             }
             rf.seek(directoryOffset);
             int ttId = rf.readInt();
             if (ttId != 0x00010000 && ttId != 0x4F54544F)
-                throw new DocumentException(fileName + " is not a valid TTF or OTF file.");
+                throw new DocumentException(MessageLocalization.getComposedMessage("1.is.not.a.valid.ttf.or.otf.file", fileName));
             int num_tables = rf.readUnsignedShort();
             rf.skipBytes(6);
             for (int k = 0; k < num_tables; ++k) {
@@ -723,9 +724,9 @@ class TrueTypeFont extends BaseFont {
      */
     protected void readGlyphWidths() throws DocumentException, IOException {
         int table_location[];
-        table_location = (int[])tables.get("hmtx");
+        table_location = tables.get("hmtx");
         if (table_location == null)
-            throw new DocumentException("Table 'hmtx' does not exist in " + fileName + style);
+            throw new DocumentException(MessageLocalization.getComposedMessage("table.1.does.not.exist.in.2", "hmtx", fileName + style));
         rf.seek(table_location[0]);
         GlyphWidths = new int[hhea.numberOfHMetrics];
         for (int k = 0; k < hhea.numberOfHMetrics; ++k) {
@@ -746,12 +747,12 @@ class TrueTypeFont extends BaseFont {
     
     private void readBbox() throws DocumentException, IOException {
         int tableLocation[];
-        tableLocation = (int[])tables.get("head");
+        tableLocation = tables.get("head");
         if (tableLocation == null)
-            throw new DocumentException("Table 'head' does not exist in " + fileName + style);
+            throw new DocumentException(MessageLocalization.getComposedMessage("table.1.does.not.exist.in.2", "head", fileName + style));
         rf.seek(tableLocation[0] + TrueTypeFontSubSet.HEAD_LOCA_FORMAT_OFFSET);
         boolean locaShortTable = (rf.readUnsignedShort() == 0);
-        tableLocation = (int[])tables.get("loca");
+        tableLocation = tables.get("loca");
         if (tableLocation == null)
             return;
         rf.seek(tableLocation[0]);
@@ -768,9 +769,9 @@ class TrueTypeFont extends BaseFont {
             for (int k = 0; k < entries; ++k)
                 locaTable[k] = rf.readInt();
         }
-        tableLocation = (int[])tables.get("glyf");
+        tableLocation = tables.get("glyf");
         if (tableLocation == null)
-            throw new DocumentException("Table 'glyf' does not exist in " + fileName + style);
+            throw new DocumentException(MessageLocalization.getComposedMessage("table.1.does.not.exist.in.2", "glyf", fileName + style));
         int tableGlyphOffset = tableLocation[0];
         bboxes = new int[locaTable.length - 1][];
         for (int glyph = 0; glyph < locaTable.length - 1; ++glyph) {
@@ -793,9 +794,9 @@ class TrueTypeFont extends BaseFont {
      */
     void readCMaps() throws DocumentException, IOException {
         int table_location[];
-        table_location = (int[])tables.get("cmap");
+        table_location = tables.get("cmap");
         if (table_location == null)
-            throw new DocumentException("Table 'cmap' does not exist in " + fileName + style);
+            throw new DocumentException(MessageLocalization.getComposedMessage("table.1.does.not.exist.in.2", "cmap", fileName + style));
         rf.seek(table_location[0]);
         rf.skipBytes(2);
         int num_tables = rf.readUnsignedShort();
@@ -871,8 +872,8 @@ class TrueTypeFont extends BaseFont {
         }
     }
 
-    HashMap readFormat12() throws IOException {
-        HashMap h = new HashMap();
+    HashMap<Integer, int[]> readFormat12() throws IOException {
+        HashMap<Integer, int[]> h = new HashMap<Integer, int[]>();
         rf.skipBytes(2);
         int table_lenght = rf.readInt();
         rf.skipBytes(4);
@@ -897,8 +898,8 @@ class TrueTypeFont extends BaseFont {
      * @return a <CODE>HashMap</CODE> representing this map
      * @throws IOException the font file could not be read
      */
-    HashMap readFormat0() throws IOException {
-        HashMap h = new HashMap();
+    HashMap<Integer, int[]> readFormat0() throws IOException {
+        HashMap<Integer, int[]> h = new HashMap<Integer, int[]>();
         rf.skipBytes(4);
         for (int k = 0; k < 256; ++k) {
             int r[] = new int[2];
@@ -914,8 +915,8 @@ class TrueTypeFont extends BaseFont {
      * @return a <CODE>HashMap</CODE> representing this map
      * @throws IOException the font file could not be read
      */
-    HashMap readFormat4() throws IOException {
-        HashMap h = new HashMap();
+    HashMap<Integer, int[]> readFormat4() throws IOException {
+        HashMap<Integer, int[]> h = new HashMap<Integer, int[]>();
         int table_lenght = rf.readUnsignedShort();
         rf.skipBytes(2);
         int segCount = rf.readUnsignedShort() / 2;
@@ -968,8 +969,8 @@ class TrueTypeFont extends BaseFont {
      * @return a <CODE>HashMap</CODE> representing this map
      * @throws IOException the font file could not be read
      */
-    HashMap readFormat6() throws IOException {
-        HashMap h = new HashMap();
+    HashMap<Integer, int[]> readFormat6() throws IOException {
+        HashMap<Integer, int[]> h = new HashMap<Integer, int[]>();
         rf.skipBytes(4);
         int start_code = rf.readUnsignedShort();
         int code_count = rf.readUnsignedShort();
@@ -987,7 +988,7 @@ class TrueTypeFont extends BaseFont {
      */
     void readKerning() throws IOException {
         int table_location[];
-        table_location = (int[])tables.get("kern");
+        table_location = tables.get("kern");
         if (table_location == null)
             return;
         rf.seek(table_location[0] + 2);
@@ -1053,10 +1054,10 @@ class TrueTypeFont extends BaseFont {
         dic.put(PdfName.CAPHEIGHT, new PdfNumber(os_2.sCapHeight * 1000 / head.unitsPerEm));
         dic.put(PdfName.DESCENT, new PdfNumber(os_2.sTypoDescender * 1000 / head.unitsPerEm));
         dic.put(PdfName.FONTBBOX, new PdfRectangle(
-        head.xMin * 1000 / head.unitsPerEm,
-        head.yMin * 1000 / head.unitsPerEm,
-        head.xMax * 1000 / head.unitsPerEm,
-        head.yMax * 1000 / head.unitsPerEm));
+        head.xMin * 1000f / head.unitsPerEm,
+        head.yMin * 1000f / head.unitsPerEm,
+        head.xMax * 1000f / head.unitsPerEm,
+        head.yMax * 1000f / head.unitsPerEm));
         if (cidset != null)
             dic.put(PdfName.CIDSET, cidset);
         if (cff) {
@@ -1164,18 +1165,18 @@ class TrueTypeFont extends BaseFont {
         }
     }
     
-    protected static int[] compactRanges(ArrayList ranges) {
-        ArrayList simp = new ArrayList();
+    protected static int[] compactRanges(ArrayList<int[]> ranges) {
+        ArrayList<int[]> simp = new ArrayList<int[]>();
         for (int k = 0; k < ranges.size(); ++k) {
-            int[] r = (int[])ranges.get(k);
+            int[] r = ranges.get(k);
             for (int j = 0; j < r.length; j += 2) {
                 simp.add(new int[]{Math.max(0, Math.min(r[j], r[j + 1])), Math.min(0xffff, Math.max(r[j], r[j + 1]))});
             }
         }
         for (int k1 = 0; k1 < simp.size() - 1; ++k1) {
             for (int k2 = k1 + 1; k2 < simp.size(); ++k2) {
-                int[] r1 = (int[])simp.get(k1);
-                int[] r2 = (int[])simp.get(k2);
+                int[] r1 = simp.get(k1);
+                int[] r2 = simp.get(k2);
                 if ((r1[0] >= r2[0] && r1[0] <= r2[1]) || (r1[1] >= r2[0] && r1[0] <= r2[1])) {
                     r1[0] = Math.min(r1[0], r2[0]);
                     r1[1] = Math.max(r1[1], r2[1]);
@@ -1186,17 +1187,17 @@ class TrueTypeFont extends BaseFont {
         }
         int[] s = new int[simp.size() * 2];
         for (int k = 0; k < simp.size(); ++k) {
-            int[] r = (int[])simp.get(k);
+            int[] r = simp.get(k);
             s[k * 2] = r[0];
             s[k * 2 + 1] = r[1];
         }
         return s;
     }
     
-    protected void addRangeUni(HashMap longTag, boolean includeMetrics, boolean subsetp) {
+    protected void addRangeUni(HashSet<Integer> longTag, boolean subsetp) {
         if (!subsetp && (subsetRanges != null || directoryOffset > 0)) {
             int[] rg = (subsetRanges == null && directoryOffset > 0) ? new int[]{0, 0xffff} : compactRanges(subsetRanges);
-            HashMap usemap;
+            HashMap<Integer, int[]> usemap;
             if (!fontSpecific && cmap31 != null) 
                 usemap = cmap31;
             else if (fontSpecific && cmap10 != null) 
@@ -1205,13 +1206,12 @@ class TrueTypeFont extends BaseFont {
                 usemap = cmap31;
             else 
                 usemap = cmap10;
-            for (Iterator it = usemap.entrySet().iterator(); it.hasNext();) {
-                Map.Entry e = (Map.Entry)it.next();
-                int[] v = (int[])e.getValue();
+            for (Map.Entry<Integer, int[]> e: usemap.entrySet()) {
+                int[] v = e.getValue();
                 Integer gi = new Integer(v[0]);
-                if (longTag.containsKey(gi))
+                if (longTag.contains(gi))
                     continue;
-                int c = ((Integer)e.getKey()).intValue();
+                int c = e.getKey().intValue();
                 boolean skip = true;
                 for (int k = 0; k < rg.length; k += 2) {
                     if (c >= rg[k] && c <= rg[k + 1]) {
@@ -1220,7 +1220,38 @@ class TrueTypeFont extends BaseFont {
                     }
                 }
                 if (!skip)
-                    longTag.put(gi, includeMetrics ? new int[]{v[0], v[1], c} : null);
+                    longTag.add(gi);
+            }
+        }
+    }
+    
+    protected void addRangeUni(HashMap<Integer, int[]> longTag, boolean subsetp) {
+        if (!subsetp && (subsetRanges != null || directoryOffset > 0)) {
+            int[] rg = (subsetRanges == null && directoryOffset > 0) ? new int[]{0, 0xffff} : compactRanges(subsetRanges);
+            HashMap<Integer, int[]> usemap;
+            if (!fontSpecific && cmap31 != null) 
+                usemap = cmap31;
+            else if (fontSpecific && cmap10 != null) 
+                usemap = cmap10;
+            else if (cmap31 != null) 
+                usemap = cmap31;
+            else 
+                usemap = cmap10;
+            for (Map.Entry<Integer, int[]> e: usemap.entrySet()) {
+                int[] v = e.getValue();
+                Integer gi = new Integer(v[0]);
+                if (longTag.containsKey(gi))
+                    continue;
+                int c = e.getKey().intValue();
+                boolean skip = true;
+                for (int k = 0; k < rg.length; k += 2) {
+                    if (c >= rg[k] && c <= rg[k + 1]) {
+                        skip = false;
+                        break;
+                    }
+                }
+                if (!skip)
+                    longTag.put(gi, new int[]{v[0], v[1], c});
             }
         }
     }
@@ -1257,7 +1288,7 @@ class TrueTypeFont extends BaseFont {
             else {
                 if (subsetp)
                     subsetPrefix = createSubsetPrefix();
-                HashMap glyphs = new HashMap();
+                HashSet<Integer> glyphs = new HashSet<Integer>();
                 for (int k = firstChar; k <= lastChar; ++k) {
                     if (shortTag[k] != 0) {
                         int[] metrics = null;
@@ -1273,10 +1304,10 @@ class TrueTypeFont extends BaseFont {
                                 metrics = getMetricsTT(unicodeDifferences[k]);
                         }
                         if (metrics != null)
-                            glyphs.put(new Integer(metrics[0]), null);
+                            glyphs.add(new Integer(metrics[0]));
                     }
                 }
-                addRangeUni(glyphs, false, subsetp);
+                addRangeUni(glyphs, subsetp);
                 byte[] b = null;
                 if (subsetp || directoryOffset != 0 || subsetRanges != null) {
                     TrueTypeFontSubSet sb = new TrueTypeFontSubSet(fileName, new RandomAccessFileOrArray(rf), glyphs, directoryOffset, true, !subsetp);
@@ -1401,15 +1432,15 @@ class TrueTypeFont extends BaseFont {
      */    
     public int[] getMetricsTT(int c) {
         if (cmapExt != null)
-            return (int[])cmapExt.get(new Integer(c));
+            return cmapExt.get(new Integer(c));
         if (!fontSpecific && cmap31 != null) 
-            return (int[])cmap31.get(new Integer(c));
+            return cmap31.get(new Integer(c));
         if (fontSpecific && cmap10 != null) 
-            return (int[])cmap10.get(new Integer(c));
+            return cmap10.get(new Integer(c));
         if (cmap31 != null) 
-            return (int[])cmap31.get(new Integer(c));
+            return cmap31.get(new Integer(c));
         if (cmap10 != null) 
-            return (int[])cmap10.get(new Integer(c));
+            return cmap10.get(new Integer(c));
         return null;
     }
 
@@ -1516,14 +1547,14 @@ class TrueTypeFont extends BaseFont {
     }
     
     protected int[] getRawCharBBox(int c, String name) {
-        HashMap map = null;
+        HashMap<Integer, int[]> map = null;
         if (name == null || cmap31 == null)
             map = cmap10;
         else
             map = cmap31;
         if (map == null)
             return null;
-        int metric[] = (int[])map.get(new Integer(c));
+        int metric[] = map.get(new Integer(c));
         if (metric == null || bboxes == null)
             return null;
         return bboxes[metric[0]];

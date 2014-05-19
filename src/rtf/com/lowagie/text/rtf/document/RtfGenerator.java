@@ -1,5 +1,5 @@
 /*
- * $Id$
+ * $Id: RtfGenerator.java 3626 2008-11-11 19:27:25Z xlv $
  *
  * Copyright 2007 by Howard Shank
  *
@@ -60,7 +60,7 @@ import com.lowagie.text.rtf.RtfElement;
 /**
  * The RtfGenerator creates the (\*\generator ...} element. 
  * 
- * @version $Id$
+ * @version $Id: RtfGenerator.java 3626 2008-11-11 19:27:25Z xlv $
  * @author Howard Shank (hgshank@yahoo.com)
  * @since 2.0.8 
  */

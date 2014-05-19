@@ -1,5 +1,5 @@
 /*
- * $Id$
+ * $Id: Chunk.java 4167 2009-12-13 04:05:50Z xlv $
  *
  * Copyright 1999, 2000, 2001, 2002 by Bruno Lowagie.
  *
@@ -53,6 +53,7 @@ import java.awt.Color;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
+import com.lowagie.text.error_messages.MessageLocalization;
 
 import com.lowagie.text.pdf.HyphenationEvent;
 import com.lowagie.text.pdf.PdfAction;
@@ -107,7 +108,7 @@ public class Chunk implements Element {
 	protected Font font = null;
 
 	/** Contains some of the attributes for this Chunk. */
-	protected HashMap attributes = null;
+	protected HashMap<String, Object> attributes = null;
 
 	// constructors
 
@@ -131,7 +132,7 @@ public class Chunk implements Element {
             font = new Font(ck.font);
         }
         if (ck.attributes != null) {
-            attributes = new HashMap(ck.attributes);
+            attributes = new HashMap<String, Object>(ck.attributes);
         }
     }
     
@@ -259,7 +260,7 @@ public class Chunk implements Element {
 	public Chunk(DrawInterface separator, float tabPosition, boolean newline) {
 		this(OBJECT_REPLACEMENT_CHARACTER, new Font());
 		if (tabPosition < 0) {
-			throw new IllegalArgumentException("A tab position may not be lower than 0; yours is " + tabPosition);
+			throw new IllegalArgumentException(MessageLocalization.getComposedMessage("a.tab.position.may.not.be.lower.than.0.yours.is.1", String.valueOf(tabPosition)));
 		}
 		setAttribute(TAB, new Object[] {separator, new Float(tabPosition), Boolean.valueOf(newline), new Float(0)});
 	}
@@ -315,8 +316,8 @@ public class Chunk implements Element {
 	 * 
 	 * @return an <CODE>ArrayList</CODE>
 	 */
-	public ArrayList getChunks() {
-		ArrayList tmp = new ArrayList();
+	public ArrayList<Chunk> getChunks() {
+		ArrayList<Chunk> tmp = new ArrayList<Chunk>();
 		tmp.add(this);
 		return tmp;
 	}
@@ -419,7 +420,7 @@ public class Chunk implements Element {
 	 * @return the attributes for this <CODE>Chunk</CODE>
 	 */
 
-	public HashMap getAttributes() {
+	public HashMap<String, Object> getAttributes() {
 		return attributes;
 	}
 
@@ -427,7 +428,7 @@ public class Chunk implements Element {
 	 * Sets the attributes all at once.
 	 * @param	attributes	the attributes of a Chunk
 	 */
-	public void setAttributes(HashMap attributes) {
+	public void setAttributes(HashMap<String, Object> attributes) {
 		this.attributes = attributes;
 	}
 
@@ -443,7 +444,7 @@ public class Chunk implements Element {
 
 	private Chunk setAttribute(String name, Object obj) {
 		if (attributes == null)
-			attributes = new HashMap();
+			attributes = new HashMap<String, Object>();
 		attributes.put(name, obj);
 		return this;
 	}
@@ -525,7 +526,7 @@ public class Chunk implements Element {
 	public Chunk setUnderline(Color color, float thickness, float thicknessMul,
 			float yPosition, float yPositionMul, int cap) {
 		if (attributes == null)
-			attributes = new HashMap();
+			attributes = new HashMap<String, Object>();
 		Object obj[] = {
 				color,
 				new float[] { thickness, thicknessMul, yPosition, yPositionMul, cap } };
@@ -875,4 +876,31 @@ public class Chunk implements Element {
 	/** Key for encoding. */
 	public static final String ENCODING = "ENCODING";
 
+	/**
+	 * Key for character spacing.
+	 */
+	public static final String CHAR_SPACING = "CHAR_SPACING";
+
+	/**
+	 * Sets the character spacing.
+	 * 
+	 * @param charSpace the character spacing value
+	 * @return this <CODE>Chunk</CODE>
+	 */
+	public Chunk setCharacterSpacing(float charSpace) {
+		return setAttribute(CHAR_SPACING, new Float(charSpace));
+	}
+	
+	/**
+	 * Gets the character spacing.
+	 * 
+	 * @return a value in float
+	 */
+	public float getCharacterSpacing() {
+		if (attributes != null && attributes.containsKey(CHAR_SPACING)) {
+			Float f = (Float) attributes.get(CHAR_SPACING);
+			return f.floatValue();
+		}
+		return 0.0f;
+	}
 }

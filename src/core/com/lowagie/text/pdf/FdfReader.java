@@ -54,7 +54,7 @@ import java.util.HashMap;
  */
 public class FdfReader extends PdfReader {
     
-    HashMap fields;
+    HashMap<String, PdfDictionary> fields;
     String fileSpec;
     PdfName encoding;
     
@@ -92,7 +92,7 @@ public class FdfReader extends PdfReader {
     }
     
     protected void readPdf() throws IOException {
-        fields = new HashMap();
+        fields = new HashMap<String, PdfDictionary>();
         try {
             tokens.checkFdfHeader();
             rebuildXref();
@@ -155,7 +155,7 @@ public class FdfReader extends PdfReader {
      * with the field content.
      * @return all the fields
      */    
-    public HashMap getFields() {
+    public HashMap<String, PdfDictionary> getFields() {
         return fields;
     }
     
@@ -164,7 +164,7 @@ public class FdfReader extends PdfReader {
      * @return the field dictionary
      */    
     public PdfDictionary getField(String name) {
-        return (PdfDictionary)fields.get(name);
+        return fields.get(name);
     }
     
     /** Gets the field value or <CODE>null</CODE> if the field does not
@@ -173,7 +173,7 @@ public class FdfReader extends PdfReader {
      * @return the field value or <CODE>null</CODE>
      */    
     public String getFieldValue(String name) {
-        PdfDictionary field = (PdfDictionary)fields.get(name);
+        PdfDictionary field = fields.get(name);
         if (field == null)
             return null;
         PdfObject v = getPdfObject(field.get(PdfName.V));

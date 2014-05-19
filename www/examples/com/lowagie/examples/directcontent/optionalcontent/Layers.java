@@ -1,5 +1,5 @@
 /*
- * $Id$
+ * $Id: Layers.java 3393 2008-05-16 21:33:55Z xlv $
  *
  * This code is part of the 'iText Tutorial'.
  * You can find the complete tutorial at the following address:
@@ -64,7 +64,7 @@ public class Layers {
             l4.setPrint("Print", true);
             l2.setOn(false);
             l3.setOn(false);
-            ArrayList radio = new ArrayList();
+            ArrayList<PdfLayer> radio = new ArrayList<PdfLayer>();
             radio.add(l1);
             radio.add(l2);
             radio.add(l3);

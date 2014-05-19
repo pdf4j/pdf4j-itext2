@@ -28,7 +28,7 @@ public class RunAllExamplesTest {
         r.testWindowsFonts();
     }
 
-    public void runSingleTest(Class c, String... args) {
+    public void runSingleTest(Class<?> c, String... args) {
         try {
             Method m = c.getMethod("main", String[].class);
             m.invoke(null, new Object[] {args});

@@ -1,5 +1,5 @@
 /*
- * $Id$
+ * $Id: RtfPictureList.java 3626 2008-11-11 19:27:25Z xlv $
  *
  * Copyright 2008 Howard Shank (hgshank@yahoo.com)
  *
@@ -61,7 +61,7 @@ import com.lowagie.text.rtf.document.RtfDocument;
 /**
  * The RtfPictureList2 manages the pictures for lists.
  * 
- * @version $Id$
+ * @version $Id: RtfPictureList.java 3626 2008-11-11 19:27:25Z xlv $
  * @author Howard Shank (hgshank@yahoo.com)
  * @since 2.1.3
  */

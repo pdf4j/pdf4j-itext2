@@ -1,5 +1,5 @@
 /*
- * $Id$
+ * $Id: RtfCodePageTest.java 3787 2009-03-17 01:25:12Z xlv $
  *
  * Copyright 2007 by Mark Hall
  *
@@ -62,7 +62,7 @@ import com.lowagie.text.rtf.RtfTestBase;
  * The <code>RtfCodePageTest</code> is a very simple junit test, that checks
  * that the <code>RtfCodePage</code> is producing the correct result.
  * 
- * @version $Id$
+ * @version $Id: RtfCodePageTest.java 3787 2009-03-17 01:25:12Z xlv $
  * @author Mark Hall (Mark.Hall@mail.room3b.eu)
  * @author Howard Shank (hgshank@yahoo.com)
  * @see com.lowagie.text.rtf.document.RtfCodePage

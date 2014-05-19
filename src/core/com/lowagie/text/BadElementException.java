@@ -1,5 +1,5 @@
 /*
- * $Id$
+ * $Id: BadElementException.java 3393 2008-05-16 21:33:55Z xlv $
  *
  * Copyright 1999, 2000, 2001, 2002 by Bruno Lowagie.
  *

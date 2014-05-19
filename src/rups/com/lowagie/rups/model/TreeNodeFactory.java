@@ -1,5 +1,5 @@
 /*
- * $Id$
+ * $Id: TreeNodeFactory.java 3788 2009-03-17 01:45:36Z xlv $
  *
  * Copyright 2007 Bruno Lowagie.
  *
@@ -91,8 +91,8 @@ public class TreeNodeFactory {
 			return;
 		case PdfObject.ARRAY:
 			PdfArray array = (PdfArray)object;
-			for (Iterator it = array.listIterator(); it.hasNext(); ) {
-				leaf = PdfObjectTreeNode.getInstance((PdfObject)it.next());
+			for (Iterator<PdfObject> it = array.listIterator(); it.hasNext(); ) {
+				leaf = PdfObjectTreeNode.getInstance(it.next());
 				addNodes(node, leaf);
 				expandNode(leaf);
 			}
@@ -100,8 +100,8 @@ public class TreeNodeFactory {
 		case PdfObject.DICTIONARY:
 		case PdfObject.STREAM:
 			PdfDictionary dict = (PdfDictionary)object;
-			for (Iterator it = dict.getKeys().iterator(); it.hasNext(); ) {
-				leaf = PdfObjectTreeNode.getInstance(dict, (PdfName)it.next());
+			for (Iterator<PdfName> it = dict.getKeys().iterator(); it.hasNext(); ) {
+				leaf = PdfObjectTreeNode.getInstance(dict, it.next());
 				addNodes(node, leaf);
 				expandNode(leaf);
 			}
@@ -114,11 +114,12 @@ public class TreeNodeFactory {
 	 * @param	node	the node with a dictionary among its children
 	 * @param	key		the key of the item corresponding with the node we need
 	 */
+    @SuppressWarnings("unchecked")
 	public PdfObjectTreeNode getChildNode(PdfObjectTreeNode node, PdfName key) {
-		Enumeration children = node.breadthFirstEnumeration();
+		Enumeration<PdfObjectTreeNode> children = node.breadthFirstEnumeration();
 		PdfObjectTreeNode child;
 		while (children.hasMoreElements()) {
-			child = (PdfObjectTreeNode)children.nextElement();
+			child = children.nextElement();
 			if (child.isDictionaryNode(key)) {
 				if (child.isIndirectReference()) {
 					expandNode(child);

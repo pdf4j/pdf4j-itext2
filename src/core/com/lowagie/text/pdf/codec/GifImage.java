@@ -53,6 +53,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
+import com.lowagie.text.error_messages.MessageLocalization;
 
 import com.lowagie.text.ExceptionConverter;
 import com.lowagie.text.Image;
@@ -113,7 +114,7 @@ public class GifImage {
     protected URL fromUrl;
 
 
-    protected ArrayList frames = new ArrayList();     // frames read from current file
+    protected ArrayList<GifFrame> frames = new ArrayList<GifFrame>();     // frames read from current file
 
     /** Reads gif images from an URL.
      * @param url the URL
@@ -179,7 +180,7 @@ public class GifImage {
      * @return the image
      */    
     public Image getImage(int frame) {
-        GifFrame gf = (GifFrame)frames.get(frame - 1);
+        GifFrame gf = frames.get(frame - 1);
         return gf.image;
     }
     
@@ -189,7 +190,7 @@ public class GifImage {
      * @return the [x,y] position of the frame
      */    
     public int[] getFramePosition(int frame) {
-        GifFrame gf = (GifFrame)frames.get(frame - 1);
+        GifFrame gf = frames.get(frame - 1);
         return new int[]{gf.ix, gf.iy};
         
     }
@@ -208,7 +209,7 @@ public class GifImage {
         readHeader();
         readContents();
         if (frames.isEmpty())
-            throw new IOException("The file does not contain any valid image.");
+            throw new IOException(MessageLocalization.getComposedMessage("the.file.does.not.contain.any.valid.image"));
     }
     
     /**
@@ -219,7 +220,7 @@ public class GifImage {
         for (int i = 0; i < 6; i++)
             id += (char)in.read();
         if (!id.startsWith("GIF8")) {
-            throw new IOException("Gif signature nor found.");
+            throw new IOException(MessageLocalization.getComposedMessage("gif.signature.nor.found"));
         }
         
         readLSD();

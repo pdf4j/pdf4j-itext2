@@ -1,5 +1,5 @@
 /*
- * $Id$
+ * $Id: Generic.java 3393 2008-05-16 21:33:55Z xlv $
  *
  * This code is part of the 'iText Tutorial'.
  * You can find the complete tutorial at the following address:
@@ -81,19 +81,19 @@ public class Generic extends PdfPageEventHelper {
 			ellipse.setGenericTag("ellipse");
 			p = new Paragraph("In this example, we will add chunks that are tagged as an ");
 			p.add(ellipse);
-			p.add(" and chunks that are tagged as a ");
+			p.addObject(" and chunks that are tagged as a ");
 			p.add(box);
-			p.add(". Can you see the difference between ");
+			p.addObject(". Can you see the difference between ");
 			Chunk c1 = new Chunk("this");
 			c1.setGenericTag("box");
 			Chunk c2 = new Chunk("that");
 			c2.setGenericTag("ellipse");
 			p.add(c1);
-			p.add(" and ");
+			p.addObject(" and ");
 			p.add(c2);
-			p.add("? One is a ");
+			p.addObject("? One is a ");
 			p.add(box);
-			p.add("; the other an ");
+			p.addObject("; the other an ");
 			p.add(ellipse);
 			document.add(p);
 		} catch (DocumentException de) {

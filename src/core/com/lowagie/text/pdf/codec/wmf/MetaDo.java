@@ -1,5 +1,6 @@
 /*
- * $Id$
+ * $Id: MetaDo.java 4167 2009-12-13 04:05:50Z xlv $
+ * $Name$
  *
  * Copyright 2001, 2002 Paulo Soares
  *
@@ -57,6 +58,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import com.lowagie.text.error_messages.MessageLocalization;
 
 import com.lowagie.text.DocumentException;
 import com.lowagie.text.Image;
@@ -151,7 +153,7 @@ public class MetaDo {
     
     public void readAll() throws IOException, DocumentException{
         if (in.readInt() != 0x9AC6CDD7) {
-            throw new DocumentException("Not a placeable windows metafile");
+            throw new DocumentException(MessageLocalization.getComposedMessage("not.a.placeable.windows.metafile"));
         }
         in.readWord();
         left = in.readShort();
@@ -364,14 +366,14 @@ public class MetaDo {
                     arc2 -= arc1;
                     if (arc2 <= 0)
                         arc2 += 360;
-                    ArrayList ar = PdfContentByte.bezierArc(l, b, r, t, arc1, arc2);
+                    ArrayList<float[]> ar = PdfContentByte.bezierArc(l, b, r, t, arc1, arc2);
                     if (ar.isEmpty())
                         break;
-                    float pt[] = (float [])ar.get(0);
+                    float pt[] = ar.get(0);
                     cb.moveTo(cx, cy);
                     cb.lineTo(pt[0], pt[1]);
                     for (int k = 0; k < ar.size(); ++k) {
-                        pt = (float [])ar.get(k);
+                        pt = ar.get(k);
                         cb.curveTo(pt[2], pt[3], pt[4], pt[5], pt[6], pt[7]);
                     }
                     cb.lineTo(cx, cy);
@@ -397,15 +399,15 @@ public class MetaDo {
                     arc2 -= arc1;
                     if (arc2 <= 0)
                         arc2 += 360;
-                    ArrayList ar = PdfContentByte.bezierArc(l, b, r, t, arc1, arc2);
+                    ArrayList<float[]> ar = PdfContentByte.bezierArc(l, b, r, t, arc1, arc2);
                     if (ar.isEmpty())
                         break;
-                    float pt[] = (float [])ar.get(0);
+                    float pt[] = ar.get(0);
                     cx = pt[0];
                     cy = pt[1];
                     cb.moveTo(cx, cy);
                     for (int k = 0; k < ar.size(); ++k) {
-                        pt = (float [])ar.get(k);
+                        pt = ar.get(k);
                         cb.curveTo(pt[2], pt[3], pt[4], pt[5], pt[6], pt[7]);
                     }
                     cb.lineTo(cx, cy);
@@ -680,7 +682,7 @@ public class MetaDo {
     
     public static byte[] wrapBMP(Image image) throws IOException {
         if (image.getOriginalType() != Image.ORIGINAL_BMP)
-            throw new IOException("Only BMP can be wrapped in WMF.");
+            throw new IOException(MessageLocalization.getComposedMessage("only.bmp.can.be.wrapped.in.wmf"));
         InputStream imgIn;
         byte data[] = null;
         if (image.getOriginalData() == null) {

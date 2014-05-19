@@ -1,5 +1,5 @@
 /*
- * $Id$
+ * $Id: RtfDestination.java 3393 2008-05-16 21:33:55Z xlv $
  *
  * Copyright 2007 by Howard Shank (hgshank@yahoo.com)
  *
@@ -49,7 +49,6 @@
 package com.lowagie.text.rtf.parser.destinations;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 
 import com.lowagie.text.rtf.parser.RtfParser;
 import com.lowagie.text.rtf.parser.ctrlwords.RtfCtrlWordData;
@@ -73,7 +72,7 @@ public abstract class RtfDestination {
 	protected RtfCtrlWordData lastCtrlWord = null;;
 	
 	/** The <code>RtfDestinationListener</code>. */
-    private static ArrayList listeners = new ArrayList();
+    private static ArrayList<RtfDestinationListener> listeners = new ArrayList<RtfDestinationListener>();
     
 	/**
 	 * Constructor.
@@ -165,9 +164,7 @@ public abstract class RtfDestination {
 	}
 	
 	protected RtfCtrlWordData beforeCtrlWord(RtfCtrlWordData ctrlWordData) {
-		RtfDestinationListener listener;
-		for (Iterator iterator = listeners.iterator(); iterator.hasNext();) {
-            listener = (RtfDestinationListener) iterator.next();
+		for (RtfDestinationListener listener: listeners) {
             listener.beforeCtrlWord(ctrlWordData);
         }
 		return null;
@@ -176,9 +173,7 @@ public abstract class RtfDestination {
 	 * 
 	 */
 	protected  RtfCtrlWordData onCtrlWord(RtfCtrlWordData ctrlWordData){
-		RtfDestinationListener listener;
-		for (Iterator iterator = listeners.iterator(); iterator.hasNext();) {
-            listener = (RtfDestinationListener) iterator.next();
+		for (RtfDestinationListener listener: listeners) {
             listener.onCtrlWord(ctrlWordData);
         }
 		return null;
@@ -188,9 +183,7 @@ public abstract class RtfDestination {
 	 * 
 	 */
 	protected  RtfCtrlWordData afterCtrlWord(RtfCtrlWordData ctrlWordData){
-		RtfDestinationListener listener;
-		for (Iterator iterator = listeners.iterator(); iterator.hasNext();) {
-            listener = (RtfDestinationListener) iterator.next();
+		for (RtfDestinationListener listener: listeners) {
             listener.afterCtrlWord(ctrlWordData);
         }
 		return null;
@@ -200,9 +193,7 @@ public abstract class RtfDestination {
 	 * 
 	 */
 	protected  int beforeCharacter(int ch){
-		RtfDestinationListener listener;
-		for (Iterator iterator = listeners.iterator(); iterator.hasNext();) {
-            listener = (RtfDestinationListener) iterator.next();
+		for (RtfDestinationListener listener: listeners) {
             listener.beforeCharacter(ch);
         }
 		return 0;
@@ -212,9 +203,7 @@ public abstract class RtfDestination {
 	 * 
 	 */
 	protected  int onCharacter(int ch){
-		RtfDestinationListener listener;
-		for (Iterator iterator = listeners.iterator(); iterator.hasNext();) {
-            listener = (RtfDestinationListener) iterator.next();
+		for (RtfDestinationListener listener: listeners) {
             listener.onCharacter(ch);
         }
 		return 0;
@@ -224,9 +213,7 @@ public abstract class RtfDestination {
 	 * 
 	 */
 	protected  int afterCharacter(int ch){
-		RtfDestinationListener listener;
-		for (Iterator iterator = listeners.iterator(); iterator.hasNext();) {
-            listener = (RtfDestinationListener) iterator.next();
+		for (RtfDestinationListener listener: listeners) {
             listener.afterCharacter(ch);
         }
 		return 0;
@@ -237,9 +224,7 @@ public abstract class RtfDestination {
 	 * @return true if all goes well
 	 */
 	protected  boolean onOpenGroup(){
-		RtfDestinationListener listener;
-		for (Iterator iterator = listeners.iterator(); iterator.hasNext();) {
-            listener = (RtfDestinationListener) iterator.next();
+		for (RtfDestinationListener listener: listeners) {
             listener.onOpenGroup();
         }
 		return true;
@@ -250,9 +235,7 @@ public abstract class RtfDestination {
 	 * @return true if all goes well
 	 */
 	protected  boolean onCloseGroup(){
-		RtfDestinationListener listener;
-		for (Iterator iterator = listeners.iterator(); iterator.hasNext();) {
-            listener = (RtfDestinationListener) iterator.next();
+		for (RtfDestinationListener listener: listeners) {
             listener.onCloseGroup();
         }
 		return true;

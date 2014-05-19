@@ -1,5 +1,5 @@
 /*
- * $Id$
+ * $Id: DocWriter.java 3989 2009-06-18 02:22:54Z xlv $
  *
  * Copyright 1999, 2000, 2001, 2002 by Bruno Lowagie.
  *
@@ -52,7 +52,6 @@ package com.lowagie.text;
 import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.Iterator;
 import java.util.Properties;
 
 import com.lowagie.text.pdf.OutputStreamCounter;
@@ -444,10 +443,8 @@ public abstract class DocWriter implements DocListener {
     protected boolean writeMarkupAttributes(Properties markup)
     throws IOException {
     	if (markup == null) return false;
-    	Iterator attributeIterator = markup.keySet().iterator();
-    	String name;
-    	while (attributeIterator.hasNext()) {
-    		name = String.valueOf(attributeIterator.next());
+    	for (Object o: markup.keySet()) {
+    		String name = String.valueOf(o);
     		write(name, markup.getProperty(name));
     	}
     	markup.clear();

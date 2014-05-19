@@ -55,7 +55,7 @@ import java.io.OutputStream;
  * data in memory.
  * More efficient than {@link RtfMemoryCache}.
  * 
- * @version $Id$
+ * @version $Id: RtfEfficientMemoryCache.java 3307 2008-05-01 19:55:48Z xlv $
  * @author Thomas Bickel (tmb99@inode.at)
  */
 public class RtfEfficientMemoryCache implements RtfDataCache 

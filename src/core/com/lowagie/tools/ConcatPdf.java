@@ -1,5 +1,5 @@
 /*
- * $Id$
+ * $Id: ConcatPdf.java 3393 2008-05-16 21:33:55Z xlv $
  *
  * Copyright 2002 by Mark Thompson
  *
@@ -51,6 +51,7 @@ package com.lowagie.tools;
 
 import java.io.FileOutputStream;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import com.lowagie.text.Document;
@@ -77,7 +78,7 @@ public class ConcatPdf {
         else {
             try {
                 int pageOffset = 0;
-                ArrayList master = new ArrayList();
+                ArrayList<HashMap<String, Object>> master = new ArrayList<HashMap<String, Object>>();
                 int f = 0;
                 String outFile = args[args.length-1];
                 Document document = null;
@@ -88,7 +89,7 @@ public class ConcatPdf {
                     reader.consolidateNamedDestinations();
                     // we retrieve the total number of pages
                     int n = reader.getNumberOfPages();
-                    List bookmarks = SimpleBookmark.getBookmark(reader);
+                    List<HashMap<String, Object>> bookmarks = SimpleBookmark.getBookmark(reader);
                     if (bookmarks != null) {
                         if (pageOffset != 0)
                             SimpleBookmark.shiftPageNumbers(bookmarks, pageOffset, null);

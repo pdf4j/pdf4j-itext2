@@ -49,6 +49,7 @@ package com.lowagie.text.pdf;
 import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Iterator;
+import com.lowagie.text.error_messages.MessageLocalization;
 
 import com.lowagie.text.Chunk;
 import com.lowagie.text.Element;
@@ -68,7 +69,7 @@ public class VerticalText {
     public static final int NO_MORE_COLUMN = 2;
 
 /** The chunks that form the text. */    
-    protected ArrayList chunks = new ArrayList();
+    protected ArrayList<PdfChunk> chunks = new ArrayList<PdfChunk>();
 
     /** The <CODE>PdfContent</CODE> where the text will be written to. */    
     protected PdfContentByte text;
@@ -118,8 +119,8 @@ public class VerticalText {
      * @param phrase the text
      */
     public void addText(Phrase phrase) {
-        for (Iterator j = phrase.getChunks().iterator(); j.hasNext();) {
-            chunks.add(new PdfChunk((Chunk)j.next(), null));
+        for (Chunk c: phrase.getChunks()) {
+            chunks.add(new PdfChunk(c, null));
         }
     }
     
@@ -173,7 +174,7 @@ public class VerticalText {
         PdfLine line = new PdfLine(0, width, alignment, 0);
         String total;
         for (currentChunkMarker = 0; currentChunkMarker < chunks.size(); ++currentChunkMarker) {
-            PdfChunk original = (PdfChunk)(chunks.get(currentChunkMarker));
+            PdfChunk original = chunks.get(currentChunkMarker);
             total = original.toString();
             currentStandbyChunk = line.add(original);
             if (currentStandbyChunk != null) {
@@ -195,7 +196,7 @@ public class VerticalText {
             chunks.clear();
             return;
         }
-        PdfChunk split = (PdfChunk)(chunks.get(currentChunkMarker));
+        PdfChunk split = chunks.get(currentChunkMarker);
         split.setValue(splittedChunkText);
         chunks.set(currentChunkMarker, currentStandbyChunk);
         for (int j = currentChunkMarker - 1; j >= 0; --j)
@@ -224,7 +225,7 @@ public class VerticalText {
             graphics = text.getDuplicate();
         }
         else if (!simulate)
-            throw new NullPointerException("VerticalText.go with simulate==false and text==null.");
+            throw new NullPointerException(MessageLocalization.getComposedMessage("verticaltext.go.with.simulate.eq.eq.false.and.text.eq.eq.null"));
         int status = 0;
         for (;;) {
             if (maxLines <= 0) {
@@ -260,8 +261,8 @@ public class VerticalText {
     void writeLine(PdfLine line, PdfContentByte text, PdfContentByte graphics) {
         PdfFont currentFont = null;
         PdfChunk chunk;
-        for (Iterator j = line.iterator(); j.hasNext(); ) {
-            chunk = (PdfChunk) j.next();
+        for (Iterator<PdfChunk> j = line.iterator(); j.hasNext(); ) {
+            chunk = j.next();
             
             if (chunk.font().compareTo(currentFont) != 0) {
                 currentFont = chunk.font();

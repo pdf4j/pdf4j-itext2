@@ -1,4 +1,4 @@
-/* $Id$
+/* $Id: RtfCtrlWordData.java 3393 2008-05-16 21:33:55Z xlv $
  *
  * Copyright 2007 by Howard Shank (hgshank@yahoo.com)
  *
@@ -151,7 +151,7 @@ public class RtfCtrlWordData implements Cloneable {
 	}
 	
 	public Object clone() throws CloneNotSupportedException{
-		Object cl = (RtfCtrlWordData)super.clone();
+		Object cl = super.clone();
 		return cl;
 	}
 }

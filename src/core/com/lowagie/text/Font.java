@@ -1,5 +1,5 @@
 /*
- * $Id$
+ * $Id: Font.java 4167 2009-12-13 04:05:50Z xlv $
  *
  * Copyright 1999, 2000, 2001, 2002 by Bruno Lowagie.
  *
@@ -69,7 +69,7 @@ import com.lowagie.text.pdf.BaseFont;
  * </BLOCKQUOTE>
  */
 
-public class Font implements Comparable {
+public class Font implements Comparable<Font> {
 
 	// static membervariables for the different families
 
@@ -277,17 +277,14 @@ public class Font implements Comparable {
 	/**
 	 * Compares this <CODE>Font</CODE> with another
 	 * 
-	 * @param object
+	 * @param font
 	 *            the other <CODE>Font</CODE>
 	 * @return a value
 	 */
-	public int compareTo(Object object) {
-		if (object == null) {
+	public int compareTo(Font font) {
+		if (font == null) {
 			return -1;
 		}
-		Font font;
-		try {
-			font = (Font) object;
 			if (baseFont != null && !baseFont.equals(font.getBaseFont())) {
 				return -2;
 			}
@@ -313,9 +310,6 @@ public class Font implements Comparable {
 				return 0;
 			}
 			return 4;
-		} catch (ClassCastException cce) {
-			return -3;
-		}
 	}
 
 	// FAMILY
@@ -495,7 +489,7 @@ public class Font implements Comparable {
 	}
 
 	/**
-	 * checks if this font is Bold.
+	 * checks if this font is italic.
 	 * 
 	 * @return a <CODE>boolean</CODE>
 	 */

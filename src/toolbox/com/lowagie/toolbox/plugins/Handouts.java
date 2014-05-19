@@ -1,5 +1,5 @@
 /*
- * $Id$
+ * $Id: Handouts.java 3307 2008-05-01 19:55:48Z xlv $
  * Copyright (c) 2005-2007 Bruno Lowagie, Carsten Hammer
  *
  * Permission is hereby granted, free of charge, to any person
@@ -61,7 +61,7 @@ import com.lowagie.toolbox.arguments.filters.PdfFilter;
 public class Handouts extends AbstractTool {
 
 	static {
-		addVersion("$Id$");
+		addVersion("$Id: Handouts.java 3307 2008-05-01 19:55:48Z xlv $");
 	}
 
 	/**

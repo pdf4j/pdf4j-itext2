@@ -1,5 +1,5 @@
 /*
- * $Id$
+ * $Id: XmpWriter.java 3989 2009-06-18 02:22:54Z xlv $
  *
  * Copyright 2005 by Bruno Lowagie.
  *
@@ -53,7 +53,6 @@ import com.lowagie.text.pdf.PdfWriter;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
-import java.util.Iterator;
 import java.util.Map;
 
 import com.lowagie.text.pdf.PdfDate;
@@ -205,10 +204,8 @@ public class XmpWriter {
         	DublinCoreSchema dc = new DublinCoreSchema();
         	PdfSchema p = new PdfSchema();
         	XmpBasicSchema basic = new XmpBasicSchema();
-        	PdfName key;
         	PdfObject obj;
-        	for (Iterator it = info.getKeys().iterator(); it.hasNext();) {
-        		key = (PdfName)it.next();
+        	for (PdfName key: info.getKeys()) {
         		obj = info.get(key);
         		if (obj == null)
         			continue;
@@ -257,7 +254,7 @@ public class XmpWriter {
      * @param info
      * @throws IOException
      */
-    public XmpWriter(OutputStream os, Map info) throws IOException {
+    public XmpWriter(OutputStream os, Map<String, String> info) throws IOException {
         this(os);
         if (info != null) {
         	DublinCoreSchema dc = new DublinCoreSchema();
@@ -265,10 +262,9 @@ public class XmpWriter {
         	XmpBasicSchema basic = new XmpBasicSchema();
         	String key;
         	String value;
-        	for (Iterator it = info.entrySet().iterator(); it.hasNext();) {
-        		Map.Entry entry = (Map.Entry) it.next();
-        		key = (String) entry.getKey();
-        		value = (String) entry.getValue();
+        	for (Map.Entry<String, String> entry: info.entrySet()) {
+        		key = entry.getKey();
+        		value = entry.getValue();
         		if (value == null)
         			continue;
         		if ("Title".equals(key)) {

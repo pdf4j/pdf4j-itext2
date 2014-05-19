@@ -1,5 +1,5 @@
 /*
- * $Id$
+ * $Id: Barcodes.java 3787 2009-03-17 01:25:12Z xlv $
  *
  * This code is part of the 'iText Tutorial'.
  * You can find the complete tutorial at the following address:

@@ -249,9 +249,9 @@ public class SequenceList {
      * @param maxNumber the maximum number in the range
      * @return a list with the numbers as <CODE>Integer</CODE>
      */    
-    public static List expand(String ranges, int maxNumber) {
+    public static List<Integer> expand(String ranges, int maxNumber) {
         SequenceList parse = new SequenceList(ranges);
-        LinkedList list = new LinkedList();
+        LinkedList<Integer> list = new LinkedList<Integer>();
         boolean sair = false;
         while (!sair) {
             sair = parse.getAttributes();
@@ -272,8 +272,8 @@ public class SequenceList {
                     parse.low = parse.high;
                     parse.high = t;
                 }
-                for (ListIterator it = list.listIterator(); it.hasNext();) {
-                    int n = ((Integer)it.next()).intValue();
+                for (ListIterator<Integer> it = list.listIterator(); it.hasNext();) {
+                    int n = it.next().intValue();
                     if (parse.even && (n & 1) == 1)
                         continue;
                     if (parse.odd && (n & 1) == 0)

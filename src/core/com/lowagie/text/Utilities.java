@@ -1,5 +1,5 @@
 /*
- * $Id$
+ * $Id: Utilities.java 3561 2008-07-15 22:17:57Z xlv $
  *
  * Copyright 2007 by Bruno Lowagie.
  *
@@ -74,8 +74,8 @@ public class Utilities {
 	 *            a Hashtable
 	 * @return the keyset of a Hashtable (or an empty set if table is null)
 	 */
-	public static Set getKeySet(Hashtable table) {
-		return (table == null) ? Collections.EMPTY_SET : table.keySet();
+	public static <K, V>  Set<K> getKeySet(Hashtable<K, V> table) {
+		return (table == null) ? Collections.<K>emptySet() : table.keySet();
 	}
 
 	/**

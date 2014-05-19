@@ -1,5 +1,6 @@
 /*
- * $Id$
+ * $Id: PdfPageLabels.java 4167 2009-12-13 04:05:50Z xlv $
+ * $Name$
  *
  * Copyright 2001, 2002 Paulo Soares
  *
@@ -52,6 +53,7 @@ package com.lowagie.text.pdf;
 import com.lowagie.text.ExceptionConverter;
 import java.io.IOException;
 import java.util.HashMap;
+import com.lowagie.text.error_messages.MessageLocalization;
 
 import com.lowagie.text.factories.RomanAlphabetFactory;
 import com.lowagie.text.factories.RomanNumberFactory;
@@ -90,12 +92,12 @@ public class PdfPageLabels {
                 new PdfName("r"), PdfName.A, new PdfName("a")};
     /** The sequence of logical pages. Will contain at least a value for page 1
      */    
-    private HashMap map;
+    private HashMap<Integer, PdfDictionary> map;
     
     /** Creates a new PdfPageLabel with a default logical page 1
      */
     public PdfPageLabels() {
-        map = new HashMap();
+        map = new HashMap<Integer, PdfDictionary>();
         addPageLabel(1, DECIMAL_ARABIC_NUMERALS, null, 1);
     }
 
@@ -107,7 +109,7 @@ public class PdfPageLabels {
      */    
     public void addPageLabel(int page, int numberStyle, String text, int firstPage) {
         if (page < 1 || firstPage < 1)
-            throw new IllegalArgumentException("In a page label the page numbers must be greater or equal to 1.");
+            throw new IllegalArgumentException(MessageLocalization.getComposedMessage("in.a.page.label.the.page.numbers.must.be.greater.or.equal.to.1"));
         PdfDictionary dic = new PdfDictionary();
         if (numberStyle >= 0 && numberStyle < numberingStyle.length)
             dic.put(PdfName.S, numberingStyle[numberStyle]);
@@ -180,7 +182,7 @@ public class PdfPageLabels {
 		
 		String[] labelstrings = new String[n];
 		
-		HashMap numberTree = PdfNumberTree.readTree(labels);
+		HashMap<Integer, PdfObject> numberTree = PdfNumberTree.readTree(labels);
 		
 		int pagecount = 1;
 		Integer current;
@@ -189,7 +191,7 @@ public class PdfPageLabels {
 		for (int i = 0; i < n; i++) {
 			current = new Integer(i);
 			if (numberTree.containsKey(current)) {
-				PdfDictionary d = (PdfDictionary)PdfReader.getPdfObjectRelease((PdfObject)numberTree.get(current));
+				PdfDictionary d = (PdfDictionary)PdfReader.getPdfObjectRelease(numberTree.get(current));
 				if (d.contains(PdfName.ST)) {
 					pagecount = ((PdfNumber)d.get(PdfName.ST)).intValue();
 				}
@@ -236,9 +238,9 @@ public class PdfPageLabels {
         PdfDictionary labels = (PdfDictionary)PdfReader.getPdfObjectRelease(dict.get(PdfName.PAGELABELS));
         if (labels == null) 
             return null;
-        HashMap numberTree = PdfNumberTree.readTree(labels);
+        HashMap<Integer, PdfObject> numberTree = PdfNumberTree.readTree(labels);
         Integer numbers[] = new Integer[numberTree.size()];
-        numbers = (Integer[])numberTree.keySet().toArray(numbers);
+        numbers = numberTree.keySet().toArray(numbers);
         Arrays.sort(numbers);
         PdfPageLabelFormat[] formats = new PdfPageLabelFormat[numberTree.size()];
         String prefix;
@@ -246,7 +248,7 @@ public class PdfPageLabels {
         int pagecount;
         for (int k = 0; k < numbers.length; ++k) {
             Integer key = numbers[k];
-            PdfDictionary d = (PdfDictionary)PdfReader.getPdfObjectRelease((PdfObject)numberTree.get(key));
+            PdfDictionary d = (PdfDictionary)PdfReader.getPdfObjectRelease(numberTree.get(key));
             if (d.contains(PdfName.ST)) {
                 pagecount = ((PdfNumber)d.get(PdfName.ST)).intValue();
             } else {

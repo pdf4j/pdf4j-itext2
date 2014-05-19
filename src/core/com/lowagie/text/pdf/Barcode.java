@@ -1,5 +1,5 @@
 /*
- * $Id$
+ * $Id: Barcode.java 3192 2008-03-27 19:07:33Z xlv $
  *
  * Copyright 2002-2006 by Paulo Soares.
  *

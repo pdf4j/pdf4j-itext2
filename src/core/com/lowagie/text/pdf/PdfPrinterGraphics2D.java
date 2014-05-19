@@ -1,5 +1,5 @@
 /*
- * $Id$
+ * $Id: PdfPrinterGraphics2D.java 3393 2008-05-16 21:33:55Z xlv $
  *
  * Copyright 2004 Paulo Soares and Alexandru Carstoiu
  *

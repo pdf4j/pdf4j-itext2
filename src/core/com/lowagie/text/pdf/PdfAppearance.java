@@ -56,7 +56,7 @@ import com.lowagie.text.Rectangle;
 
 public class PdfAppearance extends PdfTemplate {
     
-    public static final HashMap stdFieldFontNames = new HashMap();
+    public static final HashMap<String, PdfName> stdFieldFontNames = new HashMap<String, PdfName>();
     static {
         stdFieldFontNames.put("Courier-BoldOblique", new PdfName("CoBO"));
         stdFieldFontNames.put("Courier-Bold", new PdfName("CoBo"));
@@ -143,7 +143,7 @@ public class PdfAppearance extends PdfTemplate {
         }
         else
             state.fontDetails = writer.addSimple(bf);
-        PdfName psn = (PdfName)stdFieldFontNames.get(bf.getPostscriptFontName());
+        PdfName psn = stdFieldFontNames.get(bf.getPostscriptFontName());
         if (psn == null) {
             if (bf.isSubset() && bf.getFontType() == BaseFont.FONT_TYPE_TTUNI)
                 psn = state.fontDetails.getFontName();

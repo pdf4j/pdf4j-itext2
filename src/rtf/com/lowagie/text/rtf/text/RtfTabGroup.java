@@ -1,5 +1,5 @@
 /*
- * $Id$
+ * $Id: RtfTabGroup.java 3393 2008-05-16 21:33:55Z xlv $
  *
  * Copyright 2001, 2002, 2003, 2004 by Mark Hall
  *
@@ -70,7 +70,7 @@ import com.lowagie.text.rtf.RtfAddableElement;
  * para.add(tabs);<br />
  * para.add("\tLeft aligned\tCentre aligned\t12,45\tRight aligned");</code>
  * 
- * @version $Id$
+ * @version $Id: RtfTabGroup.java 3393 2008-05-16 21:33:55Z xlv $
  * @author Mark Hall (Mark.Hall@mail.room3b.eu)
  * @author Thomas Bickel (tmb99@inode.at)
  */
@@ -78,13 +78,13 @@ public class RtfTabGroup extends RtfAddableElement {
 	/**
 	 * The tabs to add.
 	 */
-	private ArrayList tabs = null;
+	private ArrayList<RtfTab> tabs = null;
 
 	/**
 	 * Constructs an empty RtfTabGroup.
 	 */
 	public RtfTabGroup() {
-		this.tabs = new ArrayList();
+		this.tabs = new ArrayList<RtfTab>();
 	}
 	
 	/**
@@ -92,11 +92,11 @@ public class RtfTabGroup extends RtfAddableElement {
 	 * 
 	 * @param tabs An ArrayList with the RtfTabs to group in this RtfTabGroup.
 	 */
-	public RtfTabGroup(ArrayList tabs) {
-		this.tabs = new ArrayList();
+	public RtfTabGroup(ArrayList<Object> tabs) {
+		this.tabs = new ArrayList<RtfTab>();
 		for(int i = 0; i < tabs.size(); i++) {
 			if(tabs.get(i) instanceof RtfTab) {
-				this.tabs.add(tabs.get(i));
+				this.tabs.add((RtfTab)tabs.get(i));
 			}
 		}
 	}
@@ -116,7 +116,7 @@ public class RtfTabGroup extends RtfAddableElement {
     public void writeContent(final OutputStream result) throws IOException
     {
     	for(int i = 0; i < this.tabs.size(); i++) {
-    		RtfTab rt = (RtfTab) this.tabs.get(i);
+    		RtfTab rt = this.tabs.get(i);
     		rt.writeContent(result);
     	}
     }        

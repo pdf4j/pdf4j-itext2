@@ -1,5 +1,5 @@
 /*
- * $Id$
+ * $Id: RtfDestinationMgr.java 3393 2008-05-16 21:33:55Z xlv $
  *
  * Copyright 2007 by Howard Shank
  *
@@ -73,12 +73,12 @@ public final class RtfDestinationMgr {
 	 * discarding unwanted data. This is primarily used when
 	 * skipping groups, binary data or unwanted/unknown data.
 	 */
-	private static HashMap destinations = new HashMap(300, 0.95f);
+	private static HashMap<String, RtfDestination> destinations = new HashMap<String, RtfDestination>(300, 0.95f);
 	/**
 	 * Destination objects.
 	 * There is only one of each destination.
 	 */
-	private static HashMap destinationObjects = new HashMap(10, 0.95f);
+	private static HashMap<String, RtfDestination> destinationObjects = new HashMap<String, RtfDestination>(10, 0.95f);
 	
 	private static boolean ignoreUnknownDestinations = false;
 	
@@ -94,7 +94,7 @@ public final class RtfDestinationMgr {
 	public static final String DESTINATION_DOCUMENT = "document";
 	
 	/**
-	 * Hidden default constructor becuase
+	 * Hidden default constructor because
 	 */
 	private RtfDestinationMgr() {
 	}
@@ -129,12 +129,12 @@ public final class RtfDestinationMgr {
 	public static RtfDestination getDestination(String destination) {
 		RtfDestination dest = null;
 		if(destinations.containsKey(destination)) {
-			dest = (RtfDestination)destinations.get(destination);
+			dest = destinations.get(destination);
 		} else {
 			if(ignoreUnknownDestinations) {
-				dest = (RtfDestination)destinations.get(DESTINATION_NULL);
+				dest = destinations.get(DESTINATION_NULL);
 			} else {
-				dest = (RtfDestination)destinations.get(DESTINATION_DOCUMENT);
+				dest = destinations.get(DESTINATION_DOCUMENT);
 			}
 		}
 		dest.setParser(RtfDestinationMgr.rtfParser);
@@ -153,7 +153,7 @@ public final class RtfDestinationMgr {
 			return true;
 		}
 		
-		Class value = null;
+		Class<?> value = null;
 	
 		try {
 			value = Class.forName(thisClass);
@@ -166,7 +166,7 @@ public final class RtfDestinationMgr {
 		RtfDestination c = null;
 		
 		if(destinationObjects.containsKey(value.getName())) {
-			c = (RtfDestination)destinationObjects.get(value.getName());		
+			c = destinationObjects.get(value.getName());		
 		} else {
 			try {
 				c = (RtfDestination)value.newInstance();

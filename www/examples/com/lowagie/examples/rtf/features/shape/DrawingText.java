@@ -1,5 +1,5 @@
 /*
- * $Id$
+ * $Id: DrawingText.java 3393 2008-05-16 21:33:55Z xlv $
  *
  * This code is free software. It may only be copied or modified
  * if you include the following copyright notice:
@@ -32,7 +32,7 @@ import com.lowagie.text.rtf.graphic.RtfShapePosition;
  * The DrawingText example demonstrates setting text into an RTF drawing object.
  * This text cannot be styled.
  * 
- * @version $Revision$
+ * @version $Revision: 3393 $
  * @author Mark Hall (Mark.Hall@mail.room3b.eu)
  */
 public class DrawingText {

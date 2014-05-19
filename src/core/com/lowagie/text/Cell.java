@@ -1,5 +1,6 @@
 /*
- * $Id$
+ * $Id: Cell.java 4167 2009-12-13 04:05:50Z xlv $
+ * $Name$
  *
  * Copyright 1999, 2000, 2001, 2002 by Bruno Lowagie.
  *
@@ -51,6 +52,7 @@ package com.lowagie.text;
 
 import java.util.ArrayList;
 import java.util.Iterator;
+import com.lowagie.text.error_messages.MessageLocalization;
 
 import com.lowagie.text.pdf.PdfPCell;
 
@@ -97,7 +99,7 @@ public class Cell extends Rectangle implements TextElementArray {
 	 * The <CODE>ArrayList</CODE> of <CODE>Element</CODE>s
 	 * that are part of the content of the Cell.
 	 */
-	protected ArrayList arrayList = null;
+	protected ArrayList<Element> arrayList = null;
 
 	/** The horizontal alignment of the cell content. */
 	protected int horizontalAlignment = Element.ALIGN_UNDEFINED;
@@ -172,7 +174,7 @@ public class Cell extends Rectangle implements TextElementArray {
 		setBorder(UNDEFINED);
 		setBorderWidth(0.5f);
 		// initializes the arraylist
-		arrayList = new ArrayList();
+		arrayList = new ArrayList<Element>();
 	}
 
 	/**
@@ -247,10 +249,10 @@ public class Cell extends Rectangle implements TextElementArray {
 	 *
 	 * @return	an <CODE>ArrayList</CODE>
 	 */
-	public ArrayList getChunks() {
-		ArrayList tmp = new ArrayList();
-		for (Iterator i = arrayList.iterator(); i.hasNext(); ) {
-			tmp.addAll(((Element) i.next()).getChunks());
+	public ArrayList<Chunk> getChunks() {
+		ArrayList<Chunk> tmp = new ArrayList<Chunk>();
+		for (Element e: arrayList) {
+			tmp.addAll(e.getChunks());
 		}
 		return tmp;
 	}
@@ -537,7 +539,7 @@ public class Cell extends Rectangle implements TextElementArray {
 	 *
 	 * @return	an <CODE>Iterator</CODE>.
 	 */
-	public Iterator getElements() {
+	public Iterator<Element> getElements() {
 		return arrayList.iterator();
 	}
 	
@@ -558,7 +560,7 @@ public class Cell extends Rectangle implements TextElementArray {
 			case 0:
 				return true;
 			case 1:
-				Element element = (Element) arrayList.get(0);
+				Element element = arrayList.get(0);
 				switch (element.type()) {
 					case Element.CHUNK:
 						return ((Chunk) element).isEmpty();
@@ -591,7 +593,7 @@ public class Cell extends Rectangle implements TextElementArray {
 	 */
 	public boolean isTable() {
 		return (size() == 1)
-			&& (((Element)arrayList.get(0)).type() == Element.TABLE);
+			&& (arrayList.get(0).type() == Element.TABLE);
 	}
 	
 	/**
@@ -616,7 +618,7 @@ public class Cell extends Rectangle implements TextElementArray {
 			case Element.LISTITEM:
 			case Element.ROW:
 			case Element.CELL:
-				throw new BadElementException("You can't add listitems, rows or cells to a cell.");
+				throw new BadElementException(MessageLocalization.getComposedMessage("you.can.t.add.listitems.rows.or.cells.to.a.cell"));
 			case Element.LIST:
 				List list = (List)element;
 				if (Float.isNaN(leading)) {
@@ -665,8 +667,8 @@ public class Cell extends Rectangle implements TextElementArray {
 					tmp = new Cell();
 					tmp.setBorder(NO_BORDER);
 					tmp.setColspan(3);
-					for (Iterator i = arrayList.iterator(); i.hasNext(); ) {
-						tmp.add(i.next());
+					for (Element e: arrayList) {
+						tmp.add(e);
 					}
 					table.addCell(tmp);
 				}
@@ -692,9 +694,28 @@ public class Cell extends Rectangle implements TextElementArray {
 	 * @param o the object to add
 	 * @return always <CODE>true</CODE>
 	 */
-	public boolean add(Object o) {
+	public boolean addObject(Object o) {
 		try {
 			this.addElement((Element) o);
+			return true;
+		}
+		catch(ClassCastException cce) {
+			throw new ClassCastException(MessageLocalization.getComposedMessage("you.can.only.add.objects.that.implement.the.element.interface"));
+		}
+		catch(BadElementException bee) {
+			throw new ClassCastException(bee.getMessage());
+		}
+	}
+
+	/**
+	 * Add an <CODE>Object</CODE> to this cell.
+	 *
+	 * @param o the object to add
+	 * @return always <CODE>true</CODE>
+	 */
+	public boolean add(Element o) {
+		try {
+			this.addElement(o);
 			return true;
 		}
 		catch(ClassCastException cce) {
@@ -724,7 +745,7 @@ public class Cell extends Rectangle implements TextElementArray {
 	 * @throws BadElementException
 	 */
 	public PdfPCell createPdfPCell() throws BadElementException {
-		if (rowspan > 1) throw new BadElementException("PdfPCells can't have a rowspan > 1");
+		if (rowspan > 1) throw new BadElementException(MessageLocalization.getComposedMessage("pdfpcells.can.t.have.a.rowspan.gt.1"));
 		if (isTable()) return new PdfPCell(((Table)arrayList.get(0)).createPdfPTable());
 		PdfPCell cell = new PdfPCell();
 		cell.setVerticalAlignment(verticalAlignment);
@@ -735,8 +756,8 @@ public class Cell extends Rectangle implements TextElementArray {
 		cell.setLeading(getLeading(), 0);
 		cell.cloneNonPositionParameters(this);
 		cell.setNoWrap(getMaxLines() == 1);
-		for (Iterator i = getElements(); i.hasNext(); ) {
-            Element e = (Element)i.next();
+		for (Iterator<Element> i = getElements(); i.hasNext(); ) {
+            Element e = i.next();
             if (e.type() == Element.PHRASE || e.type() == Element.PARAGRAPH) {
                 Paragraph p = new Paragraph((Phrase)e);
                 p.setAlignment(horizontalAlignment);
@@ -754,7 +775,7 @@ public class Cell extends Rectangle implements TextElementArray {
 	 * @return NA
 	 */
 	public float getTop() {
-		throw new UnsupportedOperationException("Dimensions of a Cell can't be calculated. See the FAQ.");
+		throw new UnsupportedOperationException(MessageLocalization.getComposedMessage("dimensions.of.a.cell.can.t.be.calculated.see.the.faq"));
 	}
 
 	/**
@@ -762,7 +783,7 @@ public class Cell extends Rectangle implements TextElementArray {
 	 * @return NA
 	 */
 	public float getBottom() {
-		throw new UnsupportedOperationException("Dimensions of a Cell can't be calculated. See the FAQ.");
+		throw new UnsupportedOperationException(MessageLocalization.getComposedMessage("dimensions.of.a.cell.can.t.be.calculated.see.the.faq"));
 	}
 
 	/**
@@ -770,7 +791,7 @@ public class Cell extends Rectangle implements TextElementArray {
 	 * @return NA
 	 */
 	public float getLeft() {
-		throw new UnsupportedOperationException("Dimensions of a Cell can't be calculated. See the FAQ.");
+		throw new UnsupportedOperationException(MessageLocalization.getComposedMessage("dimensions.of.a.cell.can.t.be.calculated.see.the.faq"));
 	}
 
 	/**
@@ -778,7 +799,7 @@ public class Cell extends Rectangle implements TextElementArray {
 	 * @return NA
 	 */
 	public float getRight() {
-		throw new UnsupportedOperationException("Dimensions of a Cell can't be calculated. See the FAQ.");
+		throw new UnsupportedOperationException(MessageLocalization.getComposedMessage("dimensions.of.a.cell.can.t.be.calculated.see.the.faq"));
 	}
 
 	/**
@@ -787,7 +808,7 @@ public class Cell extends Rectangle implements TextElementArray {
 	 * @return NA
 	 */
 	public float top(int margin) {
-		throw new UnsupportedOperationException("Dimensions of a Cell can't be calculated. See the FAQ.");
+		throw new UnsupportedOperationException(MessageLocalization.getComposedMessage("dimensions.of.a.cell.can.t.be.calculated.see.the.faq"));
 	}
 
 	/**
@@ -796,7 +817,7 @@ public class Cell extends Rectangle implements TextElementArray {
 	 * @return NA
 	 */
 	public float bottom(int margin) {
-		throw new UnsupportedOperationException("Dimensions of a Cell can't be calculated. See the FAQ.");
+		throw new UnsupportedOperationException(MessageLocalization.getComposedMessage("dimensions.of.a.cell.can.t.be.calculated.see.the.faq"));
 	}
 
 	/**
@@ -805,7 +826,7 @@ public class Cell extends Rectangle implements TextElementArray {
 	 * @return NA
 	 */
 	public float left(int margin) {
-		throw new UnsupportedOperationException("Dimensions of a Cell can't be calculated. See the FAQ.");
+		throw new UnsupportedOperationException(MessageLocalization.getComposedMessage("dimensions.of.a.cell.can.t.be.calculated.see.the.faq"));
 	}
 
 	/**
@@ -814,7 +835,7 @@ public class Cell extends Rectangle implements TextElementArray {
 	 * @return NA
 	 */
 	public float right(int margin) {
-		throw new UnsupportedOperationException("Dimensions of a Cell can't be calculated. See the FAQ.");
+		throw new UnsupportedOperationException(MessageLocalization.getComposedMessage("dimensions.of.a.cell.can.t.be.calculated.see.the.faq"));
 	}
 
 	/**
@@ -822,7 +843,7 @@ public class Cell extends Rectangle implements TextElementArray {
 	 * @param value NA
 	 */
 	public void setTop(int value) {
-		throw new UnsupportedOperationException("Dimensions of a Cell are attributed automagically. See the FAQ.");
+		throw new UnsupportedOperationException(MessageLocalization.getComposedMessage("dimensions.of.a.cell.are.attributed.automagically.see.the.faq"));
 	}
 
 	/**
@@ -830,7 +851,7 @@ public class Cell extends Rectangle implements TextElementArray {
 	 * @param value NA
 	 */
 	public void setBottom(int value) {
-		throw new UnsupportedOperationException("Dimensions of a Cell are attributed automagically. See the FAQ.");
+		throw new UnsupportedOperationException(MessageLocalization.getComposedMessage("dimensions.of.a.cell.are.attributed.automagically.see.the.faq"));
 	}
 
 	/**
@@ -838,7 +859,7 @@ public class Cell extends Rectangle implements TextElementArray {
 	 * @param value NA
 	 */
 	public void setLeft(int value) {
-		throw new UnsupportedOperationException("Dimensions of a Cell are attributed automagically. See the FAQ.");
+		throw new UnsupportedOperationException(MessageLocalization.getComposedMessage("dimensions.of.a.cell.are.attributed.automagically.see.the.faq"));
 	}
 
 	/**
@@ -846,7 +867,7 @@ public class Cell extends Rectangle implements TextElementArray {
 	 * @param value NA
 	 */
 	public void setRight(int value) {
-		throw new UnsupportedOperationException("Dimensions of a Cell are attributed automagically. See the FAQ.");
+		throw new UnsupportedOperationException(MessageLocalization.getComposedMessage("dimensions.of.a.cell.are.attributed.automagically.see.the.faq"));
 	}
 
 }

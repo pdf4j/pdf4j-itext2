@@ -1,5 +1,5 @@
 /*
- * $Id$
+ * $Id: List.java 3393 2008-05-16 21:33:55Z xlv $
  *
  * Copyright 1999, 2000, 2001, 2002 by Bruno Lowagie.
  *
@@ -119,7 +119,7 @@ public class List implements TextElementArray {
     // member variables
 	
 	/** This is the <CODE>ArrayList</CODE> containing the different <CODE>ListItem</CODE>s. */
-    protected ArrayList list = new ArrayList();
+    protected ArrayList<Element> list = new ArrayList<Element>();
     
     /** Indicates if the list has to be numbered. */
     protected boolean numbered = false;
@@ -227,8 +227,8 @@ public class List implements TextElementArray {
      */
     public boolean process(ElementListener listener) {
         try {
-            for (Iterator i = list.iterator(); i.hasNext(); ) {
-                listener.add((Element) i.next());
+            for (Iterator<Element> i = list.iterator(); i.hasNext(); ) {
+                listener.add(i.next());
             }
             return true;
         }
@@ -251,10 +251,10 @@ public class List implements TextElementArray {
      *
      * @return	an <CODE>ArrayList</CODE>
      */
-    public ArrayList getChunks() {
-        ArrayList tmp = new ArrayList();
-        for (Iterator i = list.iterator(); i.hasNext(); ) {
-            tmp.addAll(((Element) i.next()).getChunks());
+    public ArrayList<Chunk> getChunks() {
+        ArrayList<Chunk> tmp = new ArrayList<Chunk>();
+        for (Iterator<Element> i = list.iterator(); i.hasNext(); ) {
+            tmp.addAll(i.next().getChunks());
         }
         return tmp;
     }
@@ -267,7 +267,23 @@ public class List implements TextElementArray {
      * @param	o		the object to add.
      * @return true if adding the object succeeded
      */
-    public boolean add(Object o) {
+    public boolean addObject(Object o) {
+    	if (o instanceof Element) {
+    		return add((Element) o);
+    	}
+        if (o instanceof String) {
+            return this.add(new ListItem((String) o));
+        }
+        return false;
+    }
+    
+    /**
+     * Adds an <CODE>Element</CODE> to the <CODE>List</CODE>.
+     *
+     * @param	o		the object to add.
+     * @return true if adding the object succeeded
+     */
+    public boolean add(Element o) {
         if (o instanceof ListItem) {
             ListItem item = (ListItem) o;
             if (numbered || lettered) {
@@ -293,9 +309,6 @@ public class List implements TextElementArray {
             first--;
             return list.add(nested);
         }
-        else if (o instanceof String) {
-            return this.add(new ListItem((String) o));
-        }
         return false;
     }
     
@@ -305,14 +318,14 @@ public class List implements TextElementArray {
     public void normalizeIndentation() {
         float max = 0;
     	Element o;
-        for (Iterator i = list.iterator(); i.hasNext(); ) {
-        	o = (Element)i.next();
+        for (Iterator<Element> i = list.iterator(); i.hasNext(); ) {
+        	o = i.next();
             if (o instanceof ListItem) {
             	max = Math.max(max, ((ListItem)o).getIndentationLeft());
             }
         }
-        for (Iterator i = list.iterator(); i.hasNext(); ) {
-        	o = (Element)i.next();
+        for (Iterator<Element> i = list.iterator(); i.hasNext(); ) {
+        	o = i.next();
             if (o instanceof ListItem) {
             	((ListItem)o).setIndentationLeft(max);
             }
@@ -416,7 +429,7 @@ public class List implements TextElementArray {
      *
      * @return	an <CODE>ArrayList</CODE> containing <CODE>ListItem</CODE>s.
      */
-    public ArrayList getItems() {
+    public ArrayList<Element> getItems() {
         return list;
     }
     

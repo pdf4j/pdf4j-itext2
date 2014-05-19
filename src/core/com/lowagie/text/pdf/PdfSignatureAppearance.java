@@ -1,5 +1,5 @@
 /*
- * $Id$
+ * $Id: PdfSignatureAppearance.java 4167 2009-12-13 04:05:50Z xlv $
  *
  * Copyright 2004-2006 by Paulo Soares.
  *
@@ -63,8 +63,8 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
+import com.lowagie.text.error_messages.MessageLocalization;
 
 import com.lowagie.text.Chunk;
 import com.lowagie.text.DocumentException;
@@ -145,7 +145,7 @@ public class PdfSignatureAppearance {
     private byte externalDigest[];
     private byte externalRSAdata[];
     private String digestEncryptionAlgorithm;
-    private HashMap exclusionLocations;
+    private HashMap<PdfName, PdfLiteral> exclusionLocations;
         
     PdfSignatureAppearance(PdfStamperImp writer) {
         this.writer = writer;
@@ -267,15 +267,15 @@ public class PdfSignatureAppearance {
     public void setVisibleSignature(Rectangle pageRect, int page, String fieldName) {
         if (fieldName != null) {
             if (fieldName.indexOf('.') >= 0)
-                throw new IllegalArgumentException("Field names cannot contain a dot.");
+                throw new IllegalArgumentException(MessageLocalization.getComposedMessage("field.names.cannot.contain.a.dot"));
             AcroFields af = writer.getAcroFields();
             AcroFields.Item item = af.getFieldItem(fieldName);
             if (item != null)
-                throw new IllegalArgumentException("The field " + fieldName + " already exists.");
+                throw new IllegalArgumentException(MessageLocalization.getComposedMessage("the.field.1.already.exists", fieldName));
             this.fieldName = fieldName;
         }
         if (page < 1 || page > writer.reader.getNumberOfPages())
-            throw new IllegalArgumentException("Invalid page number: " + page);
+            throw new IllegalArgumentException(MessageLocalization.getComposedMessage("invalid.page.number.1", page));
         this.pageRect = new Rectangle(pageRect);
         this.pageRect.normalize();
         rect = new Rectangle(this.pageRect.getWidth(), this.pageRect.getHeight());
@@ -291,10 +291,10 @@ public class PdfSignatureAppearance {
         AcroFields af = writer.getAcroFields();
         AcroFields.Item item = af.getFieldItem(fieldName);
         if (item == null)
-            throw new IllegalArgumentException("The field " + fieldName + " does not exist.");
+            throw new IllegalArgumentException(MessageLocalization.getComposedMessage("the.field.1.does.not.exist", fieldName));
         PdfDictionary merged = item.getMerged(0);
         if (!PdfName.SIG.equals(PdfReader.getPdfObject(merged.get(PdfName.FT))))
-            throw new IllegalArgumentException("The field " + fieldName + " is not a signature field.");
+            throw new IllegalArgumentException(MessageLocalization.getComposedMessage("the.field.1.is.not.a.signature.field", fieldName));
         this.fieldName = fieldName;
         PdfArray r = merged.getAsArray(PdfName.RECT);
         float llx = r.getAsNumber(0).floatValue();
@@ -830,8 +830,7 @@ public class PdfSignatureAppearance {
                 continue;
             n1 += ".";
             found = true;
-            for (Iterator it = af.getFields().keySet().iterator(); it.hasNext();) {
-                String fn = (String)it.next();
+            for (String fn: af.getFields().keySet()) {
                 if (fn.startsWith(n1)) {
                     found = false;
                     break;
@@ -871,9 +870,9 @@ public class PdfSignatureAppearance {
      * @throws IOException on error
      * @throws DocumentException on error
      */    
-    public void preClose(HashMap exclusionSizes) throws IOException, DocumentException {
+    public void preClose(HashMap<PdfName, Integer> exclusionSizes) throws IOException, DocumentException {
         if (preClosed)
-            throw new DocumentException("Document already pre closed.");
+            throw new DocumentException(MessageLocalization.getComposedMessage("document.already.pre.closed"));
         preClosed = true;
         AcroFields af = writer.getAcroFields();
         String name = getFieldName();
@@ -911,7 +910,7 @@ public class PdfSignatureAppearance {
             writer.addAnnotation(sigField, pagen);
         }
 
-        exclusionLocations = new HashMap();
+        exclusionLocations = new HashMap<PdfName, PdfLiteral>();
         if (cryptoDictionary == null) {
             if (PdfName.ADOBE_PPKLITE.equals(getFilter()))
                 sigStandard = new PdfSigGenericPKCS.PPKLite(getProvider());
@@ -920,7 +919,7 @@ public class PdfSignatureAppearance {
             else if (PdfName.VERISIGN_PPKVS.equals(getFilter()))
                 sigStandard = new PdfSigGenericPKCS.VeriSign(getProvider());
             else
-                throw new IllegalArgumentException("Unknown filter: " + getFilter());
+                throw new IllegalArgumentException(MessageLocalization.getComposedMessage("unknown.filter.1", getFilter()));
             sigStandard.setExternalDigest(externalDigest, externalRSAdata, digestEncryptionAlgorithm);
             if (getReason() != null)
                 sigStandard.setReason(getReason());
@@ -948,10 +947,9 @@ public class PdfSignatureAppearance {
             PdfLiteral lit = new PdfLiteral(80);
             exclusionLocations.put(PdfName.BYTERANGE, lit);
             cryptoDictionary.put(PdfName.BYTERANGE, lit);
-            for (Iterator it = exclusionSizes.entrySet().iterator(); it.hasNext();) {
-                Map.Entry entry = (Map.Entry)it.next();
-                PdfName key = (PdfName)entry.getKey();
-                Integer v = (Integer)entry.getValue();
+            for (Map.Entry<PdfName, Integer> entry: exclusionSizes.entrySet()) {
+                PdfName key = entry.getKey();
+                Integer v = entry.getValue();
                 lit = new PdfLiteral(v.intValue());
                 exclusionLocations.put(key, lit);
                 cryptoDictionary.put(key, lit);
@@ -971,11 +969,10 @@ public class PdfSignatureAppearance {
         writer.close(stamper.getMoreInfo());
         
         range = new int[exclusionLocations.size() * 2];
-        int byteRangePosition = ((PdfLiteral)exclusionLocations.get(PdfName.BYTERANGE)).getPosition();
+        int byteRangePosition = exclusionLocations.get(PdfName.BYTERANGE).getPosition();
         exclusionLocations.remove(PdfName.BYTERANGE);
         int idx = 1;
-        for (Iterator it = exclusionLocations.values().iterator(); it.hasNext();) {
-            PdfLiteral lit = (PdfLiteral)it.next();
+        for (PdfLiteral lit: exclusionLocations.values()) {
             int n = lit.getPosition();
             range[idx++] = n;
             range[idx++] = lit.getPosLength() + n;
@@ -1030,18 +1027,17 @@ public class PdfSignatureAppearance {
     public void close(PdfDictionary update) throws IOException, DocumentException {
         try {
             if (!preClosed)
-                throw new DocumentException("preClose() must be called first.");
+                throw new DocumentException(MessageLocalization.getComposedMessage("preclose.must.be.called.first"));
             ByteBuffer bf = new ByteBuffer();
-            for (Iterator it = update.getKeys().iterator(); it.hasNext();) {
-                PdfName key = (PdfName)it.next();
+            for (PdfName key: update.getKeys()) {
                 PdfObject obj = update.get(key);
-                PdfLiteral lit = (PdfLiteral)exclusionLocations.get(key);
+                PdfLiteral lit = exclusionLocations.get(key);
                 if (lit == null)
-                    throw new IllegalArgumentException("The key " + key.toString() + " didn't reserve space in preClose().");
+                    throw new IllegalArgumentException(MessageLocalization.getComposedMessage("the.key.1.didn.t.reserve.space.in.preclose", key.toString()));
                 bf.reset();
                 obj.toPdf(null, bf);
                 if (bf.size() > lit.getPosLength())
-                    throw new IllegalArgumentException("The key " + key.toString() + " is too big. Is " + bf.size() + ", reserved " + lit.getPosLength());
+                    throw new IllegalArgumentException(MessageLocalization.getComposedMessage("the.key.1.is.too.big.is.2.reserved.3", key.toString(), String.valueOf(bf.size()), String.valueOf(lit.getPosLength())));
                 if (tempFile == null)
                     System.arraycopy(bf.getBuffer(), 0, bout, lit.getPosition(), bf.size());
                 else {
@@ -1050,7 +1046,7 @@ public class PdfSignatureAppearance {
                 }
             }
             if (update.size() != exclusionLocations.size())
-                throw new IllegalArgumentException("The update dictionary has less keys than required.");
+                throw new IllegalArgumentException(MessageLocalization.getComposedMessage("the.update.dictionary.has.less.keys.than.required"));
             if (tempFile == null) {
                 originalout.write(bout, 0, boutLen);
             }
@@ -1062,7 +1058,7 @@ public class PdfSignatureAppearance {
                     while (length > 0) {
                         int r = raf.read(buf, 0, Math.min(buf.length, length));
                         if (r < 0)
-                            throw new EOFException("Unexpected EOF");
+                            throw new EOFException(MessageLocalization.getComposedMessage("unexpected.eof"));
                         originalout.write(buf, 0, r);
                         length -= r;
                     }
@@ -1212,7 +1208,7 @@ public class PdfSignatureAppearance {
      */    
     public void setRunDirection(int runDirection) {
         if (runDirection < PdfWriter.RUN_DIRECTION_DEFAULT || runDirection > PdfWriter.RUN_DIRECTION_RTL)
-            throw new RuntimeException("Invalid run direction: " + runDirection);
+            throw new RuntimeException(MessageLocalization.getComposedMessage("invalid.run.direction.1", runDirection));
         this.runDirection = runDirection;
     }
     

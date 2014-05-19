@@ -1,5 +1,5 @@
 /*
- * $Id$
+ * $Id: FontFactoryImp.java 4167 2009-12-13 04:05:50Z xlv $
  *
  * Copyright 2002 by Bruno Lowagie.
  *
@@ -55,7 +55,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Hashtable;
-import java.util.Iterator;
 import java.util.Properties;
 import java.util.Set;
 
@@ -70,10 +69,10 @@ import com.lowagie.text.pdf.BaseFont;
  * @author  Bruno Lowagie
  */
 
-public class FontFactoryImp {
+public class FontFactoryImp implements FontProvider {
         
 /** This is a map of postscriptfontnames of True Type fonts and the path of their ttf- or ttc-file. */
-    private Properties trueTypeFonts = new Properties();
+    private Hashtable<String, String> trueTypeFonts = new Hashtable<String, String>();
     
     private static String[] TTFamilyOrder = {
         "3", "1", "1033",
@@ -83,7 +82,7 @@ public class FontFactoryImp {
     };
 
 /** This is a map of fontfamilies. */
-    private Hashtable fontFamilies = new Hashtable();
+    private Hashtable<String, ArrayList<String>> fontFamilies = new Hashtable<String, ArrayList<String>>();
     
 /** This is the default encoding to use. */
     public String defaultEncoding = BaseFont.WINANSI;
@@ -93,45 +92,45 @@ public class FontFactoryImp {
     
 /** Creates new FontFactory */
     public FontFactoryImp() {
-        trueTypeFonts.setProperty(FontFactory.COURIER.toLowerCase(), FontFactory.COURIER);
-        trueTypeFonts.setProperty(FontFactory.COURIER_BOLD.toLowerCase(), FontFactory.COURIER_BOLD);
-        trueTypeFonts.setProperty(FontFactory.COURIER_OBLIQUE.toLowerCase(), FontFactory.COURIER_OBLIQUE);
-        trueTypeFonts.setProperty(FontFactory.COURIER_BOLDOBLIQUE.toLowerCase(), FontFactory.COURIER_BOLDOBLIQUE);
-        trueTypeFonts.setProperty(FontFactory.HELVETICA.toLowerCase(), FontFactory.HELVETICA);
-        trueTypeFonts.setProperty(FontFactory.HELVETICA_BOLD.toLowerCase(), FontFactory.HELVETICA_BOLD);
-        trueTypeFonts.setProperty(FontFactory.HELVETICA_OBLIQUE.toLowerCase(), FontFactory.HELVETICA_OBLIQUE);
-        trueTypeFonts.setProperty(FontFactory.HELVETICA_BOLDOBLIQUE.toLowerCase(), FontFactory.HELVETICA_BOLDOBLIQUE);
-        trueTypeFonts.setProperty(FontFactory.SYMBOL.toLowerCase(), FontFactory.SYMBOL);
-        trueTypeFonts.setProperty(FontFactory.TIMES_ROMAN.toLowerCase(), FontFactory.TIMES_ROMAN);
-        trueTypeFonts.setProperty(FontFactory.TIMES_BOLD.toLowerCase(), FontFactory.TIMES_BOLD);
-        trueTypeFonts.setProperty(FontFactory.TIMES_ITALIC.toLowerCase(), FontFactory.TIMES_ITALIC);
-        trueTypeFonts.setProperty(FontFactory.TIMES_BOLDITALIC.toLowerCase(), FontFactory.TIMES_BOLDITALIC);
-        trueTypeFonts.setProperty(FontFactory.ZAPFDINGBATS.toLowerCase(), FontFactory.ZAPFDINGBATS);
+        trueTypeFonts.put(FontFactory.COURIER.toLowerCase(), FontFactory.COURIER);
+        trueTypeFonts.put(FontFactory.COURIER_BOLD.toLowerCase(), FontFactory.COURIER_BOLD);
+        trueTypeFonts.put(FontFactory.COURIER_OBLIQUE.toLowerCase(), FontFactory.COURIER_OBLIQUE);
+        trueTypeFonts.put(FontFactory.COURIER_BOLDOBLIQUE.toLowerCase(), FontFactory.COURIER_BOLDOBLIQUE);
+        trueTypeFonts.put(FontFactory.HELVETICA.toLowerCase(), FontFactory.HELVETICA);
+        trueTypeFonts.put(FontFactory.HELVETICA_BOLD.toLowerCase(), FontFactory.HELVETICA_BOLD);
+        trueTypeFonts.put(FontFactory.HELVETICA_OBLIQUE.toLowerCase(), FontFactory.HELVETICA_OBLIQUE);
+        trueTypeFonts.put(FontFactory.HELVETICA_BOLDOBLIQUE.toLowerCase(), FontFactory.HELVETICA_BOLDOBLIQUE);
+        trueTypeFonts.put(FontFactory.SYMBOL.toLowerCase(), FontFactory.SYMBOL);
+        trueTypeFonts.put(FontFactory.TIMES_ROMAN.toLowerCase(), FontFactory.TIMES_ROMAN);
+        trueTypeFonts.put(FontFactory.TIMES_BOLD.toLowerCase(), FontFactory.TIMES_BOLD);
+        trueTypeFonts.put(FontFactory.TIMES_ITALIC.toLowerCase(), FontFactory.TIMES_ITALIC);
+        trueTypeFonts.put(FontFactory.TIMES_BOLDITALIC.toLowerCase(), FontFactory.TIMES_BOLDITALIC);
+        trueTypeFonts.put(FontFactory.ZAPFDINGBATS.toLowerCase(), FontFactory.ZAPFDINGBATS);
 
-        ArrayList tmp;
-        tmp = new ArrayList();
+        ArrayList<String> tmp;
+        tmp = new ArrayList<String>();
         tmp.add(FontFactory.COURIER);
         tmp.add(FontFactory.COURIER_BOLD);
         tmp.add(FontFactory.COURIER_OBLIQUE);
         tmp.add(FontFactory.COURIER_BOLDOBLIQUE);
         fontFamilies.put(FontFactory.COURIER.toLowerCase(), tmp);
-        tmp = new ArrayList();
+        tmp = new ArrayList<String>();
         tmp.add(FontFactory.HELVETICA);
         tmp.add(FontFactory.HELVETICA_BOLD);
         tmp.add(FontFactory.HELVETICA_OBLIQUE);
         tmp.add(FontFactory.HELVETICA_BOLDOBLIQUE);
         fontFamilies.put(FontFactory.HELVETICA.toLowerCase(), tmp);
-        tmp = new ArrayList();
+        tmp = new ArrayList<String>();
         tmp.add(FontFactory.SYMBOL);
         fontFamilies.put(FontFactory.SYMBOL.toLowerCase(), tmp);
-        tmp = new ArrayList();
+        tmp = new ArrayList<String>();
         tmp.add(FontFactory.TIMES_ROMAN);
         tmp.add(FontFactory.TIMES_BOLD);
         tmp.add(FontFactory.TIMES_ITALIC);
         tmp.add(FontFactory.TIMES_BOLDITALIC);
         fontFamilies.put(FontFactory.TIMES.toLowerCase(), tmp);
         fontFamilies.put(FontFactory.TIMES_ROMAN.toLowerCase(), tmp);
-        tmp = new ArrayList();
+        tmp = new ArrayList<String>();
         tmp.add(FontFactory.ZAPFDINGBATS);
         fontFamilies.put(FontFactory.ZAPFDINGBATS.toLowerCase(), tmp);
     }
@@ -169,14 +168,13 @@ public class FontFactoryImp {
     public Font getFont(String fontname, String encoding, boolean embedded, float size, int style, Color color, boolean cached) {
     	if (fontname == null) return new Font(Font.UNDEFINED, size, style, color);
         String lowercasefontname = fontname.toLowerCase();
-        ArrayList tmp = (ArrayList) fontFamilies.get(lowercasefontname);
+        ArrayList<String> tmp = fontFamilies.get(lowercasefontname);
         if (tmp != null) {
             // some bugs were fixed here by Daniel Marczisovszky
             int s = style == Font.UNDEFINED ? Font.NORMAL : style;
             int fs = Font.NORMAL;
             boolean found = false;
-            for (Iterator i = tmp.iterator(); i.hasNext(); ) {
-                String f = (String) i.next();
+            for (String f: tmp) {
                 String lcf = f.toLowerCase();
                 fs = Font.NORMAL;
                 if (lcf.toLowerCase().indexOf("bold") != -1) fs |= Font.BOLD;
@@ -201,7 +199,7 @@ public class FontFactoryImp {
             }
             if (basefont == null) {
                 // the font is a true type font or an unknown font
-                fontname = trueTypeFonts.getProperty(fontname.toLowerCase());
+                fontname = trueTypeFonts.get(fontname.toLowerCase());
                 // the font is not registered as truetype font
                 if (fontname == null) return new Font(Font.UNDEFINED, size, style, color);
                 // the font is registered as truetype font
@@ -271,7 +269,7 @@ public class FontFactoryImp {
                     color = Markup.decodeColor(value);
                 }
                 attributes.putAll(styleAttributes);
-                for (Enumeration e = styleAttributes.keys(); e.hasMoreElements();) {
+                for (Enumeration<Object> e = styleAttributes.keys(); e.hasMoreElements();) {
                     Object o = e.nextElement();
                     attributes.put(o, styleAttributes.get(o));
                 }
@@ -485,10 +483,10 @@ public class FontFactoryImp {
      */
     public void registerFamily(String familyName, String fullName, String path) {
         if (path != null)
-            trueTypeFonts.setProperty(fullName, path);
-        ArrayList tmp = (ArrayList) fontFamilies.get(familyName);
+            trueTypeFonts.put(fullName, path);
+        ArrayList<String> tmp = fontFamilies.get(familyName);
         if (tmp == null) {
-            tmp = new ArrayList();
+            tmp = new ArrayList<String>();
             tmp.add(fullName);
             fontFamilies.put(familyName, tmp);
         }
@@ -496,7 +494,7 @@ public class FontFactoryImp {
             int fullNameLength = fullName.length();
             boolean inserted = false;
             for (int j = 0; j < tmp.size(); ++j) {
-                if (((String)tmp.get(j)).length() >= fullNameLength) {
+                if (tmp.get(j).length() >= fullNameLength) {
                     tmp.add(j, fullName);
                     inserted = true;
                     break;
@@ -528,14 +526,14 @@ public class FontFactoryImp {
         try {
             if (path.toLowerCase().endsWith(".ttf") || path.toLowerCase().endsWith(".otf") || path.toLowerCase().indexOf(".ttc,") > 0) {
                 Object allNames[] = BaseFont.getAllFontNames(path, BaseFont.WINANSI, null);
-                trueTypeFonts.setProperty(((String)allNames[0]).toLowerCase(), path);
+                trueTypeFonts.put(((String)allNames[0]).toLowerCase(), path);
                 if (alias != null) {
-                    trueTypeFonts.setProperty(alias.toLowerCase(), path);
+                    trueTypeFonts.put(alias.toLowerCase(), path);
                 }
                 // register all the font names with all the locales
                 String[][] names = (String[][])allNames[2]; //full name
                 for (int i = 0; i < names.length; i++) {
-                    trueTypeFonts.setProperty(names[i][3].toLowerCase(), path);
+                    trueTypeFonts.put(names[i][3].toLowerCase(), path);
                 }
                 String fullName = null;
                 String familyName = null;
@@ -580,8 +578,8 @@ public class FontFactoryImp {
                 String familyName = bf.getFamilyFontName()[0][3].toLowerCase();
                 String psName = bf.getPostscriptFontName().toLowerCase();
                 registerFamily(familyName, fullName, null);
-                trueTypeFonts.setProperty(psName, path);
-                trueTypeFonts.setProperty(fullName, path);
+                trueTypeFonts.put(psName, path);
+                trueTypeFonts.put(fullName, path);
             }
         }
         catch(DocumentException de) {
@@ -676,7 +674,7 @@ public class FontFactoryImp {
  * @return a set of registered fonts
  */
     
-    public Set getRegisteredFonts() {
+    public Set<String> getRegisteredFonts() {
         return Utilities.getKeySet(trueTypeFonts);
     }
     
@@ -685,7 +683,7 @@ public class FontFactoryImp {
  * @return a set of registered font families
  */
     
-    public Set getRegisteredFamilies() {
+    public Set<String> getRegisteredFamilies() {
         return Utilities.getKeySet(fontFamilies);
     }
     

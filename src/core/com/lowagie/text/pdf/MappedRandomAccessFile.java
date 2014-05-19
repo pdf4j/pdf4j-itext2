@@ -1,5 +1,5 @@
 /*
- * $Id$
+ * $Id: MappedRandomAccessFile.java 3192 2008-03-27 19:07:33Z xlv $
  *
  * Copyright 2006 Joakim Sandstroem
  *
@@ -200,14 +200,14 @@ public class MappedRandomAccessFile {
         if (buffer == null || !buffer.isDirect())
             return false;
         
-        Boolean b = (Boolean) AccessController.doPrivileged(new PrivilegedAction() {
-            public Object run() {
+        Boolean b = AccessController.doPrivileged(new PrivilegedAction<Boolean>() {
+            public Boolean run() {
                 Boolean success = Boolean.FALSE;
                 try {
-                    Method getCleanerMethod = buffer.getClass().getMethod("cleaner", (Class[])null);
+                    Method getCleanerMethod = buffer.getClass().getMethod("cleaner", (Class<?>[])null);
                     getCleanerMethod.setAccessible(true);
                     Object cleaner = getCleanerMethod.invoke(buffer, (Object[])null);
-                    Method clean = cleaner.getClass().getMethod("clean", (Class[])null);
+                    Method clean = cleaner.getClass().getMethod("clean", (Class<?>[])null);
                     clean.invoke(cleaner, (Object[])null);
                     success = Boolean.TRUE;
                 } catch (Exception e) {

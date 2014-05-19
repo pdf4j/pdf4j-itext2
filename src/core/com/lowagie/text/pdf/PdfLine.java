@@ -1,5 +1,5 @@
 /*
- * $Id$
+ * $Id: PdfLine.java 4023 2009-07-11 23:41:19Z xlv $
  *
  * Copyright 1999, 2000, 2001, 2002 Bruno Lowagie
  *
@@ -66,7 +66,7 @@ public class PdfLine {
     // membervariables
     
     /** The arraylist containing the chunks. */
-    protected ArrayList line;
+    protected ArrayList<PdfChunk> line;
     
     /** The left indentation of the line. */
     protected float left;
@@ -111,7 +111,7 @@ public class PdfLine {
         this.originalWidth = this.width;
         this.alignment = alignment;
         this.height = height;
-        this.line = new ArrayList();
+        this.line = new ArrayList<PdfChunk>();
     }
     
     /**
@@ -124,7 +124,7 @@ public class PdfLine {
      * @param line				an array of PdfChunk objects
      * @param isRTL				do you have to read the line from Right to Left?
      */
-    PdfLine(float left, float originalWidth, float remainingWidth, int alignment, boolean newlineSplit, ArrayList line, boolean isRTL) {
+    PdfLine(float left, float originalWidth, float remainingWidth, int alignment, boolean newlineSplit, ArrayList<PdfChunk> line, boolean isRTL) {
         this.left = left;
         this.originalWidth = originalWidth;
         this.width = remainingWidth;
@@ -192,7 +192,7 @@ public class PdfLine {
             }
         }
         else {
-            width += ((PdfChunk)(line.get(line.size() - 1))).trimLastSpace();
+            width += line.get(line.size() - 1).trimLastSpace();
         }
         return overflow;
     }
@@ -223,7 +223,7 @@ public class PdfLine {
      * @return	an <CODE>Iterator</CODE>
      */
     
-    public Iterator iterator() {
+    public Iterator<PdfChunk> iterator() {
         return line.iterator();
     }
     
@@ -363,8 +363,8 @@ public class PdfLine {
     
     public String toString() {
         StringBuffer tmp = new StringBuffer();
-        for (Iterator i = line.iterator(); i.hasNext(); ) {
-            tmp.append(((PdfChunk) i.next()).toString());
+        for (Iterator<PdfChunk> i = line.iterator(); i.hasNext(); ) {
+            tmp.append(i.next().toString());
         }
         return tmp.toString();
     }
@@ -376,8 +376,8 @@ public class PdfLine {
      */
     public int GetLineLengthUtf32() {
         int total = 0;
-        for (Iterator i = line.iterator(); i.hasNext();) {
-            total += ((PdfChunk)i.next()).lengthUtf32();
+        for (PdfChunk c: line) {
+            total += c.lengthUtf32();
         }
         return total;
     }
@@ -397,7 +397,7 @@ public class PdfLine {
     public int getLastStrokeChunk() {
         int lastIdx = line.size() - 1;
         for (; lastIdx >= 0; --lastIdx) {
-            PdfChunk chunk = (PdfChunk)line.get(lastIdx);
+            PdfChunk chunk = line.get(lastIdx);
             if (chunk.isStroked())
                 break;
         }
@@ -412,7 +412,7 @@ public class PdfLine {
     public PdfChunk getChunk(int idx) {
         if (idx < 0 || idx >= line.size())
             return null;
-        return (PdfChunk)line.get(idx);
+        return line.get(idx);
     }
     
     /**
@@ -453,7 +453,7 @@ public class PdfLine {
     	float image_leading = -10000;
         PdfChunk chunk;
         for (int k = 0; k < line.size(); ++k) {
-            chunk = (PdfChunk)line.get(k);
+            chunk = line.get(k);
             if (!chunk.isImage()) {
                 normal_leading = Math.max(chunk.font().size(), normal_leading);
             }
@@ -475,9 +475,7 @@ public class PdfLine {
      */
     int getSeparatorCount() {
     	int s = 0;
-    	PdfChunk ck;
-        for (Iterator i = line.iterator(); i.hasNext(); ) {
-        	ck = (PdfChunk)i.next();
+        for (PdfChunk ck: line) {
         	if (ck.isTab()) {
         		return 0;
         	}
@@ -497,7 +495,7 @@ public class PdfLine {
     public float getWidthCorrected(float charSpacing, float wordSpacing) {
         float total = 0;
         for (int k = 0; k < line.size(); ++k) {
-            PdfChunk ck = (PdfChunk)line.get(k);
+            PdfChunk ck = line.get(k);
             total += ck.getWidthCorrected(charSpacing, wordSpacing);
         }
         return total;
@@ -511,7 +509,7 @@ public class PdfLine {
    public float getAscender() {
        float ascender = 0;
        for (int k = 0; k < line.size(); ++k) {
-           PdfChunk ck = (PdfChunk)line.get(k);
+           PdfChunk ck = line.get(k);
            if (ck.isImage())
                ascender = Math.max(ascender, ck.getImage().getScaledHeight() + ck.getImageOffsetY());
            else {
@@ -530,7 +528,7 @@ public class PdfLine {
     public float getDescender() {
         float descender = 0;
         for (int k = 0; k < line.size(); ++k) {
-            PdfChunk ck = (PdfChunk)line.get(k);
+            PdfChunk ck = line.get(k);
             if (ck.isImage())
                 descender = Math.min(descender, ck.getImageOffsetY());
             else {

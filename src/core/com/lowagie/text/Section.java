@@ -1,5 +1,6 @@
 /*
- * $Id$
+ * $Id: Section.java 4167 2009-12-13 04:05:50Z xlv $
+ * $Name$
  *
  * Copyright 1999, 2000, 2001, 2002 by Bruno Lowagie.
  *
@@ -52,6 +53,7 @@ package com.lowagie.text;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
+import com.lowagie.text.error_messages.MessageLocalization;
 
 /**
  * A <CODE>Section</CODE> is a part of a <CODE>Document</CODE> containing
@@ -79,7 +81,7 @@ import java.util.Iterator;
  * </PRE></BLOCKQUOTE>
  */
 
-public class Section extends ArrayList implements TextElementArray, LargeElement {
+public class Section extends ArrayList<Element> implements TextElementArray, LargeElement {
     // constant
 	/**
 	 * A possible number style. The default number style: "1.2.3."
@@ -131,7 +133,7 @@ public class Section extends ArrayList implements TextElementArray, LargeElement
     protected int subsections = 0;
     
     /** This is the complete list of sectionnumbers of this section and the parents of this section. */
-    protected ArrayList numbers = null;
+    protected ArrayList<Integer> numbers = null;
     
     /**
      * Indicates if the Section will be complete once added to the document.
@@ -183,9 +185,7 @@ public class Section extends ArrayList implements TextElementArray, LargeElement
      */
     public boolean process(ElementListener listener) {
         try {
-        	Element element;
-            for (Iterator i = iterator(); i.hasNext(); ) {
-            	element = (Element)i.next();
+        	for (Element element: this) {
                 listener.add(element);
             }
             return true;
@@ -229,10 +229,10 @@ public class Section extends ArrayList implements TextElementArray, LargeElement
      *
      * @return	an <CODE>ArrayList</CODE>
      */
-    public ArrayList getChunks() {
-        ArrayList tmp = new ArrayList();
-        for (Iterator i = iterator(); i.hasNext(); ) {
-            tmp.addAll(((Element) i.next()).getChunks());
+    public ArrayList<Chunk> getChunks() {
+        ArrayList<Chunk> tmp = new ArrayList<Chunk>();
+        for (Element e: this) {
+            tmp.addAll(e.getChunks());
         }
         return tmp;
     }
@@ -260,21 +260,30 @@ public class Section extends ArrayList implements TextElementArray, LargeElement
      * to this <CODE>Section</CODE>.
      *
      * @param	index	index at which the specified element is to be inserted
-     * @param	o   	an object of type <CODE>Paragraph</CODE>, <CODE>List</CODE> or <CODE>Table</CODE>=
+     * @param	element	an object of type <CODE>Paragraph</CODE>, <CODE>List</CODE> or <CODE>Table</CODE>=
      * @throws	ClassCastException if the object is not a <CODE>Paragraph</CODE>, <CODE>List</CODE> or <CODE>Table</CODE>
      */
-    public void add(int index, Object o) {
+    public void add(int index, Element element) {
     	if (isAddedCompletely()) {
-    		throw new IllegalStateException("This LargeElement has already been added to the Document.");
+    		throw new IllegalStateException(MessageLocalization.getComposedMessage("this.largeelement.has.already.been.added.to.the.document"));
     	}
         try {
-            Element element = (Element) o;
             if (element.isNestable()) {
                 super.add(index, element);
             }
             else {
-                throw new ClassCastException("You can't add a " + element.getClass().getName() + " to a Section.");
+                throw new ClassCastException(MessageLocalization.getComposedMessage("you.can.t.add.a.1.to.a.section", element.getClass().getName()));
             }
+        }
+        catch(ClassCastException cce) {
+            throw new ClassCastException(MessageLocalization.getComposedMessage("insertion.of.illegal.element.1", cce.getMessage()));
+        }
+    }
+    
+    public boolean addObject(Object o) {
+        try {
+            Element element = (Element) o;
+            return add(element);
         }
         catch(ClassCastException cce) {
             throw new ClassCastException("Insertion of illegal Element: " + cce.getMessage());
@@ -285,36 +294,35 @@ public class Section extends ArrayList implements TextElementArray, LargeElement
      * Adds a <CODE>Paragraph</CODE>, <CODE>List</CODE>, <CODE>Table</CODE> or another <CODE>Section</CODE>
      * to this <CODE>Section</CODE>.
      *
-     * @param	o   	an object of type <CODE>Paragraph</CODE>, <CODE>List</CODE>, <CODE>Table</CODE> or another <CODE>Section</CODE>
+     * @param	element   	an object of type <CODE>Paragraph</CODE>, <CODE>List</CODE>, <CODE>Table</CODE> or another <CODE>Section</CODE>
      * @return	a boolean
      * @throws	ClassCastException if the object is not a <CODE>Paragraph</CODE>, <CODE>List</CODE>, <CODE>Table</CODE> or <CODE>Section</CODE>
      */
-    public boolean add(Object o) {
+    public boolean add(Element element) {
     	if (isAddedCompletely()) {
-    		throw new IllegalStateException("This LargeElement has already been added to the Document.");
+    		throw new IllegalStateException(MessageLocalization.getComposedMessage("this.largeelement.has.already.been.added.to.the.document"));
     	}
         try {
-            Element element = (Element) o;
             if (element.type() == Element.SECTION) {
-                Section section = (Section) o;
+                Section section = (Section) element;
                 section.setNumbers(++subsections, numbers);
                 return super.add(section);
             }
-            else if (o instanceof MarkedSection && ((MarkedObject)o).element.type() == Element.SECTION) {
-            	MarkedSection mo = (MarkedSection)o;
+            else if (element instanceof MarkedSection && ((MarkedObject)element).element.type() == Element.SECTION) {
+            	MarkedSection mo = (MarkedSection)element;
             	Section section = (Section)mo.element;
             	section.setNumbers(++subsections, numbers);
             	return super.add(mo);
             }
             else if (element.isNestable()) {
-            	return super.add(o);
+            	return super.add(element);
             }
             else {
-                throw new ClassCastException("You can't add a " + element.getClass().getName() + " to a Section.");
+                throw new ClassCastException(MessageLocalization.getComposedMessage("you.can.t.add.a.1.to.a.section", element.getClass().getName()));
             }
         }
         catch(ClassCastException cce) {
-            throw new ClassCastException("Insertion of illegal Element: " + cce.getMessage());
+            throw new ClassCastException(MessageLocalization.getComposedMessage("insertion.of.illegal.element.1", cce.getMessage()));
         }
     }
     
@@ -326,8 +334,8 @@ public class Section extends ArrayList implements TextElementArray, LargeElement
      * @return	<CODE>true</CODE> if the action succeeded, <CODE>false</CODE> if not.
      * @throws	ClassCastException if one of the objects isn't a <CODE>Paragraph</CODE>, <CODE>List</CODE>, <CODE>Table</CODE>
      */
-    public boolean addAll(Collection collection) {
-        for (Iterator iterator = collection.iterator(); iterator.hasNext(); ) {
+    public boolean addAll(Collection<? extends Element> collection) {
+        for (Iterator<? extends Element> iterator = collection.iterator(); iterator.hasNext(); ) {
             this.add(iterator.next());
         }
         return true;
@@ -345,7 +353,7 @@ public class Section extends ArrayList implements TextElementArray, LargeElement
      */
     public Section addSection(float indentation, Paragraph title, int numberDepth) {
     	if (isAddedCompletely()) {
-    		throw new IllegalStateException("This LargeElement has already been added to the Document.");
+    		throw new IllegalStateException(MessageLocalization.getComposedMessage("this.largeelement.has.already.been.added.to.the.document"));
     	}
         Section section = new Section(title, numberDepth);
         section.setIndentation(indentation);
@@ -467,7 +475,7 @@ public class Section extends ArrayList implements TextElementArray, LargeElement
      * @return	a Paragraph object
 	 * @since	iText 2.0.8
      */
-    public static Paragraph constructTitle(Paragraph title, ArrayList numbers, int numberDepth, int numberStyle) {
+    public static Paragraph constructTitle(Paragraph title, ArrayList<Integer> numbers, int numberDepth, int numberStyle) {
     	if (title == null) {
     		return null;
     	}
@@ -479,7 +487,7 @@ public class Section extends ArrayList implements TextElementArray, LargeElement
         StringBuffer buf = new StringBuffer(" ");
         for (int i = 0; i < depth; i++) {
             buf.insert(0, ".");
-            buf.insert(0, ((Integer) numbers.get(i)).intValue());
+            buf.insert(0, numbers.get(i).intValue());
         }
         if (numberStyle == NUMBERSTYLE_DOTTED_WITHOUT_FINAL_DOT) {
         	buf.deleteCharAt(buf.length() - 2);
@@ -641,9 +649,7 @@ public class Section extends ArrayList implements TextElementArray, LargeElement
      */
     public void setChapterNumber(int number) {
     	numbers.set(numbers.size() - 1, new Integer(number));
-    	Object s;
-    	for (Iterator i = iterator(); i.hasNext(); ) {
-    		s = i.next();
+    	for (Element s: this) {
     		if (s instanceof Section) {
     			((Section)s).setChapterNumber(number);
     		}
@@ -667,8 +673,8 @@ public class Section extends ArrayList implements TextElementArray, LargeElement
      * @param	number		the number of this section
      * @param	numbers		an <CODE>ArrayList</CODE>, containing the numbers of the Parent
      */
-    private void setNumbers(int number, ArrayList numbers) {
-        this.numbers = new ArrayList();
+    private void setNumbers(int number, ArrayList<Integer> numbers) {
+        this.numbers = new ArrayList<Integer>();
         this.numbers.add(new Integer(number));
         this.numbers.addAll(numbers);
     }
@@ -714,8 +720,8 @@ public class Section extends ArrayList implements TextElementArray, LargeElement
 		setNotAddedYet(false);
 		title = null;
 		Element element;
-		for (Iterator i = iterator(); i.hasNext(); ) {
-			element = (Element)i.next();
+		for (Iterator<Element> i = iterator(); i.hasNext(); ) {
+			element = i.next();
 			if (element instanceof Section) {
 				Section s = (Section)element;
 				if (!s.isComplete() && size() == 1) {

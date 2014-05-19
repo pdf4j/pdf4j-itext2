@@ -1,5 +1,5 @@
 /*
- * $Id$
+ * $Id: HelloWorld.java 3393 2008-05-16 21:33:55Z xlv $
  *
  * This code is free software. It may only be copied or modified
  * if you include the following copyright notice:
@@ -30,7 +30,7 @@ import com.lowagie.text.rtf.RtfWriter2;
  * The HelloWorld class demonstrates the basic steps of creating an
  * RTF document with iText.
  * 
- * @version $Revision$
+ * @version $Revision: 3393 $
  * @author Mark Hall (Mark.Hall@mail.room3b.eu)
  */
 public class HelloWorld {

@@ -1,5 +1,5 @@
 /*
- * $Id$
+ * $Id: PdfPageEventForwarder.java 3393 2008-05-16 21:33:55Z xlv $
  *
  * Copyright 2005 Bruno Lowagie
  *
@@ -50,7 +50,6 @@
 package com.lowagie.text.pdf.events;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 
 import com.lowagie.text.Document;
 import com.lowagie.text.Paragraph;
@@ -68,7 +67,7 @@ import com.lowagie.text.pdf.PdfWriter;
 public class PdfPageEventForwarder implements PdfPageEvent {
 
 	/** ArrayList containing all the PageEvents that have to be executed. */
-	protected ArrayList events = new ArrayList();
+	protected ArrayList<PdfPageEvent> events = new ArrayList<PdfPageEvent>();
 	
 	/** 
 	 * Add a page event to the forwarder.
@@ -87,9 +86,7 @@ public class PdfPageEventForwarder implements PdfPageEvent {
 	 *            the document
 	 */
 	public void onOpenDocument(PdfWriter writer, Document document) {
-		PdfPageEvent event;
-		for (Iterator i = events.iterator(); i.hasNext(); ) {
-			event = (PdfPageEvent)i.next();
+		for (PdfPageEvent event: events) {
 			event.onOpenDocument(writer, document);
 		}
 	}
@@ -106,9 +103,7 @@ public class PdfPageEventForwarder implements PdfPageEvent {
 	 *            the document
 	 */
 	public void onStartPage(PdfWriter writer, Document document) {
-		PdfPageEvent event;
-		for (Iterator i = events.iterator(); i.hasNext(); ) {
-			event = (PdfPageEvent)i.next();
+		for (PdfPageEvent event: events) {
 			event.onStartPage(writer, document);
 		}
 	}
@@ -123,9 +118,7 @@ public class PdfPageEventForwarder implements PdfPageEvent {
 	 *            the document
 	 */
 	public void onEndPage(PdfWriter writer, Document document) {
-		PdfPageEvent event;
-		for (Iterator i = events.iterator(); i.hasNext(); ) {
-			event = (PdfPageEvent)i.next();
+		for (PdfPageEvent event: events) {
 			event.onEndPage(writer, document);
 		}
 	}
@@ -142,9 +135,7 @@ public class PdfPageEventForwarder implements PdfPageEvent {
 	 *            the document
 	 */
 	public void onCloseDocument(PdfWriter writer, Document document) {
-		PdfPageEvent event;
-		for (Iterator i = events.iterator(); i.hasNext(); ) {
-			event = (PdfPageEvent)i.next();
+		for (PdfPageEvent event: events) {
 			event.onCloseDocument(writer, document);
 		}
 	}
@@ -165,9 +156,7 @@ public class PdfPageEventForwarder implements PdfPageEvent {
 	 */
 	public void onParagraph(PdfWriter writer, Document document,
 			float paragraphPosition) {
-		PdfPageEvent event;
-		for (Iterator i = events.iterator(); i.hasNext(); ) {
-			event = (PdfPageEvent)i.next();
+		for (PdfPageEvent event: events) {
 			event.onParagraph(writer, document, paragraphPosition);
 		}
 	}
@@ -187,9 +176,7 @@ public class PdfPageEventForwarder implements PdfPageEvent {
 	 */
 	public void onParagraphEnd(PdfWriter writer, Document document,
 			float paragraphPosition) {
-		PdfPageEvent event;
-		for (Iterator i = events.iterator(); i.hasNext(); ) {
-			event = (PdfPageEvent)i.next();
+		for (PdfPageEvent event: events) {
 			event.onParagraphEnd(writer, document, paragraphPosition);
 		}
 	}
@@ -211,9 +198,7 @@ public class PdfPageEventForwarder implements PdfPageEvent {
 	 */
 	public void onChapter(PdfWriter writer, Document document,
 			float paragraphPosition, Paragraph title) {
-		PdfPageEvent event;
-		for (Iterator i = events.iterator(); i.hasNext(); ) {
-			event = (PdfPageEvent)i.next();
+		for (PdfPageEvent event: events) {
 			event.onChapter(writer, document, paragraphPosition, title);
 		}
 	}
@@ -231,9 +216,7 @@ public class PdfPageEventForwarder implements PdfPageEvent {
 	 *            the position of the end of the chapter.
 	 */
 	public void onChapterEnd(PdfWriter writer, Document document, float position) {
-		PdfPageEvent event;
-		for (Iterator i = events.iterator(); i.hasNext(); ) {
-			event = (PdfPageEvent)i.next();
+		for (PdfPageEvent event: events) {
 			event.onChapterEnd(writer, document, position);
 		}
 	}
@@ -257,9 +240,7 @@ public class PdfPageEventForwarder implements PdfPageEvent {
 	 */
 	public void onSection(PdfWriter writer, Document document,
 			float paragraphPosition, int depth, Paragraph title) {
-		PdfPageEvent event;
-		for (Iterator i = events.iterator(); i.hasNext(); ) {
-			event = (PdfPageEvent)i.next();
+		for (PdfPageEvent event: events) {
 			event.onSection(writer, document, paragraphPosition, depth, title);
 		}
 	}
@@ -277,9 +258,7 @@ public class PdfPageEventForwarder implements PdfPageEvent {
 	 *            the position of the end of the section
 	 */
 	public void onSectionEnd(PdfWriter writer, Document document, float position) {
-		PdfPageEvent event;
-		for (Iterator i = events.iterator(); i.hasNext(); ) {
-			event = (PdfPageEvent)i.next();
+		for (PdfPageEvent event: events) {
 			event.onSectionEnd(writer, document, position);
 		}
 	}
@@ -302,9 +281,7 @@ public class PdfPageEventForwarder implements PdfPageEvent {
 	 */
 	public void onGenericTag(PdfWriter writer, Document document,
 			Rectangle rect, String text) {
-		PdfPageEvent event;
-		for (Iterator i = events.iterator(); i.hasNext(); ) {
-			event = (PdfPageEvent)i.next();
+		for (PdfPageEvent event: events) {
 			event.onGenericTag(writer, document, rect, text);
 		}
 	}

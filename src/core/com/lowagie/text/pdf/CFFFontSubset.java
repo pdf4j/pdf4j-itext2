@@ -1,5 +1,5 @@
 /*
- * $Id$
+ * $Id: CFFFontSubset.java 3626 2008-11-11 19:27:25Z xlv $
  *
  * Copyright 2004 Oren Manor and Ygal Blum
  *
@@ -51,7 +51,6 @@ package com.lowagie.text.pdf;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.LinkedList;
 
 /**
@@ -97,39 +96,39 @@ public class CFFFontSubset extends CFFFont {
 	 * A HashMap containing the glyphs used in the text after being converted
 	 * to glyph number by the CMap 
 	 */
-	HashMap GlyphsUsed;
+	HashMap<Integer, int[]> GlyphsUsed;
 	/**
 	 * The GlyphsUsed keys as an ArrayList
 	 */
-	ArrayList glyphsInList;
+	ArrayList<Integer> glyphsInList;
 	/**
 	 * A HashMap for keeping the FDArrays being used by the font
 	 */
-	HashMap FDArrayUsed = new HashMap();
+	HashMap<Integer, Object> FDArrayUsed = new HashMap<Integer, Object>();
 	/**
 	 * A HashMaps array for keeping the subroutines used in each FontDict
 	 */
-	HashMap[] hSubrsUsed;
+	HashMap<Integer, int[]>[] hSubrsUsed;
 	/**
 	 * The SubroutinesUsed HashMaps as ArrayLists
 	 */
-	ArrayList[] lSubrsUsed;
+	ArrayList<Integer>[] lSubrsUsed;
 	/**
 	 * A HashMap for keeping the Global subroutines used in the font
 	 */
-	HashMap hGSubrsUsed  = new HashMap();
+	HashMap<Integer, int[]> hGSubrsUsed  = new HashMap<Integer, int[]>();
 	/**
 	 * The Global SubroutinesUsed HashMaps as ArrayLists
 	 */
-	ArrayList lGSubrsUsed = new ArrayList();
+	ArrayList<Integer> lGSubrsUsed = new ArrayList<Integer>();
 	/**
 	 * A HashMap for keeping the subroutines used in a non-cid font
 	 */
-	HashMap hSubrsUsedNonCID  = new HashMap();
+	HashMap<Integer, int[]> hSubrsUsedNonCID  = new HashMap<Integer, int[]>();
 	/**
 	 * The SubroutinesUsed HashMap as ArrayList
 	 */
-	ArrayList lSubrsUsedNonCID = new ArrayList();
+	ArrayList<Integer> lSubrsUsedNonCID = new ArrayList<Integer>();
 	/**
 	 * An array of the new Indexes for the local Subr. One index for each FontDict
 	 */
@@ -155,7 +154,7 @@ public class CFFFontSubset extends CFFFont {
 	/**
 	 * The linked list for generating the new font stream
 	 */
-	LinkedList OutputList;
+	LinkedList<Item> OutputList;
 	
 	/**
 	 * Number of arguments to the stem operators in a subroutine calculated recursively
@@ -168,12 +167,12 @@ public class CFFFontSubset extends CFFFont {
 	 * @param rf - The font file
 	 * @param GlyphsUsed - a HashMap that contains the glyph used in the subset 
 	 */
-    public CFFFontSubset(RandomAccessFileOrArray rf,HashMap GlyphsUsed){
+    public CFFFontSubset(RandomAccessFileOrArray rf,HashMap<Integer, int[]> GlyphsUsed){
 		// Use CFFFont c'tor in order to parse the font file.
     	super(rf);
 		this.GlyphsUsed = GlyphsUsed;
 		//Put the glyphs into a list
-		glyphsInList = new ArrayList(GlyphsUsed.keySet());
+		glyphsInList = new ArrayList<Integer>(GlyphsUsed.keySet());
 		
 		
 		for (int i=0;i<fonts.length;++i)
@@ -327,7 +326,7 @@ public class CFFFontSubset extends CFFFont {
 		for (int i=0;i<glyphsInList.size();i++)
 		{
 			// Pop the glyphs index
-			int glyph = ((Integer)glyphsInList.get(i)).intValue();
+			int glyph = glyphsInList.get(i).intValue();
 			// Pop the glyph's FD
 			int FD = FDSelect[glyph];
 			// Put the FD index into the FDArrayUsed HashMap
@@ -431,6 +430,7 @@ public class CFFFontSubset extends CFFFont {
 	 * @param Font the font
 	 * @throws IOException
 	 */
+	@SuppressWarnings("unchecked")
 	protected void BuildNewLGSubrs(int Font)throws IOException
 	{
 		// If the font is CID then the lsubrs are divided into FontDicts.
@@ -449,14 +449,14 @@ public class CFFFontSubset extends CFFFont {
 			fonts[Font].PrivateSubrsOffsetsArray = new int[fonts[Font].fdprivateOffsets.length][];
 			
 			// Put the FDarrayUsed into a list
-			ArrayList FDInList = new ArrayList(FDArrayUsed.keySet());
+			ArrayList<Integer> FDInList = new ArrayList<Integer>(FDArrayUsed.keySet());
 			// For each FD array which is used subset the lsubr 
 			for (int j=0;j<FDInList.size();j++)
 			{
 				// The FDArray index, Hash Map, Array List to work on
-				int FD = ((Integer)FDInList.get(j)).intValue();
-				hSubrsUsed[FD] = new HashMap();
-				lSubrsUsed[FD] = new ArrayList();
+				int FD = FDInList.get(j).intValue();
+				hSubrsUsed[FD] = new HashMap<Integer, int[]>();
+				lSubrsUsed[FD] = new ArrayList<Integer>();
 				//Reads the private dicts looking for the subr operator and 
 				// store both the offset for the index and its offset array
 				BuildFDSubrsOffsets(Font,FD);
@@ -526,7 +526,7 @@ public class CFFFontSubset extends CFFFont {
 	 * @param hSubr HashMap of the subrs used
 	 * @param lSubr ArrayList of the subrs used
 	 */
-	protected void BuildSubrUsed(int Font,int FD,int SubrOffset,int[] SubrsOffsets,HashMap hSubr,ArrayList lSubr)
+	protected void BuildSubrUsed(int Font,int FD,int SubrOffset,int[] SubrsOffsets,HashMap<Integer, int[]> hSubr,ArrayList<Integer> lSubr)
 	{
 
 		// Calc the Bias for the subr index
@@ -535,7 +535,7 @@ public class CFFFontSubset extends CFFFont {
 		// For each glyph used find its GID, start & end pos
 		for (int i=0;i<glyphsInList.size();i++)
 		{
-			int glyph = ((Integer)glyphsInList.get(i)).intValue();
+			int glyph = glyphsInList.get(i).intValue();
 			int Start = fonts[Font].charstringsOffsets[glyph];
 			int End = fonts[Font].charstringsOffsets[glyph+1];
 			
@@ -560,7 +560,7 @@ public class CFFFontSubset extends CFFFont {
 		for (int i=0;i<lSubr.size();i++)
 		{
 			// Pop the subr value from the hash
-			int Subr = ((Integer)lSubr.get(i)).intValue();
+			int Subr = lSubr.get(i).intValue();
 			// Ensure the Lsubr call is valid
 			if (Subr < SubrsOffsets.length-1 && Subr>=0)
 			{
@@ -591,7 +591,7 @@ public class CFFFontSubset extends CFFFont {
 		for (int i=0;i<lGSubrsUsed.size();i++)
 		{
 			//Pop the value + check valid 
-			int Subr = ((Integer)lGSubrsUsed.get(i)).intValue();
+			int Subr = lGSubrsUsed.get(i).intValue();
 			if (Subr < gsubrOffsets.length-1 && Subr>=0)
 			{
 				// Read the subr and process
@@ -608,7 +608,7 @@ public class CFFFontSubset extends CFFFont {
 						for (int j=SizeOfNonCIDSubrsUsed;j<lSubrsUsedNonCID.size();j++)
 						{
 							//Pop the value + check valid 
-							int LSubr = ((Integer)lSubrsUsedNonCID.get(j)).intValue();
+							int LSubr = lSubrsUsedNonCID.get(j).intValue();
 							if (LSubr < fonts[Font].SubrsOffsets.length-1 && LSubr>=0)
 							{
 								// Read the subr and process
@@ -635,7 +635,7 @@ public class CFFFontSubset extends CFFFont {
 	 * @param hSubr the HashMap for the lSubrs
 	 * @param lSubr the ArrayList for the lSubrs
 	 */
-	protected void ReadASubr(int begin,int end,int GBias,int LBias,HashMap hSubr,ArrayList lSubr,int[] LSubrsOffsets)
+	protected void ReadASubr(int begin,int end,int GBias,int LBias,HashMap<Integer, int[]> hSubr,ArrayList<Integer> lSubr,int[] LSubrsOffsets)
 	{
 		// Clear the stack for the subrs
 		EmptyStack();
@@ -933,7 +933,7 @@ public class CFFFontSubset extends CFFFont {
 	 * @return the new index subset version 
 	 * @throws IOException
 	 */
-	protected byte[] BuildNewIndex(int[] Offsets,HashMap Used,byte OperatorForUnusedEntries) throws IOException 
+	protected byte[] BuildNewIndex(int[] Offsets, HashMap<Integer, int[]> Used, byte OperatorForUnusedEntries) throws IOException 
 	{
 		int unusedCount = 0;
 		int Offset=0;
@@ -1042,7 +1042,7 @@ public class CFFFontSubset extends CFFFont {
 	protected byte[] BuildNewFile(int Font)
     {
 		// Prepare linked list for new font components
-		OutputList = new LinkedList();
+		OutputList = new LinkedList<Item>();
 
         // copy the header of the font
         CopyHeader();
@@ -1192,15 +1192,12 @@ public class CFFFontSubset extends CFFFont {
         int[] currentOffset = new int[1];
         currentOffset[0] = 0;
         // Count and save the offset for each item
-        Iterator listIter = OutputList.iterator();
-        while ( listIter.hasNext() ) {
-            Item item = (Item) listIter.next();
+
+        for (Item item: OutputList) {
             item.increment(currentOffset);
         }
         // Compute the Xref for each of the offset items
-        listIter = OutputList.iterator();
-        while ( listIter.hasNext() ) {
-            Item item = (Item) listIter.next();
+        for (Item item: OutputList) {
             item.xref();
         }
         
@@ -1208,9 +1205,7 @@ public class CFFFontSubset extends CFFFont {
         byte[] b = new byte[size];
         
         // Emit all the items into the new byte array
-        listIter = OutputList.iterator();
-        while ( listIter.hasNext() ) {
-            Item item = (Item) listIter.next();
+        for (Item item: OutputList) {
             item.emit(b);
         }
         // Return the new stream

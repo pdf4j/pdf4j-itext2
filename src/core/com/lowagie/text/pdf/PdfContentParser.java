@@ -1,5 +1,5 @@
 /*
- * $Id$
+ * $Id: PdfContentParser.java 4167 2009-12-13 04:05:50Z xlv $
  *
  * Copyright 2005 by Paulo Soares.
  *
@@ -51,6 +51,7 @@ package com.lowagie.text.pdf;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import com.lowagie.text.error_messages.MessageLocalization;
 /**
  * Parses the page or template content.
  * @author Paulo Soares (psoares@consiste.pt)
@@ -83,9 +84,9 @@ public class PdfContentParser {
      * @return the same <CODE>ArrayList</CODE> given as argument or a new one
      * @throws IOException on error
      */    
-    public ArrayList parse(ArrayList ls) throws IOException {
+    public ArrayList<PdfObject> parse(ArrayList<PdfObject> ls) throws IOException {
         if (ls == null)
-            ls = new ArrayList();
+            ls = new ArrayList<PdfObject>();
         else
             ls.clear();
         PdfObject ob = null;
@@ -122,18 +123,18 @@ public class PdfContentParser {
         PdfDictionary dic = new PdfDictionary();
         while (true) {
             if (!nextValidToken())
-                throw new IOException("Unexpected end of file.");
+                throw new IOException(MessageLocalization.getComposedMessage("unexpected.end.of.file"));
                 if (tokeniser.getTokenType() == PRTokeniser.TK_END_DIC)
                     break;
                 if (tokeniser.getTokenType() != PRTokeniser.TK_NAME)
-                    throw new IOException("Dictionary key is not a name.");
+                    throw new IOException(MessageLocalization.getComposedMessage("dictionary.key.is.not.a.name"));
                 PdfName name = new PdfName(tokeniser.getStringValue(), false);
                 PdfObject obj = readPRObject();
                 int type = obj.type();
                 if (-type == PRTokeniser.TK_END_DIC)
-                    throw new IOException("Unexpected '>>'");
+                    throw new IOException(MessageLocalization.getComposedMessage("unexpected.gt.gt"));
                 if (-type == PRTokeniser.TK_END_ARRAY)
-                    throw new IOException("Unexpected ']'");
+                    throw new IOException(MessageLocalization.getComposedMessage("unexpected.close.bracket"));
                 dic.put(name, obj);
         }
         return dic;
@@ -152,7 +153,7 @@ public class PdfContentParser {
             if (-type == PRTokeniser.TK_END_ARRAY)
                 break;
             if (-type == PRTokeniser.TK_END_DIC)
-                throw new IOException("Unexpected '>>'");
+                throw new IOException(MessageLocalization.getComposedMessage("unexpected.gt.gt"));
             array.add(obj);
         }
         return array;

@@ -1,5 +1,5 @@
 /*
- * $Id$
+ * $Id: ColumnText.java 4167 2009-12-13 04:05:50Z xlv $
  *
  * Copyright 2001, 2002 by Paulo Soares.
  *
@@ -49,9 +49,9 @@
 
 package com.lowagie.text.pdf;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Stack;
+import com.lowagie.text.error_messages.MessageLocalization;
 
 import com.lowagie.text.Chunk;
 import com.lowagie.text.DocumentException;
@@ -175,10 +175,10 @@ public class ColumnText {
     protected int alignment = Element.ALIGN_LEFT;
     
     /** The left column bound. */
-    protected ArrayList leftWall;
+    protected ArrayList<float[]> leftWall;
     
     /** The right column bound. */
-    protected ArrayList rightWall;
+    protected ArrayList<float[]> rightWall;
     
     /** The chunks that form the text. */
 //    protected ArrayList chunks = new ArrayList();
@@ -240,7 +240,7 @@ public class ColumnText {
     
     protected ColumnText compositeColumn;
     
-    protected LinkedList compositeElements;
+    protected LinkedList<Element> compositeElements;
     
     protected int listIdx = 0;
     
@@ -297,10 +297,10 @@ public class ColumnText {
         alignment = org.alignment;
         leftWall = null;
         if (org.leftWall != null)
-            leftWall = new ArrayList(org.leftWall);
+            leftWall = new ArrayList<float[]>(org.leftWall);
         rightWall = null;
         if (org.rightWall != null)
-            rightWall = new ArrayList(org.rightWall);
+            rightWall = new ArrayList<float[]>(org.rightWall);
         yLine = org.yLine;
         currentLeading = org.currentLeading;
         fixedLeading = org.fixedLeading;
@@ -323,7 +323,7 @@ public class ColumnText {
         composite = org.composite;
         splittedRow = org.splittedRow;
         if (org.composite) {
-            compositeElements = new LinkedList(org.compositeElements);
+            compositeElements = new LinkedList<Element>(org.compositeElements);
             if (splittedRow) {
                 PdfPTable table = (PdfPTable)compositeElements.getFirst();
                 compositeElements.set(0, new PdfPTable(table));
@@ -345,8 +345,8 @@ public class ColumnText {
     private void addWaitingPhrase() {
         if (bidiLine == null && waitPhrase != null) {
             bidiLine = new BidiLine();
-            for (Iterator j = waitPhrase.getChunks().iterator(); j.hasNext();) {
-                bidiLine.addChunk(new PdfChunk((Chunk)j.next(), null));
+            for (Chunk c: waitPhrase.getChunks()) {
+                bidiLine.addChunk(new PdfChunk(c, null));
             }
             waitPhrase = null;
         }
@@ -366,8 +366,8 @@ public class ColumnText {
             waitPhrase = phrase;
             return;
         }
-        for (Iterator j = phrase.getChunks().iterator(); j.hasNext();) {
-            bidiLine.addChunk(new PdfChunk((Chunk)j.next(), null));
+        for (Chunk c: phrase.getChunks()) {
+            bidiLine.addChunk(new PdfChunk(c, null));
         }
     }
     
@@ -453,14 +453,14 @@ public class ColumnText {
         	try {
 				element = ((SimpleTable)element).createPdfPTable();
 			} catch (DocumentException e) {
-				throw new IllegalArgumentException("Element not allowed.");
+				throw new IllegalArgumentException(MessageLocalization.getComposedMessage("element.not.allowed"));
 			}
         }
         else if (element.type() != Element.PARAGRAPH && element.type() != Element.LIST && element.type() != Element.PTABLE && element.type() != Element.YMARK)
-            throw new IllegalArgumentException("Element not allowed.");
+            throw new IllegalArgumentException(MessageLocalization.getComposedMessage("element.not.allowed"));
         if (!composite) {
             composite = true;
-            compositeElements = new LinkedList();
+            compositeElements = new LinkedList<Element>();
             bidiLine = null;
             waitPhrase = null;
         }
@@ -477,10 +477,10 @@ public class ColumnText {
      * @param cLine the column array
      * @return the converted array
      */
-    protected ArrayList convertColumn(float cLine[]) {
+    protected ArrayList<float[]> convertColumn(float cLine[]) {
         if (cLine.length < 4)
-            throw new RuntimeException("No valid column line found.");
-        ArrayList cc = new ArrayList();
+            throw new RuntimeException(MessageLocalization.getComposedMessage("no.valid.column.line.found"));
+        ArrayList<float[]> cc = new ArrayList<float[]>();
         for (int k = 0; k < cLine.length - 2; k += 2) {
             float x1 = cLine[k];
             float y1 = cLine[k + 1];
@@ -501,7 +501,7 @@ public class ColumnText {
             minY = Math.min(minY, r[0]);
         }
         if (cc.isEmpty())
-            throw new RuntimeException("No valid column line found.");
+            throw new RuntimeException(MessageLocalization.getComposedMessage("no.valid.column.line.found"));
         return cc;
     }
     
@@ -512,14 +512,14 @@ public class ColumnText {
      * @param wall the column to intersect
      * @return the x coordinate of the intersection
      */
-    protected float findLimitsPoint(ArrayList wall) {
+    protected float findLimitsPoint(ArrayList<float[]> wall) {
         lineStatus = LINE_STATUS_OK;
         if (yLine < minY || yLine > maxY) {
             lineStatus = LINE_STATUS_OFFLIMITS;
             return 0;
         }
         for (int k = 0; k < wall.size(); ++k) {
-            float r[] = (float[])wall.get(k);
+            float r[] = wall.get(k);
             if (yLine < r[0] || yLine > r[1])
                 continue;
             return r[2] * yLine + r[3];
@@ -826,7 +826,7 @@ public class ColumnText {
             text = canvas.getDuplicate();
         }
         else if (!simulate)
-            throw new NullPointerException("ColumnText.go with simulate==false and text==null.");
+            throw new NullPointerException(MessageLocalization.getComposedMessage("columntext.go.with.simulate.eq.eq.false.and.text.eq.eq.null"));
         if (!simulate) {
             if (ratio == GLOBAL_SPACE_CHAR_RATIO)
                 ratio = text.getPdfWriter().getSpaceCharRatio();
@@ -980,7 +980,7 @@ public class ColumnText {
      */    
     public void setRunDirection(int runDirection) {
         if (runDirection < PdfWriter.RUN_DIRECTION_DEFAULT || runDirection > PdfWriter.RUN_DIRECTION_RTL)
-            throw new RuntimeException("Invalid run direction: " + runDirection);
+            throw new RuntimeException(MessageLocalization.getComposedMessage("invalid.run.direction.1", runDirection));
         this.runDirection = runDirection;
     }
     
@@ -1144,7 +1144,7 @@ public class ColumnText {
 
     protected int goComposite(boolean simulate) throws DocumentException {
         if (!rectangularMode)
-            throw new DocumentException("Irregular columns are not supported in composite mode.");
+            throw new DocumentException(MessageLocalization.getComposedMessage("irregular.columns.are.not.supported.in.composite.mode"));
         linesWritten = 0;
         descender = 0;
         boolean firstPass = adjustFirstLine;
@@ -1153,7 +1153,7 @@ public class ColumnText {
         while (true) {
             if (compositeElements.isEmpty())
                 return NO_MORE_TEXT;
-            Element element = (Element)compositeElements.getFirst();
+            Element element = compositeElements.getFirst();
             if (element.type() == Element.PARAGRAPH) {
                 Paragraph para = (Paragraph)element;
                 int status = 0;
@@ -1215,13 +1215,13 @@ public class ColumnText {
             }
             else if (element.type() == Element.LIST) {
                 com.lowagie.text.List list = (com.lowagie.text.List)element;
-                ArrayList items = list.getItems();
+                ArrayList<Element> items = list.getItems();
                 ListItem item = null;
                 float listIndentation = list.getIndentationLeft();
                 int count = 0;
-                Stack stack = new Stack();
+                Stack<Object[]> stack = new Stack<Object[]>();
                 for (int k = 0; k < items.size(); ++k) {
-                    Object obj = items.get(k);
+                	Element obj = items.get(k);
                     if (obj instanceof ListItem) {
                         if (count == listIdx) {
                             item = (ListItem)obj;
@@ -1239,7 +1239,7 @@ public class ColumnText {
                     }
                     if (k == items.size() - 1) {
                         if (!stack.isEmpty()) {
-                            Object objs[] = (Object[])stack.pop();
+                            Object objs[] = stack.pop();
                             list = (com.lowagie.text.List)objs[0];
                             items = list.getItems();
                             k = ((Integer)objs[1]).intValue();
@@ -1392,7 +1392,7 @@ public class ColumnText {
                             splittedRow = true;
                             table = new PdfPTable(table);
                             compositeElements.set(0, table);
-                            ArrayList rows = table.getRows();
+                            ArrayList<PdfPRow> rows = table.getRows();
                             for (int i = headerRows; i < listIdx; ++i)
                                 rows.set(i, null);
                         }
@@ -1431,14 +1431,12 @@ public class ColumnText {
                     }
                     // copy the rows that fit on the page in a new table nt
                     PdfPTable nt = PdfPTable.shallowCopy(table);
-                    ArrayList sub = nt.getRows();
+                    ArrayList<PdfPRow> rows = table.getRows();
+                    ArrayList<PdfPRow> sub = nt.getRows();
                     
                     // first we add the real header rows (if necessary)
-                    if (!skipHeader) {
-                        for (int j = 0; j < realHeaderRows; ++j) {
-                        	PdfPRow headerRow = table.getRow(j);
-                            sub.add(headerRow);
-                        }
+                    if (!skipHeader && realHeaderRows > 0) {
+                        sub.addAll(table.getRows(0, realHeaderRows));
                     }
                     else
                         nt.setHeaderRows(footerRows);
@@ -1447,9 +1445,11 @@ public class ColumnText {
                     // if k < table.size(), we must indicate that the new table is complete;
                     // otherwise no footers will be added (because iText thinks the table continues on the same page)
                     boolean showFooter = !table.isSkipLastFooter();
+                    boolean newPageFollows = false;
                     if (k < table.size()) {
                     	nt.setComplete(true);
                     	showFooter = true;
+                    	newPageFollows = true;
                     }
                     // we add the footer rows if necessary (not for incomplete tables)
                     for (int j = 0; j < footerRows && nt.isComplete() && showFooter; ++j)
@@ -1457,8 +1457,10 @@ public class ColumnText {
 
                     // we need a correction if the last row needs to be extended
                     float rowHeight = 0;
-                    PdfPRow last = (PdfPRow)sub.get(sub.size() - 1 - footerRows);
-                    if (table.isExtendLastRow()) {
+                    int index = sub.size() - 1;
+                    if (showFooter) index -= footerRows;
+                    PdfPRow last = sub.get(index);
+                    if (table.isExtendLastRow(newPageFollows)) {
                         rowHeight = last.getMaxHeights();
                         last.setMaxHeights(yTemp - minY + rowHeight);
                         yTemp = minY;
@@ -1469,7 +1471,7 @@ public class ColumnText {
                         nt.writeSelectedRows(0, -1, x1, yLineWrite, canvases);
                     else
                         nt.writeSelectedRows(0, -1, x1, yLineWrite, canvas);
-                    if (table.isExtendLastRow()) {
+                    if (table.isExtendLastRow(newPageFollows)) {
                         last.setMaxHeights(rowHeight);
                     }
                 }
@@ -1486,7 +1488,7 @@ public class ColumnText {
                 }
                 else {
                     if (splittedRow) {
-                        ArrayList rows = table.getRows();
+                        ArrayList<PdfPRow> rows = table.getRows();
                         for (int i = listIdx; i < k; ++i)
                             rows.set(i, null);
                     }
@@ -1557,7 +1559,7 @@ public class ColumnText {
      * @since 2.1.2
      */
     public boolean zeroHeightElement() {
-        return composite && !compositeElements.isEmpty() && ((Element)compositeElements.getFirst()).type() == Element.YMARK;
+        return composite && !compositeElements.isEmpty() && compositeElements.getFirst().type() == Element.YMARK;
     }
     
     /**

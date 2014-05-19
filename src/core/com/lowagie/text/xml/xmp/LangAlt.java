@@ -1,5 +1,5 @@
 /*
- * $Id$
+ * $Id: LangAlt.java 3393 2008-05-16 21:33:55Z xlv $
  *
  * Copyright 2007 by Armin Haberling
  *
@@ -95,7 +95,7 @@ public class LangAlt extends Properties {
 	public String toString() {
 		StringBuffer sb = new StringBuffer();
 		sb.append("<rdf:Alt>");
-		for (Enumeration e = this.propertyNames(); e.hasMoreElements();) {
+		for (Enumeration<?> e = this.propertyNames(); e.hasMoreElements();) {
 			process(sb, e.nextElement());
 		}
 		sb.append("</rdf:Alt>");

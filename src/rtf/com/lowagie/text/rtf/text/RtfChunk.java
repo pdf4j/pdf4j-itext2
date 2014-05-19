@@ -1,5 +1,5 @@
 /*
- * $Id$
+ * $Id: RtfChunk.java 3626 2008-11-11 19:27:25Z xlv $
  *
  * Copyright 2001, 2002, 2003, 2004 by Mark Hall
  *
@@ -65,7 +65,7 @@ import com.lowagie.text.rtf.style.RtfFont;
  * The RtfChunk contains one piece of text. The smallest text element available
  * in iText.
  * 
- * @version $Id$
+ * @version $Id: RtfChunk.java 3626 2008-11-11 19:27:25Z xlv $
  * @author Mark Hall (Mark.Hall@mail.room3b.eu)
  * @author Thomas Bickel (tmb99@inode.at)
  */

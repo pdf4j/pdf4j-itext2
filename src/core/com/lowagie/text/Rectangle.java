@@ -1,5 +1,5 @@
 /*
- * $Id$
+ * $Id: Rectangle.java 3787 2009-03-17 01:25:12Z xlv $
  *
  * Copyright 1999, 2000, 2001, 2002 by Bruno Lowagie.
  *
@@ -219,8 +219,8 @@ public class Rectangle implements Element {
 	 * 
 	 * @return an <CODE>ArrayList</CODE>
 	 */
-	public ArrayList getChunks() {
-		return new ArrayList();
+	public ArrayList<Chunk> getChunks() {
+		return new ArrayList<Chunk>();
 	}
 	
 	/**

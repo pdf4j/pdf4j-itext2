@@ -1,5 +1,5 @@
 /*
- * $Id$
+ * $Id: ExtendedFontStyles.java 3393 2008-05-16 21:33:55Z xlv $
  *
  * This code is free software. It may only be copied or modified
  * if you include the following copyright notice:
@@ -34,7 +34,7 @@ import com.lowagie.text.rtf.style.RtfFont;
  * font styles provided by the RtfFont class. These styles can be used
  * in place or combined with the existing font styles in Font.
  * 
- * @version $Revision$
+ * @version $Revision: 3393 $
  * @author Mark Hall (Mark.Hall@mail.room3b.eu)
  * @see com.lowagie.text.rtf.style.RtfFont
  */
@@ -71,9 +71,9 @@ public class ExtendedFontStyles {
             paragraph.add(new Chunk("deleted,", doubleStrikethrough));
             paragraph.add(new Chunk(" shady,", shadow));
             paragraph.add(new Chunk(" engraved and italic", engravedItalic));
-            paragraph.add(" and");
+            paragraph.addObject(" and");
             paragraph.add(new Chunk(" you won't see this", hidden));
-            paragraph.add(" nothing.");
+            paragraph.addObject(" nothing.");
             
             document.add(paragraph);
             document.close();

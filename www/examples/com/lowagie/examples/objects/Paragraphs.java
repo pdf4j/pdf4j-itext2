@@ -1,5 +1,5 @@
 /*
- * $Id$
+ * $Id: Paragraphs.java 3393 2008-05-16 21:33:55Z xlv $
  *
  * This code is part of the 'iText Tutorial'.
  * You can find the complete tutorial at the following address:
@@ -56,8 +56,8 @@ public class Paragraphs {
 			Paragraph p1 = new Paragraph(new Chunk(
 					"This is my first paragraph. ",
 					FontFactory.getFont(FontFactory.HELVETICA, 10)));
-			p1.add("The leading of this paragraph is calculated automagically. ");
-			p1.add("The default leading is 1.5 times the fontsize. ");
+			p1.addObject("The leading of this paragraph is calculated automagically. ");
+			p1.addObject("The default leading is 1.5 times the fontsize. ");
 			p1.add(new Chunk("You can add chunks "));
 			p1.add(new Phrase("or you can add phrases. "));
 			p1.add(new Phrase(
@@ -67,7 +67,7 @@ public class Paragraphs {
 			Paragraph p2 = new Paragraph(new Phrase(
 					"This is my second paragraph. ", FontFactory.getFont(
 							FontFactory.HELVETICA, 12)));
-			p2.add("As you can see, it started on a new line.");
+			p2.addObject("As you can see, it started on a new line.");
 			document.add(p2);
 			Paragraph p3 = new Paragraph("This is my third paragraph.",
 					FontFactory.getFont(FontFactory.HELVETICA, 12));

@@ -1,5 +1,5 @@
 /*
- * $Id$
+ * $Id: PageResources.java 3192 2008-03-27 19:07:33Z xlv $
  *
  * Copyright 2003-2005 by Paulo Soares.
  *
@@ -49,6 +49,7 @@
 package com.lowagie.text.pdf;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 
 class PageResources {
@@ -60,10 +61,10 @@ class PageResources {
     protected PdfDictionary shadingDictionary = new PdfDictionary();
     protected PdfDictionary extGStateDictionary = new PdfDictionary();
     protected PdfDictionary propertyDictionary = new PdfDictionary();
-    protected HashMap forbiddenNames;
+    protected HashSet<PdfName> forbiddenNames;
     protected PdfDictionary originalResources;
     protected int namePtr[] = {0};
-    protected HashMap usedNames;
+    protected HashMap<PdfName, PdfName> usedNames;
 
     PageResources() {
     }
@@ -71,19 +72,19 @@ class PageResources {
     void setOriginalResources(PdfDictionary resources, int newNamePtr[]) {
         if (newNamePtr != null)
             namePtr = newNamePtr;
-        forbiddenNames = new HashMap();
-        usedNames = new HashMap();
+        forbiddenNames = new HashSet<PdfName>();
+        usedNames = new HashMap<PdfName, PdfName>();
         if (resources == null)
             return;
         originalResources = new PdfDictionary();
         originalResources.merge(resources);
-        for (Iterator i = resources.getKeys().iterator(); i.hasNext();) {
-            PdfName key = (PdfName)i.next();
+        for (Iterator<PdfName> i = resources.getKeys().iterator(); i.hasNext();) {
+            PdfName key = i.next();
             PdfObject sub = PdfReader.getPdfObject(resources.get(key));
             if (sub != null && sub.isDictionary()) {
                 PdfDictionary dic = (PdfDictionary)sub;
-                for (Iterator j = dic.getKeys().iterator(); j.hasNext();) {
-                    forbiddenNames.put(j.next(), null);
+                for (Iterator<PdfName> j = dic.getKeys().iterator(); j.hasNext();) {
+                    forbiddenNames.add(j.next());
                 }
                 PdfDictionary dic2 = new PdfDictionary();
                 dic2.merge(dic);
@@ -95,11 +96,11 @@ class PageResources {
     PdfName translateName(PdfName name) {
         PdfName translated = name;
         if (forbiddenNames != null) {
-            translated = (PdfName)usedNames.get(name);
+            translated = usedNames.get(name);
             if (translated == null) {
                 while (true) {
                     translated = new PdfName("Xi" + (namePtr[0]++));
-                    if (!forbiddenNames.containsKey(translated))
+                    if (!forbiddenNames.contains(translated))
                         break;
                 }
                 usedNames.put(name, translated);

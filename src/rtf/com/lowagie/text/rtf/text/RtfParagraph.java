@@ -1,5 +1,5 @@
 /*
- * $Id$
+ * $Id: RtfParagraph.java 3787 2009-03-17 01:25:12Z xlv $
  *
  * Copyright 2001, 2002, 2003, 2004 by Mark Hall
  *
@@ -69,7 +69,7 @@ import com.lowagie.text.rtf.style.RtfParagraphStyle;
  * The RtfParagraph is an extension of the RtfPhrase that adds alignment and
  * indentation properties. It wraps a Paragraph.
  * 
- * @version $Id$
+ * @version $Id: RtfParagraph.java 3787 2009-03-17 01:25:12Z xlv $
  * @author Mark Hall (Mark.Hall@mail.room3b.eu)
  * @author Thomas Bickel (tmb99@inode.at)
  */
@@ -112,7 +112,7 @@ public class RtfParagraph extends RtfPhrase {
             this.paragraphStyle.setKeepTogether(paragraph.getKeepTogether());
         }        
         for(int i = 0; i < paragraph.size(); i++) {
-            Element chunk = (Element) paragraph.get(i);
+            Element chunk = paragraph.get(i);
             if(chunk instanceof Chunk) {
                 ((Chunk) chunk).setFont(baseFont.difference(((Chunk) chunk).getFont()));
             } else if(chunk instanceof RtfImage) {
@@ -156,7 +156,7 @@ public class RtfParagraph extends RtfPhrase {
         result.write(DocWriter.getISOBytes("\\plain"));
         
         for(int i = 0; i < chunks.size(); i++) {
-        	RtfBasicElement rbe = (RtfBasicElement)chunks.get(i);
+        	RtfBasicElement rbe = chunks.get(i);
         	rbe.writeContent(result);
         }
         

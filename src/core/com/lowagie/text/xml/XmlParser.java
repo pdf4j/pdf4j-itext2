@@ -1,5 +1,5 @@
 /*
- * $Id$
+ * $Id: XmlParser.java 3393 2008-05-16 21:33:55Z xlv $
  *
  * Copyright 2001, 2002 by Bruno Lowagie.
  *
@@ -152,7 +152,7 @@ public class XmlParser {
  * @param tagmap a user defined tagmap
  */
     
-    public void go(DocListener document, InputSource is, HashMap tagmap) {
+    public void go(DocListener document, InputSource is, HashMap<String, XmlPeer> tagmap) {
         try {
             parser.parse(is, new SAXmyHandler(document, tagmap));
         }
@@ -208,7 +208,7 @@ public class XmlParser {
  * @param tagmap a user defined tagmap
  */
     
-    public void go(DocListener document, String file, HashMap tagmap) {
+    public void go(DocListener document, String file, HashMap<String, XmlPeer> tagmap) {
         try {
             parser.parse(file, new SAXmyHandler(document, tagmap));
         }
@@ -250,7 +250,7 @@ public class XmlParser {
  * @param tagmap a user defined tagmap
  */
     
-    public static void parse(DocListener document, InputSource is, HashMap tagmap) {
+    public static void parse(DocListener document, InputSource is, HashMap<String, XmlPeer> tagmap) {
         XmlParser p = new XmlParser();
         p.go(document, is, tagmap);
     }
@@ -285,7 +285,7 @@ public class XmlParser {
  * @param tagmap A user defined tagmap
  */
     
-    public static void parse(DocListener document, String file, HashMap tagmap) {
+    public static void parse(DocListener document, String file, HashMap<String, XmlPeer> tagmap) {
         XmlParser p = new XmlParser();
         p.go(document, file, tagmap);
     }
@@ -320,7 +320,7 @@ public class XmlParser {
  * @param tagmap A user defined tagmap
  */
     
-    public static void parse(DocListener document, InputStream is, HashMap tagmap) {
+    public static void parse(DocListener document, InputStream is, HashMap<String, XmlPeer> tagmap) {
         XmlParser p = new XmlParser();
         p.go(document, new InputSource(is), tagmap);
     }
@@ -355,7 +355,7 @@ public class XmlParser {
  * @param tagmap A user defined tagmap
  */
     
-    public static void parse(DocListener document, Reader is, HashMap tagmap) {
+    public static void parse(DocListener document, Reader is, HashMap<String, XmlPeer> tagmap) {
         XmlParser p = new XmlParser();
         p.go(document, new InputSource(is), tagmap);
     }

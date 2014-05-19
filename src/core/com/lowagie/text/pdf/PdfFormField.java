@@ -47,7 +47,6 @@
 
 package com.lowagie.text.pdf;
 import java.util.ArrayList;
-import java.util.Iterator;
 
 import com.lowagie.text.Rectangle;
 
@@ -98,7 +97,7 @@ public class PdfFormField extends PdfAnnotation {
     /** Holds value of property parent. */
     protected PdfFormField parent;
     
-    protected ArrayList kids;
+    protected ArrayList<PdfFormField> kids;
     
 /**
  * Constructs a new <CODE>PdfAnnotation</CODE> of subtype link (Action).
@@ -228,11 +227,11 @@ public class PdfFormField extends PdfAnnotation {
     public void addKid(PdfFormField field) {
         field.parent = this;
         if (kids == null)
-            kids = new ArrayList();
+            kids = new ArrayList<PdfFormField>();
         kids.add(field);
     }
     
-    public ArrayList getKids() {
+    public ArrayList<PdfFormField> getKids() {
         return kids;
     }
     
@@ -315,14 +314,13 @@ public class PdfFormField extends PdfAnnotation {
         if (kids != null) {
             PdfArray array = new PdfArray();
             for (int k = 0; k < kids.size(); ++k)
-                array.add(((PdfFormField)kids.get(k)).getIndirectReference());
+                array.add(kids.get(k).getIndirectReference());
             put(PdfName.KIDS, array);
         }
         if (templates == null)
             return;
         PdfDictionary dic = new PdfDictionary();
-        for (Iterator it = templates.keySet().iterator(); it.hasNext();) {
-            PdfTemplate template = (PdfTemplate)it.next();
+        for (PdfTemplate template: templates) {
             mergeResources(dic, (PdfDictionary)template.getResources());
         }
         put(PdfName.DR, dic);

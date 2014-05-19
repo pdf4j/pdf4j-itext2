@@ -1,5 +1,5 @@
 /*
- * $Id$
+ * $Id: PdfPageTreeNode.java 3192 2008-03-27 19:07:33Z xlv $
  *
  * Copyright 2007 Bruno Lowagie.
  *

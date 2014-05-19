@@ -1,5 +1,5 @@
 /* 
- * $Id$
+ * $Id: RtfCtrlWordMgr.java 3393 2008-05-16 21:33:55Z xlv $
  *
  * Copyright 2007 by Howard Shank (hgshank@yahoo.com)
  *
@@ -51,7 +51,6 @@ package com.lowagie.text.rtf.parser.ctrlwords;
 
 import java.io.PushbackInputStream;
 import java.util.ArrayList;
-import java.util.Iterator;
 
 import com.lowagie.text.rtf.parser.RtfParser;
 
@@ -71,7 +70,7 @@ public final class RtfCtrlWordMgr {
 	private RtfCtrlWordMap ctrlWordMap = null;
 	
 	/** The <code>RtfCtrlWordListener</code>. */
-    private ArrayList listeners = new ArrayList();
+    private ArrayList<RtfCtrlWordListener> listeners = new ArrayList<RtfCtrlWordListener>();
 
 //	// TIMING DEBUG INFO
 //	private long endTime = 0;
@@ -183,27 +182,21 @@ public final class RtfCtrlWordMgr {
 	}
 	
 	private boolean beforeCtrlWord(RtfCtrlWordData ctrlWordData) {
-		RtfCtrlWordListener listener;
-		for (Iterator iterator = listeners.iterator(); iterator.hasNext();) {
-            listener = (RtfCtrlWordListener) iterator.next();
+		for (RtfCtrlWordListener listener: listeners) {
             listener.beforeCtrlWord(ctrlWordData);
         }
 		return true;
 	}
 	
 	private boolean onCtrlWord(RtfCtrlWordData ctrlWordData) {
-		RtfCtrlWordListener listener;
-		for (Iterator iterator = listeners.iterator(); iterator.hasNext();) {
-            listener = (RtfCtrlWordListener) iterator.next();
+		for (RtfCtrlWordListener listener: listeners) {
             listener.onCtrlWord(ctrlWordData);
         }
 		return true;
 	}
 	
 	private boolean afterCtrlWord(RtfCtrlWordData ctrlWordData) {
-		RtfCtrlWordListener listener;
-		for (Iterator iterator = listeners.iterator(); iterator.hasNext();) {
-            listener = (RtfCtrlWordListener) iterator.next();
+		for (RtfCtrlWordListener listener: listeners) {
             listener.afterCtrlWord(ctrlWordData);
         }
 		return true;
