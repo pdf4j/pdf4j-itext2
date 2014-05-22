@@ -1,0 +1,5 @@
+/itxt-core/target/
+/itxt-rtf/target/
+/itxt-toolbox/target/
+/itxt-rups/target/
+.DS_Store
