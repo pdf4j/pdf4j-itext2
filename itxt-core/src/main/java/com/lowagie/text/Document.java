@@ -113,6 +113,8 @@ public class Document implements DocListener {
 	/** This constant may only be changed by Paulo Soares and/or Bruno Lowagie. */
 	private static final String ITEXT_VERSION = ITEXT + " " + RELEASE + " by 1T3XT";
     
+	private static final String ITXT = "itxt";
+	private static final String ITXT_VERSION = ITXT + " " + RELEASE + " by PDF4J Release";
 	/**
 	 * Allows the pdf documents to be produced without compression for debugging
 	 * purposes.
@@ -783,7 +785,7 @@ public class Document implements DocListener {
      * @since	2.1.6
      */    
     public static final String getProduct() {
-        return ITEXT;
+        return ITXT;
     }
     
 	/**
@@ -802,7 +804,7 @@ public class Document implements DocListener {
      * @return iText version
      */    
     public static final String getVersion() {
-        return ITEXT_VERSION;
+        return ITXT_VERSION;
     }
 
 	/**

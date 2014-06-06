@@ -170,8 +170,10 @@ public class Vector {
     }
     
     /**
+     * @return returns comma delimited String
      * @see java.lang.Object#toString()
      */
+    @Override
     public String toString() {
         return vals[I1]+","+vals[I2]+","+vals[I3];
     }

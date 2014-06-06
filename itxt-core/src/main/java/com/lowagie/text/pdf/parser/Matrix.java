@@ -183,6 +183,7 @@ public class Matrix {
      * @return	true if both matrices are equal
      * @see java.lang.Object#equals(java.lang.Object)
      */
+    @Override
     public boolean equals(Object obj) {
         if (!(obj instanceof Matrix))
             return false;
@@ -195,6 +196,7 @@ public class Matrix {
      * @return	the hash code of this object
      * @see java.lang.Object#hashCode()
      */
+    @Override
     public int hashCode() {
         //return Arrays.hashCode(vals); // JDK 5 code, replaced with the following
         
@@ -210,6 +212,7 @@ public class Matrix {
      * @return	the values, delimited with tabs and newlines.
      * @see java.lang.Object#toString()
      */
+    @Override
     public String toString() {
         return  vals[I11] + "\t" + vals[I12] + "\t" + vals[I13] + "\n" + 
                 vals[I21] + "\t" + vals[I22] + "\t" + vals[I13] + "\n" +

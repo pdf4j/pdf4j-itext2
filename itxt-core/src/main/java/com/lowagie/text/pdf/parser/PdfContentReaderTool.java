@@ -220,7 +220,9 @@ public class PdfContentReaderTool {
                 writer.close();
                 System.out.println("Finished writing content to " + args[1]);
             }
-        } catch (Exception e){
+        } catch (IOException e){
+            e.printStackTrace(System.err);
+        } catch (NumberFormatException e) {
             e.printStackTrace(System.err);
         }
     }

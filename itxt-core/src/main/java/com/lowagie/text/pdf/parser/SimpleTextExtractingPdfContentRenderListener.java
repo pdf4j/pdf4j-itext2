@@ -83,7 +83,7 @@ public class SimpleTextExtractingPdfContentRenderListener implements TextProvidi
         reset();
     }
 
-    public void reset() {
+    public final void reset() {
         lastYPos = 0f;
         lastEndingXPos = 0f;
         lastTextLineMatrix = null;

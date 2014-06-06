@@ -55,7 +55,6 @@ import java.util.Stack;
 import com.lowagie.text.ExceptionConverter;
 import com.lowagie.text.error_messages.MessageLocalization;
 import com.lowagie.text.pdf.CMapAwareDocumentFont;
-import com.lowagie.text.pdf.DocumentFont;
 import com.lowagie.text.pdf.PRIndirectReference;
 import com.lowagie.text.pdf.PRTokeniser;
 import com.lowagie.text.pdf.PdfArray;
@@ -65,6 +64,7 @@ import com.lowagie.text.pdf.PdfLiteral;
 import com.lowagie.text.pdf.PdfName;
 import com.lowagie.text.pdf.PdfNumber;
 import com.lowagie.text.pdf.PdfString;
+import java.io.IOException;
 
 /**
  * Processor for a PDF content Stream.
@@ -77,7 +77,7 @@ public class PdfContentStreamProcessor {
     /** Resources for the content stream. */
     private PdfDictionary resources;
     /** Stack keeping track of the graphics state. */
-    private Stack gsStack = new Stack();
+    private final Stack gsStack = new Stack();
     /** Text matrix. */
     private Matrix textMatrix;
     /** Text line matrix. */
@@ -153,7 +153,7 @@ public class PdfContentStreamProcessor {
     /**
      * Resets the graphics state stack, matrices and resources.
      */
-    public void reset(){
+    public final void reset(){
         gsStack.removeAllElements();
         gsStack.add(new GraphicsState());
         textMatrix = null;
@@ -256,7 +256,7 @@ public class PdfContentStreamProcessor {
             }
             
         }
-        catch (Exception e) {
+        catch (IOException e) {
             throw new ExceptionConverter(e);
         }    
         
@@ -269,12 +269,11 @@ public class PdfContentStreamProcessor {
     private static class ShowTextArray implements ContentOperator{
         public void invoke(PdfContentStreamProcessor processor, PdfLiteral operator, ArrayList operands) {
             PdfArray array = (PdfArray)operands.get(0);
-            float tj = 0;
+            float tj;
             for (Iterator i = array.listIterator(); i.hasNext(); ) {
             	Object entryObj = i.next();
                 if (entryObj instanceof PdfString){
                     processor.displayPdfString((PdfString)entryObj);
-                    tj = 0;
                 } else {
                     tj = ((PdfNumber)entryObj).floatValue();
                     processor.applyTextAdjust(tj);
