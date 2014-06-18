@@ -149,6 +149,7 @@ public class XmpReader {
      * @param domDocument the <CODE>Document</CODE> that contains the node
      * @param n the <CODE>Node</CODE> to add the text to
      * @param value the text to add
+     * @return returns boolean
      */
     public boolean setNodeText(Document domDocument, Node n, String value) {
         if (n == null)
@@ -163,6 +164,8 @@ public class XmpReader {
 	
     /**
      * Writes the document to a byte array.
+     * @return returns byte[]
+     * @throws java.io.IOException
      */
 	public byte[] serializeDoc() throws IOException {
 		XmlDomWriter xw = new XmlDomWriter();

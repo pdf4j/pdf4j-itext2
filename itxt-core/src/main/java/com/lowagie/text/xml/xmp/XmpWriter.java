@@ -197,6 +197,7 @@ public class XmpWriter {
     /**
      * @param os
      * @param info
+     * @param PdfXConformance
      * @throws IOException
      */
     public XmpWriter(OutputStream os, PdfDictionary info, int PdfXConformance) throws IOException {
