@@ -490,7 +490,7 @@ public final class SimpleXMLParser {
      */
     private int restoreState() {
         if(!stack.empty())
-            return ((Integer)stack.pop()).intValue();
+            return ((Integer)stack.pop());
         else
             return UNKNOWN;
     }
@@ -499,7 +499,7 @@ public final class SimpleXMLParser {
      * @param	s	a state to add to the stack
      */
     private void saveState(int s) {
-    	stack.push(new Integer(s));
+    	stack.push(s);
     }
     /**
      * Flushes the text that is currently in the buffer.
@@ -571,7 +571,9 @@ public final class SimpleXMLParser {
     /**
      * Parses the XML document firing the events to the handler.
      * @param doc the document handler
+     * @param comment
      * @param r the document. The encoding is already resolved. The reader is not closed
+     * @param html
      * @throws IOException on error
      */
     public static void parse(SimpleXMLDocHandler doc, SimpleXMLDocHandlerComment comment, Reader r, boolean html) throws IOException {
