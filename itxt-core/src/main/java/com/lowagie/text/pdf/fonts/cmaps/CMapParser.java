@@ -131,7 +131,7 @@ public class CMapParser
                         byte[] endCode = (byte[])parseNextToken( cmapStream );
                         Object nextToken = parseNextToken( cmapStream );
                         List array = null;
-                        byte[] tokenBytes = null;
+                        byte[] tokenBytes;
                         if( nextToken instanceof List )
                         {
                             array = (List)nextToken;
@@ -142,7 +142,7 @@ public class CMapParser
                             tokenBytes = (byte[])nextToken;
                         }
                         
-                        String value = null;
+                        String value;
                         
                         int arrayIndex = 0;
                         boolean done = false;
@@ -410,7 +410,7 @@ public class CMapParser
     
     private String createStringFromBytes( byte[] bytes ) throws IOException
     {
-        String retval = null;
+        String retval;
         if( bytes.length == 1 )
         {
             retval = new String( bytes );

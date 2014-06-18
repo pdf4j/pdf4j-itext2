@@ -46,9 +46,9 @@ import java.util.Map;
  */
 public class CMap
 {
-    private List codeSpaceRanges = new ArrayList();
-    private Map singleByteMappings = new HashMap();
-    private Map doubleByteMappings = new HashMap();
+    private List<CodespaceRange> codeSpaceRanges = new ArrayList<CodespaceRange>();
+    private Map<Integer, String> singleByteMappings = new HashMap<Integer, String>();
+    private Map<Integer, String> doubleByteMappings = new HashMap<Integer, String>();
 
     /**
      * Creates a new instance of CMap.
@@ -91,11 +91,11 @@ public class CMap
     {
 
         String result = null;
-        Integer key = null;
+        Integer key;
         if( length == 1 )
         {
             
-            key = new Integer( code[offset] & 0xff );
+            key = code[offset] & 0xff;
             result = (String)singleByteMappings.get( key );
         }
         else if( length == 2 )
@@ -103,7 +103,7 @@ public class CMap
             int intKey = code[offset] & 0xff;
             intKey <<= 8;
             intKey += code[offset+1] & 0xff;
-            key = new Integer( intKey );
+            key = intKey;
 
             result = (String)doubleByteMappings.get( key );
         }
@@ -123,14 +123,14 @@ public class CMap
     {
         if( src.length == 1 )
         {
-            singleByteMappings.put( new Integer( src[0] & 0xff ), dest );
+            singleByteMappings.put( src[0] & 0xff, dest );
         }
         else if( src.length == 2 )
         {
             int intSrc = src[0]&0xFF;
             intSrc <<= 8;
             intSrc |= (src[1]&0xFF);
-            doubleByteMappings.put( new Integer( intSrc), dest );
+            doubleByteMappings.put( intSrc, dest );
         }
         else
         {
@@ -154,7 +154,7 @@ public class CMap
      *
      * @return Value of property codeSpaceRanges.
      */
-    public List getCodeSpaceRanges()
+    public List<CodespaceRange> getCodeSpaceRanges()
     {
         return codeSpaceRanges;
     }
