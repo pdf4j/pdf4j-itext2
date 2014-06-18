@@ -88,6 +88,7 @@ import com.lowagie.text.html.HtmlTagMap;
 import com.lowagie.text.pdf.BaseFont;
 import com.lowagie.text.pdf.draw.LineSeparator;
 import com.lowagie.text.xml.simpleparser.EntitiesToSymbol;
+import java.io.IOException;
 
 /**
  * This class is a Handler that controls the iText XML to PDF conversion.
@@ -205,6 +206,7 @@ public class SAXiTextHandler extends DefaultHandler {
      *            the list of attributes
      */
 
+    @Override
     public void startElement(String uri, String lname, String name,
             Attributes attrs) {
 
@@ -365,7 +367,11 @@ public class SAXiTextHandler extends DefaultHandler {
                     }
                     return;
                 }
-            } catch (Exception e) {
+            } catch (BadElementException e) {
+                throw new ExceptionConverter(e);
+            } catch (IOException e) {
+                throw new ExceptionConverter(e);
+            } catch (ExceptionConverter e) {
                 throw new ExceptionConverter(e);
             }
         }
@@ -469,7 +475,7 @@ public class SAXiTextHandler extends DefaultHandler {
                         topMargin = Float.parseFloat(value + "f");
                     if (ElementTags.BOTTOM.equalsIgnoreCase(key))
                         bottomMargin = Float.parseFloat(value + "f");
-                } catch (Exception ex) {
+                } catch (NumberFormatException ex) {
                     throw new ExceptionConverter(ex);
                 }
                 if (ElementTags.PAGE_SIZE.equals(key)) {
@@ -478,7 +484,13 @@ public class SAXiTextHandler extends DefaultHandler {
                         Field pageSizeField = PageSize.class
                                 .getField(pageSizeName);
                         pageSize = (Rectangle) pageSizeField.get(null);
-                    } catch (Exception ex) {
+                    } catch (NoSuchFieldException ex) {
+                        throw new ExceptionConverter(ex);
+                    } catch (SecurityException ex) {
+                        throw new ExceptionConverter(ex);
+                    } catch (IllegalArgumentException ex) {
+                        throw new ExceptionConverter(ex);
+                    } catch (IllegalAccessException ex) {
                         throw new ExceptionConverter(ex);
                     }
                 } else if (ElementTags.ORIENTATION.equals(key)) {
@@ -522,7 +534,6 @@ public class SAXiTextHandler extends DefaultHandler {
                 || current instanceof Cell) {
             ((TextElementArray) current).add(img);
             stack.push(current);
-            return;
         }
         // ...if not, we need to to a lot of stuff
         else {
@@ -541,7 +552,6 @@ public class SAXiTextHandler extends DefaultHandler {
             while (!newStack.empty()) {
                 stack.push(newStack.pop());
             }
-            return;
         }
     }
     
@@ -556,6 +566,7 @@ public class SAXiTextHandler extends DefaultHandler {
      *            the number of characters to read from the array
      */
 
+    @Override
     public void ignorableWhitespace(char[] ch, int start, int length) {
         characters(ch, start, length);
     }
@@ -571,6 +582,7 @@ public class SAXiTextHandler extends DefaultHandler {
      *            the number of characters to read from the array
      */
 
+    @Override
     public void characters(char[] ch, int start, int length) {
 
         if (ignore)
@@ -643,6 +655,7 @@ public class SAXiTextHandler extends DefaultHandler {
      *            the name of the tag that ends
      */
 
+    @Override
     public void endElement(String uri, String lname, String name) {
         handleEndingTags(name);
     }
@@ -788,7 +801,7 @@ public class SAXiTextHandler extends DefaultHandler {
                                             + "f");
                             total += cellWidths[j];
                             cellNulls[j] = false;
-                        } catch (Exception e) {
+                        } catch (NumberFormatException e) {
                             // empty on purpose
                         }
                     }
@@ -853,7 +866,6 @@ public class SAXiTextHandler extends DefaultHandler {
                 }
                 if (controlOpenClose)
                     document.close();
-                return;
             }
         } catch (DocumentException de) {
             throw new ExceptionConverter(de);

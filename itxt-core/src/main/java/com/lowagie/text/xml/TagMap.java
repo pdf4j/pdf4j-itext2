@@ -62,6 +62,9 @@ import org.xml.sax.InputSource;
 import org.xml.sax.helpers.DefaultHandler;
 
 import com.lowagie.text.ExceptionConverter;
+import java.io.IOException;
+import javax.xml.parsers.ParserConfigurationException;
+import org.xml.sax.SAXException;
 
 /**
  * The <CODE>Tags</CODE>-class maps several XHTML-tags to iText-objects.
@@ -92,7 +95,7 @@ public class TagMap extends HashMap {
         public static final String CONTENT = "content";
         
 /** This is the tagmap using the AttributeHandler */
-        private HashMap tagMap;
+        private HashMap<String, XmlPeer> tagMap;
         
 /** This is the current peer. */
         private XmlPeer currentPeer;
@@ -104,7 +107,7 @@ public class TagMap extends HashMap {
  * @param	tagMap  A Hashmap containing XmlPeer-objects
  */
         
-        public AttributeHandler(HashMap tagMap) {
+        public AttributeHandler(HashMap<String, XmlPeer> tagMap) {
             super();
             this.tagMap = tagMap;
         }
@@ -118,6 +121,7 @@ public class TagMap extends HashMap {
  * @param	attrs		the list of attributes
  */
         
+        @Override
         public void startElement(String uri, String lname, String tag, Attributes attrs) {
             String name = attrs.getValue(NAME);
             String alias = attrs.getValue(ALIAS);
@@ -149,6 +153,7 @@ public class TagMap extends HashMap {
  * @param	length	the number of characters to read from the array
  */
         
+        @Override
         public void ignorableWhitespace(char[] ch, int start, int length) {
             // do nothing
         }
@@ -161,6 +166,7 @@ public class TagMap extends HashMap {
  * @param	length	the number of characters to read from the array
  */
         
+        @Override
         public void characters(char[] ch, int start, int length) {
             // do nothing
         }
@@ -173,6 +179,7 @@ public class TagMap extends HashMap {
  * @param	tag		the name of the tag that ends
  */
         
+        @Override
         public void endElement(String uri, String lname, String tag) {
             if (TAG.equals(tag))
                 tagMap.put(currentPeer.getAlias(), currentPeer);
@@ -210,7 +217,11 @@ public class TagMap extends HashMap {
             SAXParser parser = SAXParserFactory.newInstance().newSAXParser();
             parser.parse(new InputSource(in), new AttributeHandler(this));
         }
-        catch(Exception e) {
+        catch(ParserConfigurationException e) {
+            throw new ExceptionConverter(e);
+        } catch (SAXException e) {
+            throw new ExceptionConverter(e);
+        } catch (IOException e) {
             throw new ExceptionConverter(e);
         }
     }

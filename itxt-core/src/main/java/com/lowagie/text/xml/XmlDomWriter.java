@@ -58,12 +58,20 @@ public class XmlDomWriter {
     // Public methods
     //
     
-    /** Sets whether output is canonical. */
+    /** 
+     * Sets whether output is canonical.
+     * @param canonical 
+     */
     public void setCanonical(boolean canonical) {
         fCanonical = canonical;
     } // setCanonical(boolean)
     
-    /** Sets the output stream for printing. */
+    /** 
+     * Sets the output stream for printing. 
+     * @param stream
+     * @param encoding
+     * @throws java.io.UnsupportedEncodingException
+     */
     public void setOutput(OutputStream stream, String encoding)
     throws UnsupportedEncodingException {
         
@@ -76,7 +84,10 @@ public class XmlDomWriter {
         
     } // setOutput(OutputStream,String)
     
-    /** Sets the output writer. */
+    /** 
+     * Sets the output writer. 
+     * @param writer
+     */
     public void setOutput(java.io.Writer writer) {
         
         fOut = writer instanceof PrintWriter
@@ -84,7 +95,10 @@ public class XmlDomWriter {
         
     } // setOutput(java.io.Writer)
     
-    /** Writes the specified node, recursively. */
+    /** 
+     * Writes the specified node, recursively. 
+     * @param node
+     */
     public void write(Node node) {
         
         // is there anything to do?
@@ -141,8 +155,7 @@ public class XmlDomWriter {
                 fOut.print('<');
                 fOut.print(node.getNodeName());
                 Attr attrs[] = sortAttributes(node.getAttributes());
-                for (int i = 0; i < attrs.length; i++) {
-                    Attr attr = attrs[i];
+                for (Attr attr: attrs) {
                     fOut.print(' ');
                     fOut.print(attr.getNodeName());
                     fOut.print("=\"");
@@ -229,7 +242,11 @@ public class XmlDomWriter {
         
     } // write(Node)
     
-    /** Returns a sorted list of attributes. */
+    /** 
+     * Returns a sorted list of attributes. 
+     * @param attrs
+     * @return 
+     */
     protected Attr[] sortAttributes(NamedNodeMap attrs) {
         
         int len = (attrs != null) ? attrs.getLength() : 0;
@@ -262,7 +279,11 @@ public class XmlDomWriter {
     // Protected methods
     //
     
-    /** Normalizes and prints the given string. */
+    /** 
+     * Normalizes and prints the given string. 
+     * @param s
+     * @param isAttValue
+     */
     protected void normalizeAndPrint(String s, boolean isAttValue) {
         
         int len = (s != null) ? s.length() : 0;
@@ -273,7 +294,11 @@ public class XmlDomWriter {
         
     } // normalizeAndPrint(String,boolean)
     
-    /** Normalizes and print the given character. */
+    /** 
+     * Normalizes and print the given character. 
+     * @param c
+     * @param isAttValue
+     */
     protected void normalizeAndPrint(char c, boolean isAttValue) {
         
         switch (c) {

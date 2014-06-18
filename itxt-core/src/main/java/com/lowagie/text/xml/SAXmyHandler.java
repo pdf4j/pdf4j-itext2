@@ -77,12 +77,12 @@ public class SAXmyHandler extends SAXiTextHandler {
 /**
  * This method gets called when a start tag is encountered.
  * 
-	 * @param   uri 		the Uniform Resource Identifier
-	 * @param   lname 		the local name (without prefix), or the empty string if Namespace processing is not being performed.
- * @param	name		the name of the tag that is encountered
- * @param	attrs		the list of attributes
+ * @param   lname 		the local name (without prefix), or the empty string if Namespace processing is not being performed.
+ * @param   name		the name of the tag that is encountered
+ * @param   attrs		the list of attributes
  */
     
+    @Override
     public void startElement(String uri, String lname, String name, Attributes attrs) {
         if (myTags.containsKey(name)) {
             XmlPeer peer = (XmlPeer) myTags.get(name);
@@ -105,9 +105,10 @@ public class SAXmyHandler extends SAXiTextHandler {
  	 *
 	 * @param   uri 		the Uniform Resource Identifier
 	 * @param   lname 		the local name (without prefix), or the empty string if Namespace processing is not being performed.
-	 * @param	name		the name of the tag that ends
+	 * @param   name		the name of the tag that ends
 	 */
     
+    @Override
     public void endElement(String uri, String lname, String name) {
         if (myTags.containsKey(name)) {
             XmlPeer peer = (XmlPeer) myTags.get(name);
