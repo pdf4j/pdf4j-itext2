@@ -163,6 +163,7 @@ public class RomanNumberFactory {
 	/** 
 	 * Changes an int into a roman number.
 	 * @param index the original number
+         * @param lowercase
 	 * @return the roman number (lower case)
 	 */
 	public static final String getString(int index, boolean lowercase) {
@@ -176,6 +177,7 @@ public class RomanNumberFactory {
 	
 	/**
 	 * Test this class using this main method.
+         * @param args
 	 */
 	public static void main(String[] args) {
 		for (int i = 1; i < 2000; i++) {

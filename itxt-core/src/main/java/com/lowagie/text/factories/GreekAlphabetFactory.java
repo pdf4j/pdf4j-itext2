@@ -91,6 +91,7 @@ public class GreekAlphabetFactory {
 	/** 
 	 * Changes an int into a Greek letter combination.
 	 * @param index the original number
+         * @param lowercase
 	 * @return the letter combination
 	 */
 	public static final String getString(int index, boolean lowercase) {
@@ -122,6 +123,7 @@ public class GreekAlphabetFactory {
 	
 	/**
 	 * Test this class using this main method.
+         * @param args
 	 */
 	public static void main(String[] args) {
 		for (int i = 1; i < 1000; i++) {

@@ -345,9 +345,11 @@ public class ElementFactory {
 				value = attributes.getProperty(ElementTags.COLUMNS);
 				try {
 					table = new Table(Integer.parseInt(value));
-				} catch (Exception e) {
+				} catch (NumberFormatException e) {
 					table = new Table(1);
-				}
+				} catch (BadElementException e) {
+                                    table = new Table(1);
+                            }
 			}
 
 			table.setBorder(Table.BOX);
@@ -480,6 +482,7 @@ public class ElementFactory {
 
 	/**
 	 * Creates a Section object based on a list of properties.
+         * @param parent
 	 * @param attributes
 	 * @return a Section
 	 */
@@ -518,6 +521,8 @@ public class ElementFactory {
 	 * Creates an Image object based on a list of properties.
 	 * @param attributes
 	 * @return an Image
+         * @throws com.lowagie.text.BadElementException
+         * @throws java.net.MalformedURLException
 	 */
 	public static Image getImage(Properties attributes)
 			throws BadElementException, MalformedURLException, IOException {
