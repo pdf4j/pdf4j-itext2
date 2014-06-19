@@ -112,7 +112,7 @@ import com.lowagie.text.pdf.BaseFont;
  *    System.err.println(de.getMessage());
  * }
  * // this will close the document and all the OutputStreams listening to it
- * <STRONG>document.close();</CODE>
+ * <STRONG>document.close();</STRONG>
  * </PRE></BLOCKQUOTE>
  */
 
@@ -203,6 +203,7 @@ public class HtmlWriter extends DocWriter {
  * @return  <CODE>true</CODE> if this action succeeded, <CODE>false</CODE> if not.
  */
     
+    @Override
     public boolean newPage() {
         try {
             writeStart(HtmlTags.DIV);
@@ -227,6 +228,7 @@ public class HtmlWriter extends DocWriter {
  * @throws  DocumentException when a document isn't open yet, or has been closed
  */
     
+    @Override
     public boolean add(Element element) throws DocumentException {
         if (pause) {
             return false;
@@ -314,6 +316,7 @@ public class HtmlWriter extends DocWriter {
  * The <CODE>HEAD</CODE>-section of the HTML-document is written.
  */
     
+    @Override
     public void open() {
         super.open();
         try {
@@ -360,6 +363,7 @@ public class HtmlWriter extends DocWriter {
  * <CODE>Elements</CODE> will be added.
  */
     
+    @Override
     public void close() {
         try {
             initFooter(); // line added by David Freels
@@ -377,7 +381,7 @@ public class HtmlWriter extends DocWriter {
     // some protected methods
     
 /**
- * Adds the header to the top of the </CODE>Document</CODE>
+ * Adds the header to the top of the <CODE>Document</CODE>
  */
     
     protected void initHeader() {
@@ -385,14 +389,14 @@ public class HtmlWriter extends DocWriter {
             try {
                 add(header.paragraph());
             }
-            catch(Exception e) {
+            catch(DocumentException e) {
                 throw new ExceptionConverter(e);
             }
         }
     }
     
 /**
- *  Adds the header to the top of the </CODE>Document</CODE>
+ *  Adds the header to the top of the <CODE>Document</CODE>
  */
     
     protected void initFooter() {
@@ -403,7 +407,7 @@ public class HtmlWriter extends DocWriter {
                 footer.setPageNumber(pageN + 1);
                 add(footer.paragraph());
             }
-            catch(Exception e) {
+            catch(DocumentException e) {
                 throw new ExceptionConverter(e);
             }
         }
@@ -532,12 +536,10 @@ public class HtmlWriter extends DocWriter {
     public boolean isOtherFont(Font font) {
         try {
             Font cFont = (Font) currentfont.peek();
-            if (cFont.compareTo(font) == 0) return false;
-            return true;
+            return cFont.compareTo(font) != 0;
         }
         catch(EmptyStackException ese) {
-            if (standardfont.compareTo(font) == 0) return false;
-            return true;
+            return standardfont.compareTo(font) != 0;
         }
     }
     
@@ -571,6 +573,7 @@ public class HtmlWriter extends DocWriter {
  * @param header    the new header
  */
     
+    @Override
     public void setHeader(HeaderFooter header) {
         this.header = header;
     }
@@ -581,6 +584,7 @@ public class HtmlWriter extends DocWriter {
  * @param footer    the new footer
  */
     
+    @Override
     public void setFooter(HeaderFooter footer) {
         this.footer = footer;
     }
@@ -653,7 +657,7 @@ public class HtmlWriter extends DocWriter {
                 }
                 if (attributes != null && attributes.get(Chunk.SUBSUPSCRIPT) != null) {
                     // start sup or sub tag
-                    if (((Float)attributes.get(Chunk.SUBSUPSCRIPT)).floatValue() > 0) {
+                    if (((Float)attributes.get(Chunk.SUBSUPSCRIPT)) > 0) {
                         writeStart(HtmlTags.SUP);
                     }
                     else {
@@ -667,7 +671,7 @@ public class HtmlWriter extends DocWriter {
                     // end sup or sub tag
                     os.write(LT);
                     os.write(FORWARD);
-                    if (((Float)attributes.get(Chunk.SUBSUPSCRIPT)).floatValue() > 0) {
+                    if (((Float)attributes.get(Chunk.SUBSUPSCRIPT)) > 0) {
                         write(HtmlTags.SUP);
                     }
                     else {
@@ -1080,12 +1084,12 @@ public class HtmlWriter extends DocWriter {
             BaseFont bf = font.getBaseFont();
             if (bf != null) {
                 String ps = bf.getPostscriptFontName().toLowerCase();
-                if (ps.indexOf("bold") >= 0) {
+                if (ps.contains("bold")) {
                     if (fontstyle == Font.UNDEFINED)
                         fontstyle = 0;
                     fontstyle |= Font.BOLD;
                 }
-                if (ps.indexOf("italic") >= 0 || ps.indexOf("oblique") >= 0) {
+                if (ps.contains("italic") || ps.contains("oblique")) {
                     if (fontstyle == Font.UNDEFINED)
                         fontstyle = 0;
                     fontstyle |= Font.ITALIC;

@@ -366,6 +366,7 @@ public class Base64 {
      * Encodes or decodes two files from the command line;
      * <strong>feel free to delete this method (in fact you probably should)
      * if you're embedding this code into a larger program.</strong>
+     * @param args
      */
     public final static void main( String[] args ) {
         if( args.length < 3 ){

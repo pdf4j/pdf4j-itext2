@@ -343,6 +343,9 @@ public class Markup {
 	/**
 	 * New method contributed by: Lubos Strapko
 	 * 
+         * @param string
+         * @param actualFontSize
+         * @return 
 	 * @since 2.1.3
 	 */
 	public static float parseLength(String string, float actualFontSize) {
@@ -411,8 +414,7 @@ public class Markup {
 	 * Converts a <CODE>Color</CODE> into a HTML representation of this <CODE>
 	 * Color</CODE>.
 	 * 
-	 * @param s
-	 *            the <CODE>Color</CODE> that has to be converted.
+	 * @param s the <CODE>Color</CODE> that has to be converted.
 	 * @return the HTML representation of this <COLOR>Color </COLOR>
 	 */
 

@@ -80,6 +80,7 @@ public class HtmlParser extends XmlParser {
  * @param is the InputSource with the content
  */
     
+    @Override
     public void go(DocListener document, InputSource is) {
         try {
             parser.parse(is, new SAXmyHtmlHandler(document));
@@ -109,6 +110,7 @@ public class HtmlParser extends XmlParser {
  * @param file the file with the content
  */
     
+    @Override
     public void go(DocListener document, String file) {
         try {
             parser.parse(file, new SAXmyHtmlHandler(document));

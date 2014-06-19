@@ -128,6 +128,7 @@ public class SAXmyHtmlHandler extends SAXiTextHandler // SAXmyHandler
      *            the list of attributes
      */
 
+    @Override
     public void startElement(String uri, String lname, String name,
             Attributes attrs) {
         // System.err.println("Start: " + name);
@@ -228,6 +229,7 @@ public class SAXmyHtmlHandler extends SAXiTextHandler // SAXmyHandler
      *            the name of the tag that ends
      */
 
+    @Override
     public void endElement(String uri, String lname, String name) {
         // System.err.println("End: " + name);
     	name = name.toLowerCase();
