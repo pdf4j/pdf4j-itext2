@@ -215,7 +215,7 @@ public class FactoryProperties {
 	 * @return	a HyphenationEvent
 	 * @since	2.1.2
 	 */
-	public static HyphenationEvent getHyphenation(HashMap props) {
+	public static HyphenationEvent getHyphenation(HashMap<String, String> props) {
 		return getHyphenation((String) props.get("hyphenation"));
 	}
 
@@ -265,7 +265,7 @@ public class FactoryProperties {
 	 * @param	h	a HashMap that should have at least a key named
 	 * style. After this method is invoked, more keys could be added.
 	 */
-	public static void insertStyle(HashMap h) {
+	public static void insertStyle(HashMap<String, String> h) {
 		String style = (String) h.get("style");
 		if (style == null)
 			return;
@@ -324,7 +324,7 @@ public class FactoryProperties {
 	 * @param cprops
 	 * @since 2.1.3
 	 */
-	public static void insertStyle(HashMap h, ChainedProperties cprops) {
+	public static void insertStyle(HashMap<String, String> h, ChainedProperties cprops) {
 		String style = (String) h.get("style");
 		if (style == null)
 			return;
@@ -400,7 +400,7 @@ public class FactoryProperties {
 		this.fontImp = fontImp;
 	}
 
-	public static HashMap followTags = new HashMap();
+	public static HashMap<String, String> followTags = new HashMap<String, String>();
 	static {
 		followTags.put("i", "i");
 		followTags.put("b", "b");

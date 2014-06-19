@@ -58,7 +58,15 @@ public class ChainedProperties {
 
 	public final static int fontSizes[] = { 8, 10, 12, 14, 18, 24, 36 };
 
-	public ArrayList chain = new ArrayList();
+    private static final class ChainedProperty {
+    	final String key;
+    	final HashMap<String, String> property;
+    	ChainedProperty(String key, HashMap<String, String> property) {
+    		this.key = key;
+    		this.property = property;
+    	}
+    }
+    public ArrayList<ChainedProperty> chain = new ArrayList<ChainedProperty>();
 
 	/** Creates a new instance of ChainedProperties */
 	public ChainedProperties() {
@@ -66,8 +74,8 @@ public class ChainedProperties {
 
 	public String getProperty(String key) {
 		for (int k = chain.size() - 1; k >= 0; --k) {
-			Object obj[] = (Object[]) chain.get(k);
-			HashMap prop = (HashMap) obj[1];
+                    ChainedProperty p = chain.get(k);
+                    HashMap<String, String> prop = p.property;
 			String ret = (String) prop.get(key);
 			if (ret != null)
 				return ret;
@@ -77,15 +85,15 @@ public class ChainedProperties {
 
 	public boolean hasProperty(String key) {
 		for (int k = chain.size() - 1; k >= 0; --k) {
-			Object obj[] = (Object[]) chain.get(k);
-			HashMap prop = (HashMap) obj[1];
+                    ChainedProperty p = chain.get(k);
+                    HashMap<String, String> prop = p.property;
 			if (prop.containsKey(key))
 				return true;
 		}
 		return false;
 	}
 
-	public void addToChain(String key, HashMap prop) {
+	public void addToChain(String key, HashMap<String, String> prop) {
 		// adjust the font size
 		String value = (String) prop.get(ElementTags.SIZE);
 		if (value != null) {
@@ -123,12 +131,12 @@ public class ChainedProperties {
 				prop.put(ElementTags.SIZE, Integer.toString(fontSizes[s]));
 			}
 		}
-		chain.add(new Object[] { key, prop });
+		chain.add(new ChainedProperty(key, prop));
 	}
 
 	public void removeChain(String key) {
 		for (int k = chain.size() - 1; k >= 0; --k) {
-			if (key.equals(((Object[]) chain.get(k))[0])) {
+			if (key.equals(chain.get(k).key)) {
 				chain.remove(k);
 				return;
 			}

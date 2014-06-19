@@ -51,6 +51,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 
+import com.lowagie.text.Chunk;
+import com.lowagie.text.Element;
+import com.lowagie.text.ElementListener;
 import com.lowagie.text.pdf.PdfPCell;
 import com.lowagie.text.pdf.PdfPTable;
 
@@ -58,24 +61,26 @@ import com.lowagie.text.pdf.PdfPTable;
  *
  * @author  psoares
  */
-public class IncTable {
-    private HashMap props = new HashMap();
-    private ArrayList rows = new ArrayList();
-    private ArrayList cols;
+public class IncTable implements Element {
+	private ArrayList<Chunk> chunks = new ArrayList<Chunk>();
+
+    private HashMap<String, String> props = new HashMap<String, String>();
+    private ArrayList<ArrayList<PdfPCell>> rows = new ArrayList<ArrayList<PdfPCell>>();
+    private ArrayList<PdfPCell> cols;
     /** Creates a new instance of IncTable */
-    public IncTable(HashMap props) {
+    public IncTable(HashMap<String, String> props) {
         this.props.putAll(props);
     }
     
     public void addCol(PdfPCell cell) {
         if (cols == null)
-            cols = new ArrayList();
+            cols = new ArrayList<PdfPCell>();
         cols.add(cell);
     }
     
-    public void addCols(ArrayList ncols) {
+    public void addCols(ArrayList<PdfPCell> ncols) {
         if (cols == null)
-            cols = new ArrayList(ncols);
+            cols = new ArrayList<PdfPCell>(ncols);
         else
             cols.addAll(ncols);
     }
@@ -88,7 +93,7 @@ public class IncTable {
         }
     }
     
-    public ArrayList getRows() {
+    public ArrayList<ArrayList<PdfPCell>> getRows() {
         return rows;
     }
     
@@ -96,12 +101,12 @@ public class IncTable {
         if (rows.isEmpty())
             return new PdfPTable(1);
         int ncol = 0;
-        ArrayList c0 = (ArrayList)rows.get(0);
+        ArrayList<PdfPCell> c0 = rows.get(0);
         for (int k = 0; k < c0.size(); ++k) {
-            ncol += ((PdfPCell)c0.get(k)).getColspan();
+            ncol += c0.get(k).getColspan();
         }
         PdfPTable table = new PdfPTable(ncol);
-        String width = (String)props.get("width");
+        String width = props.get("width");
         if (width == null)
             table.setWidthPercentage(100);
         else {
@@ -113,11 +118,29 @@ public class IncTable {
             }
         }
         for (int row = 0; row < rows.size(); ++row) {
-            ArrayList col = (ArrayList)rows.get(row);
+            ArrayList<PdfPCell> col = rows.get(row);
             for (int k = 0; k < col.size(); ++k) {
-                table.addCell((PdfPCell)col.get(k));
+                table.addCell(col.get(k));
             }
         }
         return table;
     }
+
+    
+    public ArrayList<Chunk> getChunks() {
+    	return chunks;
+    }
+    
+    public boolean process(ElementListener listener) {
+    	return true;
+    }
+    
+    public int type() {
+    	return 0;
+    }
+    
+    public boolean isNestable() { return true; }
+
+    public boolean isContent() { return true; }
+
 }

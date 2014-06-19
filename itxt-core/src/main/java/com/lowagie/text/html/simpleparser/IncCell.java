@@ -49,6 +49,7 @@ package com.lowagie.text.html.simpleparser;
 
 import java.util.ArrayList;
 
+import com.lowagie.text.Chunk;
 import com.lowagie.text.Element;
 import com.lowagie.text.ElementListener;
 import com.lowagie.text.Phrase;
@@ -61,10 +62,14 @@ import com.lowagie.text.pdf.PdfPCell;
  */
 public class IncCell implements TextElementArray {
     
-    private ArrayList chunks = new ArrayList();
+    private ArrayList<Chunk> chunks = new ArrayList<Chunk>();
     private PdfPCell cell;
     
-    /** Creates a new instance of IncCell */
+    /** 
+     * Creates a new instance of IncCell 
+     * @param tag
+     * @param props
+     */
     public IncCell(String tag, ChainedProperties props) {
         cell = new PdfPCell((Phrase)null);
         String value = props.getProperty("colspan");
@@ -104,14 +109,18 @@ public class IncCell implements TextElementArray {
         cell.setBackgroundColor(Markup.decodeColor(value));
     }
     
-    public boolean add(Object o) {
+    public boolean addObject(Object o) {
         if (!(o instanceof Element))
             return false;
-        cell.addElement((Element)o);
+        return add((Element)o);
+    }
+    
+    public boolean add(Element element) {
+        cell.addElement(element);
         return true;
     }
     
-    public ArrayList getChunks() {
+    public ArrayList<Chunk> getChunks() {
         return chunks;
     }
     

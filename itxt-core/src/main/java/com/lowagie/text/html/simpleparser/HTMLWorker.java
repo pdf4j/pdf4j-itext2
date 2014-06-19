@@ -81,7 +81,7 @@ import com.lowagie.text.xml.simpleparser.SimpleXMLParser;
 
 public class HTMLWorker implements SimpleXMLDocHandler, DocListener {
 
-	protected ArrayList objectList;
+	protected ArrayList<Element> objectList;
 
 	protected DocListener document;
 
@@ -89,7 +89,7 @@ public class HTMLWorker implements SimpleXMLDocHandler, DocListener {
 
 	private ChainedProperties cprops = new ChainedProperties();
 
-	private Stack stack = new Stack();
+	private Stack<Element> stack = new Stack<Element>();
 
 	private boolean pendingTR = false;
 
@@ -101,11 +101,11 @@ public class HTMLWorker implements SimpleXMLDocHandler, DocListener {
 
 	private boolean isPRE = false;
 
-	private Stack tableState = new Stack();
+	private Stack<boolean[]> tableState = new Stack<boolean[]>();
 
 	private boolean skipText = false;
 
-	private HashMap interfaceProps;
+	private HashMap<String, Object> interfaceProps;
 
 	private FactoryProperties factoryProperties = new FactoryProperties();
 
@@ -124,7 +124,7 @@ public class HTMLWorker implements SimpleXMLDocHandler, DocListener {
 		return style;
 	}
 
-	public void setInterfaceProps(HashMap interfaceProps) {
+	public void setInterfaceProps(HashMap<String, Object> interfaceProps) {
 		this.interfaceProps = interfaceProps;
 		FontProvider ff = null;
 		if (interfaceProps != null)
@@ -133,7 +133,7 @@ public class HTMLWorker implements SimpleXMLDocHandler, DocListener {
 			factoryProperties.setFontImp(ff);
 	}
 
-	public HashMap getInterfaceProps() {
+	public HashMap<String, Object> getInterfaceProps() {
 		return interfaceProps;
 	}
 
@@ -147,7 +147,7 @@ public class HTMLWorker implements SimpleXMLDocHandler, DocListener {
 	}
 
 	public static ArrayList parseToList(Reader reader, StyleSheet style,
-			HashMap interfaceProps) throws IOException {
+			HashMap<String, Object> interfaceProps) throws IOException {
 		HTMLWorker worker = new HTMLWorker(null);
 		if (style != null)
 			worker.style = style;
@@ -171,19 +171,19 @@ public class HTMLWorker implements SimpleXMLDocHandler, DocListener {
 	}
 
 	public void startDocument() {
-		HashMap h = new HashMap();
+		HashMap<String, String> h = new HashMap<String, String>();
 		style.applyStyle("body", h);
 		cprops.addToChain("body", h);
 	}
 
-	public void startElement(String tag, HashMap h) {
+	public void startElement(String tag, HashMap<String, String> h) {
 		if (!tagsSupported.containsKey(tag))
 			return;
 		try {
 			style.applyStyle(tag, h);
 			String follow = (String) FactoryProperties.followTags.get(tag);
 			if (follow != null) {
-				HashMap prop = new HashMap();
+				HashMap<String, String> prop = new HashMap<String, String>();
 				prop.put(follow, null);
 				cprops.addToChain(follow, prop);
 				return;
@@ -492,7 +492,7 @@ public class HTMLWorker implements SimpleXMLDocHandler, DocListener {
 				if (stack.empty())
 					document.add(currentParagraph);
 				else {
-					Object obj = stack.pop();
+					Element obj = stack.pop();
 					if (obj instanceof TextElementArray) {
 						TextElementArray current = (TextElementArray) obj;
 						current.add(currentParagraph);
@@ -509,7 +509,7 @@ public class HTMLWorker implements SimpleXMLDocHandler, DocListener {
 				cprops.removeChain(tag);
 				if (stack.empty())
 					return;
-				Object obj = stack.pop();
+				Element obj = stack.pop();
 				if (!(obj instanceof com.lowagie.text.List)) {
 					stack.push(obj);
 					return;
@@ -526,7 +526,7 @@ public class HTMLWorker implements SimpleXMLDocHandler, DocListener {
 				cprops.removeChain(tag);
 				if (stack.empty())
 					return;
-				Object obj = stack.pop();
+				Element obj = stack.pop();
 				if (!(obj instanceof ListItem)) {
 					stack.push(obj);
 					return;
@@ -535,7 +535,7 @@ public class HTMLWorker implements SimpleXMLDocHandler, DocListener {
 					document.add((Element) obj);
 					return;
 				}
-				Object list = stack.pop();
+				Element list = stack.pop();
 				if (!(list instanceof com.lowagie.text.List)) {
 					stack.push(list);
 					return;
