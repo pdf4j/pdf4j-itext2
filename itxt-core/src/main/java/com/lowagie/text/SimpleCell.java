@@ -71,7 +71,7 @@ public class SimpleCell extends Rectangle implements PdfPCellEvent, TextElementA
 	
 	// member variables
 	/** the content of the Cell. */
-	private ArrayList content = new ArrayList();
+	private ArrayList<Element> content = new ArrayList<Element>();
 	/** the width of the Cell. */
 	private float width = 0f;
 	/** the widthpercentage of the Cell. */
@@ -445,6 +445,7 @@ public class SimpleCell extends Rectangle implements PdfPCellEvent, TextElementA
 	/**
 	 * @return Returns the width.
 	 */
+        @Override
 	public float getWidth() {
 		return width;
 	}
@@ -506,28 +507,39 @@ public class SimpleCell extends Rectangle implements PdfPCellEvent, TextElementA
 	/**
 	 * @return Returns the content.
 	 */
-	ArrayList getContent() {
+	ArrayList<Element> getContent() {
 		return content;
 	}
 
-	/**
-	 * @see com.lowagie.text.TextElementArray#add(java.lang.Object)
-	 */
-	public boolean add(Object o) {
-		try {
-			addElement((Element)o);
-			return true;
-		}
-		catch(ClassCastException e) {
-			return false;
-		}
-		catch(BadElementException e) {
-			throw new ExceptionConverter(e);
-		}
-	}
+    public boolean addObject(Object o) {
+        try {
+                addElement((Element)o);
+                return true;
+        }
+        catch(ClassCastException e) {
+                return false;
+        }
+        catch(BadElementException e) {
+                throw new ExceptionConverter(e);
+        }
+    }
+
+    public boolean add(Element o) {
+    try {
+                addElement((Element)o);
+                return true;
+        }
+        catch(ClassCastException e) {
+                return false;
+        }
+        catch(BadElementException e) {
+                throw new ExceptionConverter(e);
+        }
+    }
 	/**
 	 * @see com.lowagie.text.Element#type()
 	 */
+        @Override
 	public int type() {
 		return Element.CELL;
 	}

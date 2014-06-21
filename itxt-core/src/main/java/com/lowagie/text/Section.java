@@ -265,6 +265,7 @@ public class Section extends ArrayList implements TextElementArray, LargeElement
      * @param	o   	an object of type <CODE>Paragraph</CODE>, <CODE>List</CODE> or <CODE>Table</CODE>=
      * @throws	ClassCastException if the object is not a <CODE>Paragraph</CODE>, <CODE>List</CODE> or <CODE>Table</CODE>
      */
+    @Override
     public void add(int index, Object o) {
     	if (isAddedCompletely()) {
     		throw new IllegalStateException(MessageLocalization.getComposedMessage("this.largeelement.has.already.been.added.to.the.document"));
@@ -291,7 +292,8 @@ public class Section extends ArrayList implements TextElementArray, LargeElement
      * @return	a boolean
      * @throws	ClassCastException if the object is not a <CODE>Paragraph</CODE>, <CODE>List</CODE>, <CODE>Table</CODE> or <CODE>Section</CODE>
      */
-    public boolean add(Object o) {
+    @Override
+    public boolean add(Element o) {
     	if (isAddedCompletely()) {
     		throw new IllegalStateException(MessageLocalization.getComposedMessage("this.largeelement.has.already.been.added.to.the.document"));
     	}
@@ -328,6 +330,7 @@ public class Section extends ArrayList implements TextElementArray, LargeElement
      * @return	<CODE>true</CODE> if the action succeeded, <CODE>false</CODE> if not.
      * @throws	ClassCastException if one of the objects isn't a <CODE>Paragraph</CODE>, <CODE>List</CODE>, <CODE>Table</CODE>
      */
+    @Override
     public boolean addAll(Collection collection) {
         for (Iterator iterator = collection.iterator(); iterator.hasNext(); ) {
             this.add(iterator.next());
@@ -517,6 +520,7 @@ public class Section extends ArrayList implements TextElementArray, LargeElement
      * Sets the style for numbering sections.
      * Possible values are NUMBERSTYLE_DOTTED: 1.2.3. (the default)
      * or NUMBERSTYLE_DOTTED_WITHOUT_FINAL_DOT: 1.2.3
+     * @param numberStyle
 	 * @since	iText 2.0.8
      */
 	public void setNumberStyle(int numberStyle) {
@@ -755,4 +759,8 @@ public class Section extends ArrayList implements TextElementArray, LargeElement
 	public void newPage() {
 		this.add(Chunk.NEXTPAGE);
 	}
+
+    public boolean addObject(Object o) {
+        return add((Element)o);
+    }
 }

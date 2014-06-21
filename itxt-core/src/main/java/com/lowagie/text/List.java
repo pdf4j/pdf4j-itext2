@@ -267,7 +267,7 @@ public class List implements TextElementArray {
      * @param	o		the object to add.
      * @return true if adding the object succeeded
      */
-    public boolean add(Object o) {
+    public boolean add(Element o) {
         if (o instanceof ListItem) {
             ListItem item = (ListItem) o;
             if (numbered || lettered) {
@@ -292,9 +292,6 @@ public class List implements TextElementArray {
             nested.setIndentationLeft(nested.getIndentationLeft() + symbolIndent);
             first--;
             return list.add(nested);
-        }
-        else if (o instanceof String) {
-            return this.add(new ListItem((String) o));
         }
         return false;
     }
@@ -584,5 +581,16 @@ public class List implements TextElementArray {
 	public void setPreSymbol(String preSymbol) {
 		this.preSymbol = preSymbol;
 	}
+
+    public boolean addObject(Object o) {
+        if (o == null) return false;
+        if(o instanceof Element) {
+            return add((Element)o);
+        }
+        if (o instanceof String) {
+            return this.add(new ListItem((String) o));
+        }
+        return false;
+    }
 
 }

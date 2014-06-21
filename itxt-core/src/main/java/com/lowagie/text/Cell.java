@@ -99,7 +99,7 @@ public class Cell extends Rectangle implements TextElementArray {
 	 * The <CODE>ArrayList</CODE> of <CODE>Element</CODE>s
 	 * that are part of the content of the Cell.
 	 */
-	protected ArrayList arrayList = null;
+	protected ArrayList<Element> arrayList = null;
 
 	/** The horizontal alignment of the cell content. */
 	protected int horizontalAlignment = Element.ALIGN_UNDEFINED;
@@ -226,6 +226,7 @@ public class Cell extends Rectangle implements TextElementArray {
 	 * @param	listener	an <CODE>ElementListener</CODE>
 	 * @return	<CODE>true</CODE> if the element was processed successfully
 	 */
+        @Override
 	public boolean process(ElementListener listener) {
 		try {
 			return listener.add(this);
@@ -240,6 +241,7 @@ public class Cell extends Rectangle implements TextElementArray {
 	 *
 	 * @return	a type
 	 */
+        @Override
 	public int type() {
 		return Element.CELL;
 	}
@@ -249,10 +251,11 @@ public class Cell extends Rectangle implements TextElementArray {
 	 *
 	 * @return	an <CODE>ArrayList</CODE>
 	 */
-	public ArrayList getChunks() {
-		ArrayList tmp = new ArrayList();
-		for (Iterator i = arrayList.iterator(); i.hasNext(); ) {
-			tmp.addAll(((Element) i.next()).getChunks());
+        @Override
+	public ArrayList<Chunk> getChunks() {
+		ArrayList<Chunk> tmp = new ArrayList<Chunk>();
+		for (Element e: arrayList) {
+			tmp.addAll(e.getChunks());
 		}
 		return tmp;
 	}
@@ -335,7 +338,9 @@ public class Cell extends Rectangle implements TextElementArray {
 	
 	/**
 	 * Gets the width.
+     * @return 
 	 */
+        @Override
 	public float getWidth() {
 		return width;
 	}
@@ -667,8 +672,8 @@ public class Cell extends Rectangle implements TextElementArray {
 					tmp = new Cell();
 					tmp.setBorder(NO_BORDER);
 					tmp.setColspan(3);
-					for (Iterator i = arrayList.iterator(); i.hasNext(); ) {
-						tmp.add(i.next());
+					for (Element i: arrayList) {
+                                            tmp.add(i);
 					}
 					table.addCell(tmp);
 				}
@@ -689,12 +694,12 @@ public class Cell extends Rectangle implements TextElementArray {
 	}
 
 	/**
-	 * Add an <CODE>Object</CODE> to this cell.
+	 * Add an <CODE>Element</CODE> to this cell.
 	 *
 	 * @param o the object to add
 	 * @return always <CODE>true</CODE>
 	 */
-	public boolean add(Object o) {
+	public boolean add(Element o) {
 		try {
 			this.addElement((Element) o);
 			return true;
@@ -706,7 +711,20 @@ public class Cell extends Rectangle implements TextElementArray {
 			throw new ClassCastException(bee.getMessage());
 		}
 	}
-
+	/**
+	 * Add an <CODE>Object</CODE> to this cell.
+	 *
+	 * @param o the object to add
+	 * @return always <CODE>true</CODE>
+	 */
+	public boolean addObject(Object o) {
+            if (o instanceof Element) {
+                return add((Element)o);
+            } else {
+                return false;
+            }
+            
+        }
 	// helper methods
 	
 	/**
@@ -755,6 +773,7 @@ public class Cell extends Rectangle implements TextElementArray {
 	 * This method throws an <CODE>UnsupportedOperationException</CODE>.
 	 * @return NA
 	 */
+        @Override
 	public float getTop() {
 		throw new UnsupportedOperationException(MessageLocalization.getComposedMessage("dimensions.of.a.cell.can.t.be.calculated.see.the.faq"));
 	}
@@ -763,6 +782,7 @@ public class Cell extends Rectangle implements TextElementArray {
 	 * This method throws an <CODE>UnsupportedOperationException</CODE>.
 	 * @return NA
 	 */
+        @Override
 	public float getBottom() {
 		throw new UnsupportedOperationException(MessageLocalization.getComposedMessage("dimensions.of.a.cell.can.t.be.calculated.see.the.faq"));
 	}
@@ -771,6 +791,7 @@ public class Cell extends Rectangle implements TextElementArray {
 	 * This method throws an <CODE>UnsupportedOperationException</CODE>.
 	 * @return NA
 	 */
+        @Override
 	public float getLeft() {
 		throw new UnsupportedOperationException(MessageLocalization.getComposedMessage("dimensions.of.a.cell.can.t.be.calculated.see.the.faq"));
 	}
@@ -779,6 +800,7 @@ public class Cell extends Rectangle implements TextElementArray {
 	 * This method throws an <CODE>UnsupportedOperationException</CODE>.
 	 * @return NA
 	 */
+        @Override
 	public float getRight() {
 		throw new UnsupportedOperationException(MessageLocalization.getComposedMessage("dimensions.of.a.cell.can.t.be.calculated.see.the.faq"));
 	}

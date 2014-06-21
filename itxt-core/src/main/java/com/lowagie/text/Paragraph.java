@@ -224,7 +224,22 @@ public class Paragraph extends Phrase {
      * @param	o   object		the object to add.
      * @return true is adding the object succeeded
      */
-    public boolean add(Object o) {
+    @Override
+    public boolean addObject(Object o) {
+    	if (o instanceof Element) {
+	    	Element element = (Element) o;
+	    	return add(element);
+    	}
+    	return super.addObject(o);
+    } 
+    /**
+     * Adds an <CODE>Element</CODE> to the <CODE>Paragraph</CODE>.
+     *
+     * @param	o   object		the object to add.
+     * @return true is adding the object succeeded
+     */
+    @Override
+    public boolean add(Element o) {
         if (o instanceof List) {
             List list = (List) o;
             list.setIndentationLeft(list.getIndentationLeft() + indentationLeft);

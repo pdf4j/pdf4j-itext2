@@ -337,10 +337,23 @@ public class SimpleTable extends Rectangle implements PdfPTableEvent, TextElemen
 		return true;
 	}
 
+    public boolean addObject(Object o) {
+        try {
+            addElement((SimpleCell)o);
+            return true;
+        }
+        catch(ClassCastException e) {
+            return false;
+        }
+        catch(BadElementException e) {
+            throw new ExceptionConverter(e);
+        }
+    }
 	/**
-	 * @see com.lowagie.text.TextElementArray#add(java.lang.Object)
+         * @param o
+	 * @see com.lowagie.text.TextElementArray#add(Element)
 	 */
-	public boolean add(Object o) {
+	public boolean add(Element o) {
 		try {
 			addElement((SimpleCell)o);
 			return true;

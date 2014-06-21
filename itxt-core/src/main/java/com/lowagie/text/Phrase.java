@@ -236,8 +236,8 @@ public class Phrase extends ArrayList implements TextElementArray {
      *
      * @return	an <CODE>ArrayList</CODE>
      */ 
-    public ArrayList getChunks() {
-        ArrayList tmp = new ArrayList();
+    public ArrayList<Chunk> getChunks() {
+        ArrayList<Chunk> tmp = new ArrayList<Chunk>();
         for (Iterator i = iterator(); i.hasNext(); ) {
             tmp.addAll(((Element) i.next()).getChunks());
         }
@@ -309,11 +309,12 @@ public class Phrase extends ArrayList implements TextElementArray {
      * @return	a boolean
      * @throws	ClassCastException	when you try to add something that isn't a <CODE>Chunk</CODE>, <CODE>Anchor</CODE> or <CODE>Phrase</CODE>
      */
-    public boolean add(Object o) {
+        @Override
+    public boolean add(Element o) {
     	if (o == null) return false;
-        if (o instanceof String) {
-            return super.add(new Chunk((String) o, font));
-        }
+//        if (o instanceof String) {
+//            return super.add(new Chunk((String) o, font));
+//        }
         if (o instanceof RtfElementInterface) {
         	return super.add(o);
         }
@@ -585,6 +586,14 @@ public class Phrase extends ArrayList implements TextElementArray {
         	((ArrayList)p).add(new Chunk(string, font));
         }
     	return p;
+    }
+
+    public boolean addObject(Object o) {
+        if (o == null) return false;
+        if (o instanceof String) {
+            return super.add(new Chunk((String) o, font));
+        }
+        return add((Element)o);
     }
 
 }
