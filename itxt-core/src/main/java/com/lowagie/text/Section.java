@@ -133,7 +133,7 @@ public class Section extends ArrayList implements TextElementArray, LargeElement
     protected int subsections = 0;
     
     /** This is the complete list of sectionnumbers of this section and the parents of this section. */
-    protected ArrayList numbers = null;
+    protected ArrayList<Integer> numbers = null;
     
     /**
      * Indicates if the Section will be complete once added to the document.
@@ -382,6 +382,7 @@ public class Section extends ArrayList implements TextElementArray, LargeElement
     
     /**
      * Adds a marked section. For use in class MarkedSection only!
+     * @return 
      */
     public MarkedSection addMarkedSection() {
     	MarkedSection section = new MarkedSection(new Section(null, numberDepth + 1));
@@ -644,9 +645,10 @@ public class Section extends ArrayList implements TextElementArray, LargeElement
     
     /**
      * Changes the Chapter number.
+     * @param number
      */
     public void setChapterNumber(int number) {
-    	numbers.set(numbers.size() - 1, new Integer(number));
+    	numbers.set(numbers.size() - 1, number);
     	Object s;
     	for (Iterator i = iterator(); i.hasNext(); ) {
     		s = i.next();
@@ -699,6 +701,7 @@ public class Section extends ArrayList implements TextElementArray, LargeElement
 	}
     
     /**
+     * @return 
      * @since	iText 2.0.8
      */
     protected boolean isAddedCompletely() {
@@ -706,7 +709,8 @@ public class Section extends ArrayList implements TextElementArray, LargeElement
 	}
     
 	/**
-     * @since	iText 2.0.8
+         * @param addedCompletely
+         * @since	iText 2.0.8
 	 */
 	protected void setAddedCompletely(boolean addedCompletely) {
 		this.addedCompletely = addedCompletely;

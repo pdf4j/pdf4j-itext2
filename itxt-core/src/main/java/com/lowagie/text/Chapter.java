@@ -86,7 +86,7 @@ public class Chapter extends Section {
     public Chapter(int number) {
         super(null, 1);
         numbers = new ArrayList();
-        numbers.add(new Integer(number));
+        numbers.add(number);
         triggerNewPage = true;
     }
 	
@@ -100,7 +100,7 @@ public class Chapter extends Section {
     public Chapter(Paragraph title, int number) {
         super(title, 1);
         numbers = new ArrayList();
-        numbers.add(new Integer(number));
+        numbers.add(number);
         triggerNewPage = true;
     }
     
@@ -121,14 +121,17 @@ public class Chapter extends Section {
      *
      * @return	a type
      */
+        @Override
     public int type() {
         return Element.CHAPTER;
     }
 
 	/**
+     * @return 
 	 * @see com.lowagie.text.Element#isNestable()
 	 * @since	iText 2.0.8
 	 */
+        @Override
 	public boolean isNestable() {
 		return false;
 	}
